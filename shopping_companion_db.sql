@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS `groupes` (
   `group_id` int NOT NULL AUTO_INCREMENT,
   `group_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `creation_date` datetime NOT NULL,
-  `creator_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
   PRIMARY KEY (`group_id`),
-  KEY `creator_id` (`creator_id`)
+  KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

@@ -27,6 +27,8 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'supermarket_id'
             }
         }
+    },{
+        timestamps:false
     });
 
     return Shelf;

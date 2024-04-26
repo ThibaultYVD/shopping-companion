@@ -14,13 +14,15 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: false
         },
-        creator_id: {
+        user_id: {
             type: Sequelize.INTEGER,
             references: {
                 model: User,
                 key: 'user_id'
             }
         }
+    },{
+        timestamps:false
     });
 
     return Group;
