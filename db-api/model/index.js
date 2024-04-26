@@ -22,13 +22,13 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.user = require("../model/User.js")(sequelize, Sequelize);
-db.role = require("../model/Role.js")(sequelize, Sequelize)
-db.supermarket = require("../model/Supermarket.js")(sequelize, Sequelize)
-db.shelf = require("../model/Shelf.js")(sequelize, Sequelize)
-db.group = require("../model/Group.js")(sequelize, Sequelize)
-db.list = require("../model/List.js")(sequelize, Sequelize)
-db.product = require("../model/Product.js")(sequelize, Sequelize)
+db.User = require("../model/User.js")(sequelize, Sequelize);
+db.Role = require("../model/Role.js")(sequelize, Sequelize)
+db.Supermarket = require("../model/Supermarket.js")(sequelize, Sequelize)
+db.Shelf = require("../model/Shelf.js")(sequelize, Sequelize)
+db.Group = require("../model/Group.js")(sequelize, Sequelize)
+db.List = require("../model/List.js")(sequelize, Sequelize)
+db.Product = require("../model/Product.js")(sequelize, Sequelize)
 
 // Tables de jointures
 

@@ -4,7 +4,7 @@ const db = require('../model/index');
 
 router.get('/', async (req, res) => {
     try {
-        const products = await db.product.findAll();
+        const products = await db.Product.findAll();
         res.json(products);
     } catch (err) {
         console.error('Error dans récupération des produits :', err);
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:productId', async (req,res)=>{
     try {
-        const product = await db.product.findByPk(req.params.productId)
+        const product = await db.Product.findByPk(req.params.productId)
         if(product === null){
             res.status(404).json({ error: 'Produit non trouvé.' });
         }else{
@@ -31,7 +31,7 @@ router.post('/', async (req,res)=>{
     const { product_name, price, shelf_id } = req.body;
 
     try {
-        const createdProduct = await db.product.create({
+        const createdProduct = await db.Product.create({
             product_name: product_name,
             price: price,
             shelf_id: shelf_id
@@ -46,7 +46,7 @@ router.post('/', async (req,res)=>{
 
 router.delete('/:productId', async (req,res)=>{
     try {
-        const removeProduct = await db.product.destroy({
+        const removeProduct = await db.Product.destroy({
             where: { product_id: req.params.productId }
         })
         res.json(removeProduct)
@@ -61,13 +61,13 @@ router.patch('/:productId', async (req, res)=>{
     const { product_name, price, shelf_id } = req.body
 
     try {
-        const existingProduct = await db.product.findByPk(req.params.productId)
+        const existingProduct = await db.Product.findByPk(req.params.productId)
 
         if(!existingProduct){
             return res.status(404).json({error: 'Produit introuvable'})
         }
 
-        const patchedProduct = await db.product.update
+        const patchedProduct = await db.Product.update
         ({
             product_name: product_name,
             price: price,
