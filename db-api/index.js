@@ -29,6 +29,8 @@ app.use('/roles/', rolesRoute)
 const shelvesRoute = require('./routes/shelves')
 app.use('/shelves/', shelvesRoute)
 
+const supermarketsRoute = require('./routes/supermarkets')
+app.use('/supermarkets/', supermarketsRoute)
 
 app.get("/", (req, res) => {
     res.json({ message: "API Database" });
