@@ -23,7 +23,7 @@ router.get('/:productId', async (req,res)=>{
         
     } catch (error) {
         console.error(`Error dans récupération du produit ${req.params.productId} :`, err);
-        res.status(500).json({ error: 'Error dans récupération des produits' });
+        res.status(500).json({ error: 'Error dans récupération du produit' });
     }
 })
 

@@ -17,6 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 const productsRoute = require('./routes/products')
 app.use('/products/', productsRoute)
 
+const groupsRoute = require('./routes/groups')
+app.use('/groups/', groupsRoute)
+
 
 app.get("/", (req, res) => {
     res.json({ message: "API Database" });

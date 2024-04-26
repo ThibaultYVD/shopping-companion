@@ -32,34 +32,34 @@ db.Product = require("../model/Product.js")(sequelize, Sequelize)
 
 // Tables de jointures
 
-db.user.belongsToMany(db.role, {
+db.User.belongsToMany(db.Role, {
     through: "user_role"
 });
 
-db.group.belongsToMany(db.user, {
+db.Group.belongsToMany(db.User, {
     through: "group_members"
 });
 
-db.product.belongsToMany(db.list, {
+db.Product.belongsToMany(db.List, {
     through: "products_list"
 });
 
 
 // Clés étrangères
 
-db.shelf.belongsTo(db.supermarket, {
+db.Shelf.belongsTo(db.Supermarket, {
     foreignKey: 'supermarket_id'
 });
 
-db.group.belongsTo(db.user, {
+db.Group.belongsTo(db.User, {
     foreignKey: 'user_id'
 });
 
-db.list.belongsTo(db.group, {
+db.List.belongsTo(db.Group, {
     foreignKey: 'group_id'
 });
 
-db.product.belongsTo(db.shelf, {
+db.Product.belongsTo(db.Shelf, {
     foreignKey: 'shelf_id'
 });
 
