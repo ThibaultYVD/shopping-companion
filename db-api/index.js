@@ -23,6 +23,9 @@ app.use('/groups/', groupsRoute)
 const listsRoute = require('./routes/lists')
 app.use('/lists/', listsRoute)
 
+const rolesRoute = require('./routes/roles')
+app.use('/roles/', rolesRoute)
+
 
 app.get("/", (req, res) => {
     res.json({ message: "API Database" });
