@@ -5,7 +5,7 @@ const db = require('../model/index');
 router.get('/', async (req, res) => {
     try {
         const products = await db.Product.findAll();
-        res.json(products);
+        res.status(200).json(products);
     } catch (err) {
         console.error('Error dans récupération des produits :', err);
         res.status(500).json({ error: 'Error dans récupération des produits' });
@@ -18,7 +18,7 @@ router.get('/:productId', async (req,res)=>{
         if(product === null){
             res.status(404).json({ error: 'Produit non trouvé.' });
         }else{
-            res.json(product)
+            res.status(200).json(product)
         }
         
     } catch (error) {
@@ -37,7 +37,7 @@ router.post('/', async (req,res)=>{
             shelf_id: shelf_id
         });
 
-        res.json(createdProduct);
+        res.status(201).json(createdProduct);
     } catch (error) {
         console.error(`Error dans l'insertion du produit :`, error);
         res.status(500).json({ error: "Erreur dans l'insertion du produit." });
@@ -46,10 +46,17 @@ router.post('/', async (req,res)=>{
 
 router.delete('/:productId', async (req,res)=>{
     try {
+
+        const existingProduct = await db.Product.findByPk(req.params.productId)
+
+        if(!existingProduct){
+            return res.status(404).json({error: 'Produit introuvable'})
+        }
+
         const removeProduct = await db.Product.destroy({
             where: { product_id: req.params.productId }
         })
-        res.json(removeProduct)
+        res.status(204).json(removeProduct)
     } catch (error) {
         console.error(`Error dans suppression du produit ${req.params.productId} :`, error);
         res.status(500).json({ error: 'Error dans suppression du produit' });
@@ -77,7 +84,7 @@ router.patch('/:productId', async (req, res)=>{
             where: { product_id: req.params.productId },
         })
 
-        res.json(patchedProduct)
+        res.status(200).json(patchedProduct)
         
     } catch (error) {
         console.error(`Error dans maj du produit ${req.params.productId} :`, error);
