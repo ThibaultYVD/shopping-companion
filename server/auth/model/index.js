@@ -13,6 +13,9 @@ const sequelize = new Sequelize(
             min: config.pool.min,
             acquire: config.pool.acquire,
             idle: config.pool.idle
+        },
+        define: {
+            timestamps: false
         }
     }
 );
@@ -22,11 +25,17 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.user = require("../model/User.js")(sequelize, Sequelize);
-db.role = require("../model/Role.js")(sequelize, Sequelize)
+db.User = require("../model/User.js")(sequelize, Sequelize);
+db.Role = require("../model/Role.js")(sequelize, Sequelize)
 
-db.user.belongsToMany(db.role, {
-    through: "user_role"
+// Règles ManyToMany pour les user/roles
+
+db.User.belongsToMany(db.Role, {
+    through: "user_role", foreignKey: 'user_id'
+});
+
+db.Role.belongsToMany(db.User, {
+    through: "user_role", foreignKey: 'role_id'
 });
 
 db.ROLES = ["user", "admin", "moderator"];

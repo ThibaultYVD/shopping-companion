@@ -33,7 +33,7 @@ const supermarketsRoute = require('./routes/supermarkets')
 app.use('/supermarkets/', supermarketsRoute)
 
 app.get("/", (req, res) => {
-    res.json({ message: "API Database" });
+    res.json({ message: "DB Server" });
 });
 
 

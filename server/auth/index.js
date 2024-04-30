@@ -27,8 +27,8 @@ app.use(
     })
 );
 
-app.get("/home", (req, res) => {
-    res.json({ message: "API Registration/login" });
+app.get("/", (req, res) => {
+    res.json({ message: "Auth Server" });
 });
 
 
