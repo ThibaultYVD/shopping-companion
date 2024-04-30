@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/index');
+const db = require('../model/Models');
 
 router.get('/', async (req, res) => {
     try {
@@ -12,22 +12,22 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:shelfId', async (req,res)=>{
+router.get('/:shelfId', async (req, res) => {
     try {
         const shelf = await db.Shelf.findByPk(req.params.shelfId)
-        if(shelf === null){
+        if (shelf === null) {
             res.status(404).json({ error: 'Rayon non trouvé.' });
-        }else{
+        } else {
             res.status(200).json(shelf)
         }
-        
+
     } catch (error) {
         console.error(`Error dans récupération du rayon ${req.params.shelfId} :`, err);
         res.status(500).json({ error: 'Error dans récupération du rayon' });
     }
 })
 
-router.post('/', async (req,res)=>{
+router.post('/', async (req, res) => {
     const { shelf_name, location_x, location_y, supermarket_id } = req.body;
 
     try {
@@ -45,13 +45,13 @@ router.post('/', async (req,res)=>{
     }
 })
 
-router.delete('/:shelfId', async (req,res)=>{
+router.delete('/:shelfId', async (req, res) => {
     try {
 
         const existingShelf = await db.Shelf.findByPk(req.params.shelfId)
 
-        if(!existingShelf){
-            return res.status(404).json({error: 'Rayon introuvable'})
+        if (!existingShelf) {
+            return res.status(404).json({ error: 'Rayon introuvable' })
         }
 
         const removeShelf = await db.Shelf.destroy({
@@ -64,34 +64,34 @@ router.delete('/:shelfId', async (req,res)=>{
     }
 })
 
-router.patch('/:shelfId', async (req, res)=>{
+router.patch('/:shelfId', async (req, res) => {
 
     const { shelf_name, location_x, location_y, } = req.body
 
     try {
         const existingShelf = await db.Shelf.findByPk(req.params.shelfId)
 
-        if(!existingShelf){
-            return res.status(404).json({error: 'Payon introuvable'})
+        if (!existingShelf) {
+            return res.status(404).json({ error: 'Payon introuvable' })
         }
 
         const patchedShelf = await db.Shelf.update
-        ({
-            shelf_name: shelf_name,
-            location_x: location_x,
-            location_y: location_y
-        },
-        {
-            where: { shelf_id: req.params.shelfId },
-        })
+            ({
+                shelf_name: shelf_name,
+                location_x: location_x,
+                location_y: location_y
+            },
+                {
+                    where: { shelf_id: req.params.shelfId },
+                })
 
         res.status(200).json(patchedShelf)
-        
+
     } catch (error) {
         console.error(`Error dans maj du rayon ${req.params.shelfId} :`, error);
         res.status(500).json({ error: 'Error dans maj du rayon' });
     }
-    
+
 })
 
 module.exports = router
