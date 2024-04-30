@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/index');
+const db = require('../model/Models');
 
 router.get('/', async (req, res) => {
     try {
@@ -12,26 +12,26 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:listId', async (req,res)=>{
+router.get('/:listId', async (req, res) => {
     try {
         const list = await db.List.findByPk(req.params.listId)
-        if(list === null){
+        if (list === null) {
             res.status(404).json({ error: 'Liste non trouvé.' });
-        }else{
+        } else {
             res.status(200).json(list)
         }
-        
+
     } catch (error) {
         console.error(`Error dans récupération de la liste ${req.params.listId} :`, err);
         res.status(500).json({ error: 'Error dans récupération de la liste' });
     }
 })
 
-router.post('/', async (req,res)=>{
+router.post('/', async (req, res) => {
     const { list_name, group_id, shopping_date } = req.body;
 
     try {
-        
+
         const createdList = await db.List.create({
             list_name: list_name,
             group_id: group_id,
@@ -46,12 +46,12 @@ router.post('/', async (req,res)=>{
     }
 })
 
-router.delete('/:listId', async (req,res)=>{
+router.delete('/:listId', async (req, res) => {
     try {
         const existingList = await db.List.findByPk(req.params.listId)
 
-        if(!existingList){
-            return res.status(404).json({error: 'liste introuvable'})
+        if (!existingList) {
+            return res.status(404).json({ error: 'liste introuvable' })
         }
 
         const removeList = await db.List.destroy({
@@ -64,33 +64,33 @@ router.delete('/:listId', async (req,res)=>{
     }
 })
 
-router.patch('/:listId', async (req, res)=>{
+router.patch('/:listId', async (req, res) => {
 
     const { list_name, shopping_date } = req.body
 
     try {
         const existingList = await db.List.findByPk(req.params.listId)
 
-        if(!existingList){
-            return res.status(404).json({error: 'liste introuvable'})
+        if (!existingList) {
+            return res.status(404).json({ error: 'liste introuvable' })
         }
 
         const patchedList = await db.List.update
-        ({
-            list_name: list_name,
-            shopping_date: shopping_date
-        },
-        {
-            where: { list_id: req.params.listId },
-        })
+            ({
+                list_name: list_name,
+                shopping_date: shopping_date
+            },
+                {
+                    where: { list_id: req.params.listId },
+                })
 
         res.status(200).json(patchedList)
-        
+
     } catch (error) {
         console.error(`Error dans maj du liste ${req.params.listId} :`, error);
         res.status(500).json({ error: 'Error dans maj de la liste' });
     }
-    
+
 })
 
 module.exports = router

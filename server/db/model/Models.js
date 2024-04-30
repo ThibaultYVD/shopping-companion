@@ -13,6 +13,9 @@ const sequelize = new Sequelize(
             min: config.pool.min,
             acquire: config.pool.acquire,
             idle: config.pool.idle
+        },
+        define: {
+            timestamps: false
         }
     }
 );
@@ -22,13 +25,13 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.User = require("../model/User.js")(sequelize, Sequelize);
-db.Role = require("../model/Role.js")(sequelize, Sequelize)
-db.Supermarket = require("../model/Supermarket.js")(sequelize, Sequelize)
-db.Shelf = require("../model/Shelf.js")(sequelize, Sequelize)
-db.Group = require("../model/Group.js")(sequelize, Sequelize)
-db.List = require("../model/List.js")(sequelize, Sequelize)
-db.Product = require("../model/Product.js")(sequelize, Sequelize)
+db.User = require("./User.js")(sequelize, Sequelize);
+db.Role = require("./Role.js")(sequelize, Sequelize)
+db.Supermarket = require("./Supermarket.js")(sequelize, Sequelize)
+db.Shelf = require("./Shelf.js")(sequelize, Sequelize)
+db.Group = require("./Group.js")(sequelize, Sequelize)
+db.List = require("./List.js")(sequelize, Sequelize)
+db.Product = require("./Product.js")(sequelize, Sequelize)
 
 // Tables de jointures
 
@@ -37,8 +40,12 @@ db.User.belongsToMany(db.Role, {
 });
 
 db.Group.belongsToMany(db.User, {
-    through: "group_members"
+    through: "group_members", foreignKey: 'group_id'
 });
+db.User.belongsToMany(db.Group, {
+    through: "group_members", foreignKey: 'user_id'
+});
+
 
 db.Product.belongsToMany(db.List, {
     through: "products_list"

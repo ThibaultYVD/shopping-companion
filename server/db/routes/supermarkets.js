@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/index');
+const db = require('../model/Models');
 
 router.get('/', async (req, res) => {
     try {
@@ -12,22 +12,22 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:supermarketId', async (req,res)=>{
+router.get('/:supermarketId', async (req, res) => {
     try {
         const supermarket = await db.Supermarket.findByPk(req.params.supermarketId)
-        if(supermarket === null){
+        if (supermarket === null) {
             res.status(404).json({ error: 'Produit non trouvé.' });
-        }else{
+        } else {
             res.status(200).json(supermarket)
         }
-        
+
     } catch (error) {
         console.error(`Error dans récupération du produit ${req.params.supermarketId} :`, err);
         res.status(500).json({ error: 'Error dans récupération du produit' });
     }
 })
 
-router.post('/', async (req,res)=>{
+router.post('/', async (req, res) => {
     const { supermarket_name, address } = req.body;
 
     try {
@@ -43,13 +43,13 @@ router.post('/', async (req,res)=>{
     }
 })
 
-router.delete('/:supermarketId', async (req,res)=>{
+router.delete('/:supermarketId', async (req, res) => {
     try {
 
         const existingSupermarket = await db.Supermarket.findByPk(req.params.supermarketId)
 
-        if(!existingSupermarket){
-            return res.status(404).json({error: 'Produit introuvable'})
+        if (!existingSupermarket) {
+            return res.status(404).json({ error: 'Produit introuvable' })
         }
 
         const removeSupermarket = await db.Supermarket.destroy({
@@ -62,33 +62,33 @@ router.delete('/:supermarketId', async (req,res)=>{
     }
 })
 
-router.patch('/:supermarketId', async (req, res)=>{
+router.patch('/:supermarketId', async (req, res) => {
 
     const { supermarket_name, address } = req.body
 
     try {
         const existingSupermarket = await db.Supermarket.findByPk(req.params.supermarketId)
 
-        if(!existingSupermarket){
-            return res.status(404).json({error: 'Produit introuvable'})
+        if (!existingSupermarket) {
+            return res.status(404).json({ error: 'Produit introuvable' })
         }
 
         const patchedSupermarket = await db.Supermarket.update
-        ({
-            supermarket_name: supermarket_name,
-            address: address
-        },
-        {
-            where: { supermarket_id: req.params.supermarketId },
-        })
+            ({
+                supermarket_name: supermarket_name,
+                address: address
+            },
+                {
+                    where: { supermarket_id: req.params.supermarketId },
+                })
 
         res.status(200).json(patchedSupermarket)
-        
+
     } catch (error) {
         console.error(`Error dans maj du produit ${req.params.supermarketId} :`, error);
         res.status(500).json({ error: 'Error dans maj du produit' });
     }
-    
+
 })
 
 module.exports = router
