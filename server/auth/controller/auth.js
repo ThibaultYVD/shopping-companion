@@ -94,7 +94,7 @@ exports.signin = async (req, res) => {
 exports.signout = async (req, res) => {
     try {
         req.session = null;
-        return res.status(200).send({
+        return res.status(200).json({
             message: "Vous avez été déconnecté."
         });
     } catch (err) {
