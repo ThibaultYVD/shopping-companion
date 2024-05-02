@@ -36,7 +36,11 @@ db.Product = require("./Product.js")(sequelize, Sequelize)
 // Tables de jointures
 
 db.User.belongsToMany(db.Role, {
-    through: "user_role"
+    through: "user_role", foreignKey: 'user_id'
+});
+
+db.Role.belongsToMany(db.User, {
+    through: "user_role", foreignKey: 'role_id'
 });
 
 db.Group.belongsToMany(db.User, {

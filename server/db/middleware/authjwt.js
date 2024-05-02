@@ -3,35 +3,47 @@ const db = require("../model/Models");
 const User = db.User;
 
 verifyToken = (req, res, next) => {
-    let token = req.session.token;
+    try {
+        let token = req.session.token;
+        if (!req.session) {
+            return res.status(401).send({
+                message: "Aucune session n'a été trouvé.",
+            });
+        }
 
-    if (!token) {
-        return res.status(403).send({
-            message: "Aucun token n'a été fourni.",
+        if (!token) {
+            return res.status(403).send({
+                message: "Aucun token n'a été fourni.",
+            });
+        }
+
+        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return res.status(401).send({
+                    message: "Vous n'avez pas d'autorisation.",
+                });
+            }
+            req.userId = decoded.id;
+            next();
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send({
+            message: "Erreur dans la validation du token.",
         });
     }
 
-    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-        if (err) {
-            return res.status(401).send({
-                message: "Vous n'avez pas d'autorisation.",
-            });
-        }
-        req.userId = decoded.id;
-        next();
-    });
 };
 
 isAdmin = async (req, res, next) => {
     try {
-        console.log(req.session)
         const token = req.session.token;
-
         if (!token) {
             return res.status(401).send({
                 message: "Aucun token n'a été trouvé dans cette session.",
             });
         }
+
 
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
