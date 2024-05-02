@@ -5,8 +5,8 @@ const axios = require('axios')
 
 
 router.post('/signin', async (req, res) => {
+
     try {
-        console.log(req)
         const email = req.body.email
         const password = req.body.password
 
@@ -19,7 +19,13 @@ router.post('/signin', async (req, res) => {
 
         res.json(req.session.token);
     } catch (error) {
-        console.log(error)
+
+        if (error.response) {
+            res.status(error.response.status).json({ message: error.response.data.message });
+        } else {
+            console.log(error)
+            res.status(500).json({ message: 'Une erreur s\'est produite lors de la connexion.' });
+        }
     }
 
 })
