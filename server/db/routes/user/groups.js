@@ -3,10 +3,10 @@ const router = express.Router()
 const db = require('../../model/Models');
 const jwt = require("jsonwebtoken");
 const { verifyToken } = require('../../middleware/authjwt')
+const { escapeData } = require('../../middleware/validation')
 
 router.get('/', [verifyToken], async (req, res) => {
     try {
-
         const token = req.session.token
 
         if (!token) {
@@ -15,13 +15,11 @@ router.get('/', [verifyToken], async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
-
-
         const user = await db.User.findOne({
             where: { user_id: tokenUser_id },
             include: [{
                 model: db.Group,
-                through: { attributes: [] }, // Pour exclure les attributs de la table de jointure
+                through: { attributes: [] },
             }]
         });
         res.status(200).json(user.groupes)
@@ -39,9 +37,14 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
-        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM groupes g INNER JOIN group_members m ON m.user_id = ${tokenUser_id} AND m.group_id = ${req.params.groupId} WHERE g.group_id = ${req.params.groupId}`, {
-            type: db.sequelize.QueryTypes.SELECT,
-        });
+        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM groupes g INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id WHERE g.group_id = :group_id`,
+            {
+                replacements: {
+                    user_id: tokenUser_id,
+                    group_id: req.params.groupId
+                }, type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
 
         if (!userGroup || userGroup.length == 0) {
             return res.status(403).json({ error: 'Vous n\'êtes pas autorisé à accéder à ce groupe' });
@@ -57,7 +60,7 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
 
 
 
-router.post('/', [verifyToken], async (req, res) => {
+router.post('/', [verifyToken, escapeData], async (req, res) => {
     const { group_name } = req.body;
     const token = req.session.token
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
@@ -94,8 +97,6 @@ router.delete('/:groupId', [verifyToken], async (req, res) => {
         if (tokenUser_id != existingGroup.user_id) {
             return res.status(403).json({ error: 'Vous ne pouvez pas supprimer ce groupe' })
         }
-
-
 
         const removeGroup = await db.Group.destroy({
             where: { group_id: req.params.groupId }

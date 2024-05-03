@@ -1,9 +1,7 @@
 const db = require("../model");
-const config = require("../config/auth");
+
 const User = db.User;
 const Role = db.Role;
-
-const Op = db.Sequelize.Op;
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -18,22 +16,9 @@ exports.signup = async (req, res) => {
             password: bcrypt.hashSync(req.body.password, 8),
         });
 
-        // Soit le rôle est renseigné à l'inscription, donc l'utilisateur aura le role renseigné, soit il aura le rôle de base : celui de user simple
-        if (req.body.roles) {
-            const roles = await Role.findAll({
-                where: {
-                    role_name: {
-                        [Op.or]: req.body.roles,
-                    },
-                },
-            });
-            
-            const result = user.setRoles(roles);
-            if (result) res.send({ message: "User registered successfully!" });
-        } else {
-            const result = user.setRoles([1])
-            if (result) res.send({ message: "User registered successfully!" });
-        }
+        const result = user.setRoles([1])
+        if (result) res.send({ message: "User registered successfully!" });
+
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
@@ -62,14 +47,14 @@ exports.signin = async (req, res) => {
             });
         }
 
-        
+
         const payload = {
-            id:user.user_id
+            id: user.user_id
         }
 
         const token = jwt.sign(payload, process.env.SECRET_KEY, {
             algorithm: 'HS256',
-            expiresIn: '30m' // 24 heures
+            expiresIn: '30m'
         });
 
 
@@ -78,13 +63,13 @@ exports.signin = async (req, res) => {
         for (let i = 0; i < roles.length; i++) {
             authorities.push(roles[i].role_name);
         }
-        
+
         req.session.token = token;
         return res.status(200).send({
             id: user.id,
             email: user.email,
             roles: authorities,
-            token:token
+            token: token
         });
     } catch (error) {
         return res.status(500).send({ message: error.message });
