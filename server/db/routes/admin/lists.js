@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/Models');
+const db = require('../../model/Models');
 
-router.get('/', async (req, res) => {
+router.get('/', [verifyToken, isAdmin], async (req, res) => {
     try {
         const lists = await db.List.findAll();
         res.status(200).json(lists);
@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:listId', async (req, res) => {
+router.get('/:listId', [verifyToken, isAdmin], async (req, res) => {
     try {
         const list = await db.List.findByPk(req.params.listId)
         if (list === null) {
@@ -27,7 +27,7 @@ router.get('/:listId', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', [verifyToken, isAdmin], async (req, res) => {
     const { list_name, group_id, shopping_date } = req.body;
 
     try {
@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.delete('/:listId', async (req, res) => {
+router.delete('/:listId', [verifyToken, isAdmin], async (req, res) => {
     try {
         const existingList = await db.List.findByPk(req.params.listId)
 
@@ -64,7 +64,7 @@ router.delete('/:listId', async (req, res) => {
     }
 })
 
-router.patch('/:listId', async (req, res) => {
+router.patch('/:listId', [verifyToken, isAdmin], async (req, res) => {
 
     const { list_name, shopping_date } = req.body
 

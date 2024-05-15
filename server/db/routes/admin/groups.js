@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/Models');
-const jwt = require("jsonwebtoken");
+const db = require('../../model/Models');
+const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
-router.get('/', async (req, res) => {
+
+
+router.get('/', [verifyToken, isAdmin], async (req, res) => {
     try {
         const groups = await db.Group.findAll();
         res.status(200).json(groups);
@@ -13,62 +15,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/userGroups', async (req, res) => {
-    try {
 
-        const token = req.session.token
-
-        if (!token) {
-            return res.status(401).json({ error: 'Token d\'accès manquant' });
-        }
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
-
-
-        const user = await db.User.findOne({
-            where: { user_id: tokenUser_id },
-            include: [{
-                model: db.Group,
-                through: { attributes: [] }, // Pour exclure les attributs de la table de jointure
-            }]
-        });
-        res.status(200).json(user.groupes)
-
-    } catch (error) {
-        console.error(`Error dans récupération des groupes`, error);
-        res.status(500).json({ error: 'Error dans récupération des groupes' });
-    }
-})
-
-router.get('/userGroup/:groupId', async (req, res) => {
-    try {
-
-        const token = req.session.token
-
-        if (!token) {
-            return res.status(401).json({ error: 'Token d\'accès manquant' });
-        }
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
-
-        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM groupes g INNER JOIN group_members m ON m.user_id = ${tokenUser_id} WHERE g.group_id = ${req.params.groupId}`, {
-            type: db.sequelize.QueryTypes.SELECT,
-        });
-
-        if (!userGroup) {
-            return res.status(403).json({ error: 'Vous n\'êtes pas autorisé à accéder à ce groupe' });
-        }
-
-        res.status(200).json(userGroup)
-    } catch (error) {
-        console.error(`Error dans récupération du groupe ${req.params.groupId} :`, error);
-        res.status(500).json({ error: 'Error dans récupération du groupe' });
-    }
-})
-
-
-
-router.get('/:groupId', async (req, res) => {
+router.get('/:groupId', [verifyToken, isAdmin], async (req, res) => {
     try {
         const group = await db.Group.findByPk(req.params.groupId)
         if (group === null) {
@@ -83,7 +31,7 @@ router.get('/:groupId', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', [verifyToken, isAdmin], async (req, res) => {
     const { group_name, creator_id } = req.body;
 
     try {
@@ -100,7 +48,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.delete('/:groupId', async (req, res) => {
+router.delete('/:groupId', [verifyToken, isAdmin], async (req, res) => {
     try {
         const existingGroup = await db.Group.findByPk(req.params.groupId)
 
@@ -118,7 +66,7 @@ router.delete('/:groupId', async (req, res) => {
     }
 })
 
-router.patch('/:groupId', async (req, res) => {
+router.patch('/:groupId', [verifyToken, isAdmin], async (req, res) => {
 
     const { group_name, creator_id } = req.body
 
@@ -146,5 +94,6 @@ router.patch('/:groupId', async (req, res) => {
     }
 
 })
+
 
 module.exports = router

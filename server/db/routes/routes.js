@@ -1,29 +1,35 @@
-const express = require('express');
-const app = express()
+async function routes(app) {
+    app.get("/", (req, res) => {
+        res.json({ message: "DB Server" });
+    });
 
-app.get("/", (req, res) => {
-    res.json({ message: "DB Server" });
-});
+    /* ROUTES ADMIN */
+    const groupsAdmin = require('./admin/groups')
+    app.use('/admin/groups/', groupsAdmin)
 
-const productsRoute = require('./products')
-app.use('/products/', productsRoute)
 
-const groupsRoute = require('./groups')
-app.use('/groups/', groupsRoute)
+    /* ROUTES USERS */
+    const groupsRoute = require('./user/groups')
+    app.use('/groups/', groupsRoute)
 
-const listsRoute = require('./lists')
-app.use('/lists/', listsRoute)
+    const listsRoute = require('./admin/lists')
+    app.use('/lists/', listsRoute)
 
-const rolesRoute = require('./roles')
-app.use('/roles/', rolesRoute)
+    const productsRoute = require('./products')
+    app.use('/products/', productsRoute)
 
-const shelvesRoute = require('./shelves')
-app.use('/shelves/', shelvesRoute)
+    const rolesRoute = require('./roles')
+    app.use('/roles/', rolesRoute)
 
-const supermarketsRoute = require('./supermarkets')
-app.use('/supermarkets/', supermarketsRoute)
+    const shelvesRoute = require('./shelves')
+    app.use('/shelves/', shelvesRoute)
 
-const authRoute = require('./auth')
-app.use('/auth/', authRoute)
+    const supermarketsRoute = require('./supermarkets')
+    app.use('/supermarkets/', supermarketsRoute)
 
-module.exports = app
+    const authRoute = require('./auth')
+    app.use('/auth/', authRoute)
+}
+
+
+module.exports = routes
