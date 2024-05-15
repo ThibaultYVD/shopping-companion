@@ -10,10 +10,10 @@ async function routes(app) {
 
     /* ROUTES USERS */
     const groupsRoute = require('./user/groups')
-    app.use('/groups/', groupsRoute)
+    app.use('/user/groups/', groupsRoute)
 
-    const listsRoute = require('./admin/lists')
-    app.use('/lists/', listsRoute)
+    const listsRoute = require('./user/lists')
+    app.use('/user/lists/', listsRoute)
 
     const productsRoute = require('./products')
     app.use('/products/', productsRoute)
