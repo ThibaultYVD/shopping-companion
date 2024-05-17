@@ -50,14 +50,16 @@ db.User.belongsToMany(db.Group, {
     through: "group_members", foreignKey: 'user_id'
 });
 
-
 db.Product.belongsToMany(db.List, {
-    through: "products_list"
+    through: "products_list", foreignKey: 'product_id'
+});
+
+db.List.belongsToMany(db.Product, {
+    through: "products_list", foreignKey: 'list_id'
 });
 
 
 // Clés étrangères
-
 db.Shelf.belongsTo(db.Supermarket, {
     foreignKey: 'supermarket_id'
 });

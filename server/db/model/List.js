@@ -1,10 +1,12 @@
 const Group = require("./Group");
+const Supermarket = require("./Supermarket");
 
 module.exports = (sequelize, Sequelize) => {
     const List = sequelize.define("lists", {
         list_id: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true // Ajout de l'auto-incrémentation
         },
         list_name: {
             type: Sequelize.STRING,
@@ -25,10 +27,17 @@ module.exports = (sequelize, Sequelize) => {
         shopping_date: {
             type: Sequelize.DATE,
             allowNull: true
+        },
+        supermarket_id: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: Supermarket,
+                key: 'supermarket_id'
+            }
         }
-        
-    },{
-        timestamps:false
+    }, {
+        timestamps: false
     });
 
     return List;
