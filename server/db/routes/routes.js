@@ -23,6 +23,9 @@ async function routes(app) {
     const productsRoute = require('./user/products')
     app.use('/user/products/', productsRoute)
 
+    const usersRoute = require('./user/users')
+    app.use('/user/users/', usersRoute)
+
     /* A FAIRE */
 
     const rolesRoute = require('./roles')
