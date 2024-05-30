@@ -14,6 +14,7 @@ exports.signup = async (req, res) => {
             last_name: req.body.last_name,
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, 8),
+            created_at: new Date(),
         });
 
         const result = user.setRoles([1])
