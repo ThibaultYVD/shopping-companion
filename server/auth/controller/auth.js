@@ -37,41 +37,42 @@ exports.signin = async (req, res) => {
             return res.status(404).send({ message: "Utilisateur non trouvé." });
         }
 
-        const passwordIsValid = bcrypt.compare(
-            req.body.password,
-            user.password
-        );
-
-        if (!passwordIsValid) {
-            return res.status(401).send({
-                message: "Mot de passe invalide",
-            });
-        }
-
-
-        const payload = {
-            id: user.user_id
-        }
-
-        const token = jwt.sign(payload, process.env.SECRET_KEY, {
-            algorithm: 'HS256',
-            expiresIn: '30m'
+        bcrypt.compare(req.body.password, user.password, async function(err, result) {
+            if (err) {
+                console.error('Erreur lors de la comparaison :', err);
+                return;
+            }
+            if (result) {
+                const payload = {
+                    id: user.user_id
+                }
+        
+                const token = jwt.sign(payload, process.env.SECRET_KEY, {
+                    algorithm: 'HS256',
+                    expiresIn: '30m'
+                });
+        
+        
+                let authorities = [];
+                const roles = await user.getRoles();
+                for (let i = 0; i < roles.length; i++) {
+                    authorities.push(roles[i].role_name);
+                }
+        
+                req.session.token = token;
+                return res.status(200).send({
+                    id: user.id,
+                    email: user.email,
+                    roles: authorities,
+                    token: token
+                });
+            } else {
+                res.status(403).json({message:"Mot de passe invalide"});
+            }
         });
 
 
-        let authorities = [];
-        const roles = await user.getRoles();
-        for (let i = 0; i < roles.length; i++) {
-            authorities.push(roles[i].role_name);
-        }
-
-        req.session.token = token;
-        return res.status(200).send({
-            id: user.id,
-            email: user.email,
-            roles: authorities,
-            token: token
-        });
+        
     } catch (error) {
         return res.status(500).send({ message: error.message });
     }
