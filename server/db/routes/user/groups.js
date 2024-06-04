@@ -31,50 +31,7 @@ router.get('/', [verifyToken], async (req, res) => {
     }
 })
 
-router.get('/createInvit/:groupId', [verifyToken], async(req,res)=>{
-    try {
-        
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
 
-        const verifCreator = await db.sequelize.query(`SELECT user_id FROM groupes WHERE group_id = :group_id`,
-        {
-            replacements: {
-                group_id: req.params.groupId
-            }, type: db.sequelize.QueryTypes.SELECT,
-        });
-
-        if(!verifCreator || verifCreator.length == 0) return res.status(404).json({message:"Ce groupe n'existe pas."})
-        if(verifCreator[0].user_id != tokenUser_id) return res.status(403).json({message:"Vous n'êtes pas autorisé à créer un code d'invitation."})
-
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
-        const length = 8
-
-        let result = '';
-
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            result += characters.charAt(randomIndex);
-        }
-
-        let hashedCode = bcrypt.hashSync(result, 8)
-
-        await db.sequelize.query(`UPDATE groupes SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
-        {
-            replacements: {
-                invitation_code: hashedCode,
-                is_open: "TRUE",
-                group_id:req.params.groupId,
-            }, type: db.sequelize.QueryTypes.UPDATE,
-        });
-
-        res.status(200).json(result);
-    } catch (error) {
-        console.error(`Error dans création de l'invitation du groupe ${req.params.groupId}`)
-        res.status(500).json({ error: "Error dans création de l'invitation." });
-    }
-})
 
 router.get('/:groupId', [verifyToken], async (req, res) => {
     try {
@@ -102,7 +59,6 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
         res.status(500).json({ error: 'Error dans récupération du groupe' });
     }
 })
-
 
 
 
@@ -141,32 +97,6 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
 
 })
 
-router.delete('/:groupId', [verifyToken], async (req, res) => {
-    try {
-        const existingGroup = await db.Group.findByPk(req.params.groupId)
-
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
-
-        if (!existingGroup) {
-            return res.status(404).json({ error: 'Groupe introuvable' })
-        }
-
-        if (tokenUser_id != existingGroup.user_id) {
-            return res.status(403).json({ error: 'Vous ne pouvez pas supprimer ce groupe' })
-        }
-
-        const removeGroup = await db.Group.destroy({
-            where: { group_id: req.params.groupId }
-        })
-        res.status(204).json(removeGroup)
-
-    } catch (error) {
-        console.error(`Error dans suppression du groupe ${req.params.groupId} :`, error);
-        res.status(500).json({ error: 'Error dans suppression du groupe' });
-    }
-})
 
 router.patch('/:groupId', [verifyToken], async (req, res) => {
     try {
@@ -202,6 +132,93 @@ router.patch('/:groupId', [verifyToken], async (req, res) => {
         res.status(500).json({ error: 'Error dans maj du groupe' });
     }
 
+})
+
+
+router.patch('/createInvit/:groupId', [verifyToken], async(req,res)=>{
+    try {
+        
+        const token = req.session.token
+        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        const tokenUser_id = decodedToken.id
+
+        const verifCreator = await db.sequelize.query(`SELECT user_id FROM groupes WHERE group_id = :group_id`,
+        {
+            replacements: {
+                group_id: req.params.groupId
+            }, type: db.sequelize.QueryTypes.SELECT,
+        });
+
+        if(!verifCreator || verifCreator.length == 0) return res.status(404).json({message:"Ce groupe n'existe pas."})
+        if(verifCreator[0].user_id != tokenUser_id) return res.status(403).json({message:"Vous n'êtes pas autorisé à créer un code d'invitation."})
+
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
+        const length = 8
+
+        let result = '';
+
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            result += characters.charAt(randomIndex);
+        }
+
+        let hashedCode = bcrypt.hashSync(result, 8)
+
+        await db.sequelize.query(`UPDATE groupes SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
+        {
+            replacements: {
+                invitation_code: hashedCode,
+                is_open: "TRUE",
+                group_id:req.params.groupId,
+            }, type: db.sequelize.QueryTypes.UPDATE,
+        });
+
+
+        setTimeout(async () => {
+            await db.sequelize.query(`UPDATE groupes SET is_open = :is_open WHERE group_id = :group_id`,
+            {
+                replacements: {
+                    is_open: "FALSE",
+                    group_id: req.params.groupId,
+                },
+             type: db.sequelize.QueryTypes.UPDATE,
+            });
+        }, 600000); 
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`Error dans création de l'invitation du groupe ${req.params.groupId}`)
+        res.status(500).json({ error: "Error dans création de l'invitation." });
+    }
+})
+
+
+
+router.delete('/:groupId', [verifyToken], async (req, res) => {
+    try {
+        const existingGroup = await db.Group.findByPk(req.params.groupId)
+
+        const token = req.session.token
+        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        const tokenUser_id = decodedToken.id
+
+        if (!existingGroup) {
+            return res.status(404).json({ error: 'Groupe introuvable' })
+        }
+
+        if (tokenUser_id != existingGroup.user_id) {
+            return res.status(403).json({ error: 'Vous ne pouvez pas supprimer ce groupe' })
+        }
+
+        const removeGroup = await db.Group.destroy({
+            where: { group_id: req.params.groupId }
+        })
+        res.status(204).json(removeGroup)
+
+    } catch (error) {
+        console.error(`Error dans suppression du groupe ${req.params.groupId} :`, error);
+        res.status(500).json({ error: 'Error dans suppression du groupe' });
+    }
 })
 
 module.exports = router
