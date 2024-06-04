@@ -75,8 +75,8 @@ router.get('/:groupId/:listId', [verifyToken], async (req, res) => {
     }
 })
 
-router.post('/', [verifyToken], async (req, res) => {
-    const { list_name, group_id, shopping_date } = req.body;
+router.post('/:groupId', [verifyToken], async (req, res) => {
+    const { list_name, shopping_date } = req.body;
 
     try {
         const token = req.session.token
@@ -90,7 +90,7 @@ router.post('/', [verifyToken], async (req, res) => {
         const creator_id = await db.sequelize.query(sql,
             {
                 replacements: {
-                    group_id: group_id,
+                    group_id: req.params.groupId,
                 }, type: db.sequelize.QueryTypes.SELECT,
             }
         );
@@ -102,7 +102,7 @@ router.post('/', [verifyToken], async (req, res) => {
         if (creator_id[0].user_id == tokenUser_id){
             const createdList = await db.List.create({
                 list_name: list_name,
-                group_id: group_id,
+                group_id: req.params.groupId,
                 creation_date: new Date(),
                 shopping_date: shopping_date
             });
@@ -118,49 +118,6 @@ router.post('/', [verifyToken], async (req, res) => {
     }
 })
 
-router.delete('/:groupId/:listId', [verifyToken], async (req, res) => {
-    try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
-
-        let sql = `SELECT DISTINCT g.user_id 
-        FROM groupes g
-        INNER JOIN lists l ON l.group_id = g.group_id 
-        WHERE g.group_id = :group_id
-        AND l.list_id = :list_id`
-        
-
-        
-        const creator_id = await db.sequelize.query(sql,
-            {
-                replacements: {
-                    group_id: req.params.groupId,
-                    list_id: req.params.listId,
-                }, type: db.sequelize.QueryTypes.SELECT,
-            }
-        );
-
-        if (!creator_id || creator_id.length == 0) {
-            return res.status(404).json({ error: "Ce groupe ou cette liste n'existe pas ou cette liste n'est pas dans ce groupe." });
-        }
-
-        if (creator_id[0].user_id == tokenUser_id){
-            const removeList = await db.List.destroy({
-                where: { list_id: req.params.listId }
-            })
-            res.status(204).json(removeList)
-            
-        } else{
-            res.status(403).json({message: "Seul le créateur du groupe peut supprimer une liste."})
-        }
-
-        
-    } catch (error) {
-        console.error(`Error dans suppression de la liste ${req.params.listId} :`, error);
-        res.status(500).json({ error: 'Error dans suppression de la liste' });
-    }
-})
 
 router.patch('/:groupId/:listId', [verifyToken], async (req, res) => {
 
@@ -215,6 +172,51 @@ router.patch('/:groupId/:listId', [verifyToken], async (req, res) => {
         res.status(500).json({ error: 'Error dans maj de la liste' });
     }
 
+})
+
+
+router.delete('/:groupId/:listId', [verifyToken], async (req, res) => {
+    try {
+        const token = req.session.token
+        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        const tokenUser_id = decodedToken.id
+
+        let sql = `SELECT DISTINCT g.user_id 
+        FROM groupes g
+        INNER JOIN lists l ON l.group_id = g.group_id 
+        WHERE g.group_id = :group_id
+        AND l.list_id = :list_id`
+        
+
+        
+        const creator_id = await db.sequelize.query(sql,
+            {
+                replacements: {
+                    group_id: req.params.groupId,
+                    list_id: req.params.listId,
+                }, type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
+
+        if (!creator_id || creator_id.length == 0) {
+            return res.status(404).json({ error: "Ce groupe ou cette liste n'existe pas ou cette liste n'est pas dans ce groupe." });
+        }
+
+        if (creator_id[0].user_id == tokenUser_id){
+            const removeList = await db.List.destroy({
+                where: { list_id: req.params.listId }
+            })
+            res.status(204).json(removeList)
+            
+        } else{
+            res.status(403).json({message: "Seul le créateur du groupe peut supprimer une liste."})
+        }
+
+        
+    } catch (error) {
+        console.error(`Error dans suppression de la liste ${req.params.listId} :`, error);
+        res.status(500).json({ error: 'Error dans suppression de la liste' });
+    }
 })
 
 module.exports = router

@@ -30,7 +30,7 @@ router.get('/', [verifyToken], async (req, res) => {
     }
 })
 
-router.post('/joinGroup/:groupId', [verifyToken, escapeData], async (req, res) => {
+router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) => {
 
     const existingGroup = await db.Group.findByPk(req.params.groupId)
 
@@ -89,45 +89,6 @@ router.post('/joinGroup/:groupId', [verifyToken, escapeData], async (req, res) =
 })
 
 
-router.post('/', [verifyToken, escapeData], async (req, res) => {
-
-    const token = req.session.token
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const tokenUser_id = decodedToken.id
-
-
-    try {
-        const createdGroup = await db.Group.create({
-            group_name: group_name,
-            creation_date: new Date(),
-            user_id: tokenUser_id
-        });
-
-        res.status(201).json(createdGroup);
-    } catch (error) {
-        console.error(`Error dans l'insertion du groupe :`, error);
-        res.status(500).json({ error: "Erreur dans l'insertion du groupe." });
-    }
-
-})
-
-router.delete('/', [verifyToken], async (req, res) => {
-    try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
-
-        const removeUser = await db.User.destroy({
-            where: { user_id: tokenUser_id }
-        })
-        res.status(204).json(removeUser)
-
-    } catch (error) {
-        console.error(`Error dans suppression de l'utilisateur ${tokenUser_id} :`, error);
-        res.status(500).json({ error: "Error dans suppression de l'utilisateur" });
-    }
-})
-
 router.patch('/', [verifyToken], async (req, res) => {
     const token = req.session.token
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
@@ -153,5 +114,24 @@ router.patch('/', [verifyToken], async (req, res) => {
     }
 
 })
+
+
+router.delete('/', [verifyToken], async (req, res) => {
+    try {
+        const token = req.session.token
+        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        const tokenUser_id = decodedToken.id
+
+        const removeUser = await db.User.destroy({
+            where: { user_id: tokenUser_id }
+        })
+        res.status(204).json(removeUser)
+
+    } catch (error) {
+        console.error(`Error dans suppression de l'utilisateur ${tokenUser_id} :`, error);
+        res.status(500).json({ error: "Error dans suppression de l'utilisateur" });
+    }
+})
+
 
 module.exports = router
