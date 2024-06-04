@@ -13,6 +13,16 @@ async function routes(app) {
     const productsAdmin = require('./admin/products')
     app.use('/admin/products/', productsAdmin)
 
+    const rolesRoute = require('./admin/roles')
+    app.use('/admin/roles/', rolesRoute)
+
+    const shelvesRoute = require('./admin/shelves')
+    app.use('/admin/shelves/', shelvesRoute)
+
+    const supermarketsRoute = require('./admin/supermarkets')
+    app.use('/supermarkets/', supermarketsRoute)
+
+
     /* ROUTES USERS */
     const groupsRoute = require('./user/groups')
     app.use('/user/groups/', groupsRoute)
@@ -26,17 +36,8 @@ async function routes(app) {
     const usersRoute = require('./user/users')
     app.use('/user/users/', usersRoute)
 
-    /* A FAIRE */
 
-    const rolesRoute = require('./roles')
-    app.use('/roles/', rolesRoute)
-
-    const shelvesRoute = require('./shelves')
-    app.use('/shelves/', shelvesRoute)
-
-    const supermarketsRoute = require('./supermarkets')
-    app.use('/supermarkets/', supermarketsRoute)
-
+    /* ROUTE AUTH */
     const authRoute = require('./auth')
     app.use('/auth/', authRoute)
 }
