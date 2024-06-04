@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../../model/Models');
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 
@@ -27,6 +28,51 @@ router.get('/', [verifyToken], async (req, res) => {
     } catch (error) {
         console.error(`Error dans récupération des groupes`, error);
         res.status(500).json({ error: 'Error dans récupération des groupes' });
+    }
+})
+
+router.get('/createInvit/:groupId', [verifyToken], async(req,res)=>{
+    try {
+        
+        const token = req.session.token
+        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        const tokenUser_id = decodedToken.id
+
+        const verifCreator = await db.sequelize.query(`SELECT user_id FROM groupes WHERE group_id = :group_id`,
+        {
+            replacements: {
+                group_id: req.params.groupId
+            }, type: db.sequelize.QueryTypes.SELECT,
+        });
+
+        if(!verifCreator || verifCreator.length == 0) return res.status(404).json({message:"Ce groupe n'existe pas."})
+        if(verifCreator[0].user_id != tokenUser_id) return res.status(403).json({message:"Vous n'êtes pas autorisé à créer un code d'invitation."})
+
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
+        const length = 8
+
+        let result = '';
+
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            result += characters.charAt(randomIndex);
+        }
+
+        let hashedCode = bcrypt.hashSync(result, 8)
+
+        await db.sequelize.query(`UPDATE groupes SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
+        {
+            replacements: {
+                invitation_code: hashedCode,
+                is_open: "TRUE",
+                group_id:req.params.groupId,
+            }, type: db.sequelize.QueryTypes.UPDATE,
+        });
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`Error dans création de l'invitation du groupe ${req.params.groupId}`)
+        res.status(500).json({ error: "Error dans création de l'invitation." });
     }
 })
 
@@ -71,8 +117,21 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
         const createdGroup = await db.Group.create({
             group_name: group_name,
             creation_date: new Date(),
-            user_id: tokenUser_id
+            user_id: tokenUser_id,
+            is_open:"FALSE"
         });
+
+        const group_id = createdGroup.null
+
+        await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
+            {
+                replacements: {
+                    user_id: tokenUser_id,
+                    group_id: group_id,
+                    joined_at: new Date(),
+                }, type: db.sequelize.QueryTypes.INSERT,
+            }
+        );
 
         res.status(201).json(createdGroup);
     } catch (error) {

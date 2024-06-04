@@ -20,6 +20,14 @@ module.exports = (sequelize, Sequelize) => {
                 model: User,
                 key: 'user_id'
             }
+        },
+        invitation_code: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
+        is_open:{
+            type: Sequelize.STRING,
+            allowNull: false
         }
     },{
         timestamps:false
