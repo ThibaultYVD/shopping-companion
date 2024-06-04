@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/Models');
+const db = require('../../model/Models');
+const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
-router.get('/', async (req, res) => {
+router.get('/', [verifyToken, isAdmin], async (req, res) => {
     try {
         const supermarkets = await db.Supermarket.findAll();
         res.status(200).json(supermarkets);
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:supermarketId', async (req, res) => {
+router.get('/:supermarketId', [verifyToken, isAdmin], async (req, res) => {
     try {
         const supermarket = await db.Supermarket.findByPk(req.params.supermarketId)
         if (supermarket === null) {
@@ -27,7 +28,7 @@ router.get('/:supermarketId', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', [verifyToken, isAdmin], async (req, res) => {
     const { supermarket_name, address } = req.body;
 
     try {
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.delete('/:supermarketId', async (req, res) => {
+router.delete('/:supermarketId', [verifyToken, isAdmin], async (req, res) => {
     try {
 
         const existingSupermarket = await db.Supermarket.findByPk(req.params.supermarketId)
@@ -62,7 +63,7 @@ router.delete('/:supermarketId', async (req, res) => {
     }
 })
 
-router.patch('/:supermarketId', async (req, res) => {
+router.patch('/:supermarketId', [verifyToken, isAdmin], async (req, res) => {
 
     const { supermarket_name, address } = req.body
 

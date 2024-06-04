@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const db = require('../../model/Models');
+const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
 router.get('/', [verifyToken, isAdmin], async (req, res) => {
     try {

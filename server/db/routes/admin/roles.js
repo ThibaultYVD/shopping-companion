@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../model/Models');
+const db = require('../../model/Models');
+const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
-router.get('/', async (req, res) => {
+router.get('/', [verifyToken, isAdmin], async (req, res) => {
     try {
         const roles = await db.Role.findAll();
         res.status(200).json(roles);
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:roleId', async (req, res) => {
+router.get('/:roleId', [verifyToken, isAdmin], async (req, res) => {
     try {
         const role = await db.Role.findByPk(req.params.roleId)
         if (role === null) {
@@ -27,7 +28,7 @@ router.get('/:roleId', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', [verifyToken, isAdmin], async (req, res) => {
     const { role_name } = req.body;
 
     try {
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.delete('/:roleId', async (req, res) => {
+router.delete('/:roleId', [verifyToken, isAdmin], async (req, res) => {
     try {
 
         const existingRole = await db.Role.findByPk(req.params.roleId)
@@ -61,7 +62,7 @@ router.delete('/:roleId', async (req, res) => {
     }
 })
 
-router.patch('/:roleId', async (req, res) => {
+router.patch('/:roleId', [verifyToken, isAdmin], async (req, res) => {
 
     const { role_name } = req.body
 
