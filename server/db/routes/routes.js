@@ -36,6 +36,9 @@ async function routes(app) {
     const usersRoute = require('./user/users')
     app.use('/user/users/', usersRoute)
 
+    const dijkstra = require('./dijkstra')
+    app.use('/dijkstra/', dijkstra)
+
 
     /* ROUTE AUTH */
     const authRoute = require('./auth')
