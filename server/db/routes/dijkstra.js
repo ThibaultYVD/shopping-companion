@@ -5,12 +5,10 @@ const db = require('../model/Models');
 
 function dijkstra(graph, source) {
     const distances = {};
-    const prev = {};
     const pq = [];
     let closestPoint = null;
     let minDistance = Infinity;
 
-    // Initialisation des distances et de la file de priorité
     for (let vertex in graph) {
         if (vertex === source) {
             distances[vertex] = 0;
@@ -19,10 +17,8 @@ function dijkstra(graph, source) {
             distances[vertex] = Infinity;
             pq.push({ key: vertex, priority: Infinity });
         }
-        prev[vertex] = null;
     }
 
-    // Fonction pour trier la file de priorité
     const sortQueue = () => {
         pq.sort((a, b) => a.priority - b.priority);
     };
@@ -37,9 +33,6 @@ function dijkstra(graph, source) {
 
             if (alt < distances[neighbor]) {
                 distances[neighbor] = alt;
-                prev[neighbor] = currentVertex;
-
-                // Mise à jour de la priorité dans la file
                 const index = pq.findIndex(item => item.key === neighbor);
                 if (index !== -1) {
                     pq[index].priority = alt;
@@ -47,7 +40,6 @@ function dijkstra(graph, source) {
             }
         }
 
-        // Vérifier si le point actuel est le plus proche trouvé
         if (currentVertex !== source && distances[currentVertex] < minDistance) {
             closestPoint = currentVertex;
             minDistance = distances[currentVertex];
@@ -66,24 +58,18 @@ function euclideanDistance(point1, point2) {
     );
 }
 
-
+// Construire un graph avec les coordonnées des rayons
 function buildGraph(points) {
     const graph = {};
 
-    for (let i = 0; i < points.length; i++) {
-        console.log(points[i].shelf_id)
-        graph[points[i].shelf_id] = {};  // Initialise une liste d'adjacence pour le point i
-        
-
-        for (let j = 0; j < points.length; j++) {
-
+    points.forEach((pointI, i) => {
+        graph[pointI.shelf_id] = {};
+        points.forEach((pointJ, j) => {
             if (i !== j) {
-                const distance = euclideanDistance(points[i], points[j]);
-                console.log(distance)
-                graph[points[i].shelf_id][points[j].shelf_id] = distance;  // Ajoute le voisin j avec la distance
+                graph[pointI.shelf_id][pointJ.shelf_id] = euclideanDistance(pointI, pointJ);
             }
-        }
-    }
+        });
+    });
 
     return graph;
 }
@@ -99,7 +85,7 @@ router.get('/', async (req, res) => {
 
         let sql = 
         `SELECT DISTINCT 
-            l.list_id, s.shelf_id, s.shelf_name, s.location_x, s.location_y
+            s.shelf_id, s.location_x, s.location_y
 
         FROM shelves s 
         
@@ -120,6 +106,8 @@ router.get('/', async (req, res) => {
             }, type: db.sequelize.QueryTypes.SELECT,
         });
 
+
+
         const points = []
 
         for (let i = 0; i < shelvesData.length; i++){
@@ -131,14 +119,13 @@ router.get('/', async (req, res) => {
             })
         }
 
-        const source = '1';
+        const source = '11';
         const { closestPoint, minDistance } = dijkstra(buildGraph(points), source);
 
-    console.log(`Le point le plus proche de ${source} est ${closestPoint} avec une distance de ${minDistance}`);
+        console.log(`Le point le plus proche de ${source} est ${closestPoint} avec une distance de ${minDistance}`);
    
         
  } catch (error) {
-
         console.log(error)
     }
 
