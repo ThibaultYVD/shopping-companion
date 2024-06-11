@@ -47,7 +47,7 @@ function dijkstra(graph, source) {
         }
     }
 
-    return { closestPoint, minDistance };
+    return { closestPoint };
 }
 
 
@@ -64,6 +64,7 @@ function buildGraph(points) {
 
     points.forEach((pointI, i) => {
         graph[pointI.shelf_id] = {};
+
         points.forEach((pointJ, j) => {
             if (i !== j) {
                 graph[pointI.shelf_id][pointJ.shelf_id] = euclideanDistance(pointI, pointJ);
@@ -114,16 +115,82 @@ router.get('/', async (req, res) => {
 
             points.push({
                 shelf_id: shelvesData[i].shelf_id, 
+                shelf_name: shelvesData[i].shelf_name,
                 x:shelvesData[i].location_x, 
                 y:shelvesData[i].location_y
             })
         }
 
-        const source = '11';
-        const { closestPoint, minDistance } = dijkstra(buildGraph(points), source);
+        let source = '11';
+        let route = []
 
-        console.log(`Le point le plus proche de ${source} est ${closestPoint} avec une distance de ${minDistance}`);
-   
+        route.push({
+            start: {
+                shelf_id:0,
+                shelf_name:"Entrée"
+            }                 
+        });
+
+        while(points.length > 1){
+            let { closestPoint } = dijkstra(buildGraph(points), source);
+    
+            sql = 
+                `SELECT DISTINCT 
+                    s.shelf_name
+        
+                FROM shelves s 
+    
+                WHERE s.shelf_id = :shelf_id`
+    
+            const toShelveName = await db.sequelize.query(sql,
+            {
+                replacements: {
+                    shelf_id: closestPoint,
+                }, type: db.sequelize.QueryTypes.SELECT,
+            });
+
+            sql = 
+            `SELECT DISTINCT 
+            pl.product_id, p.product_name, p.price, pl.quantity
+
+        FROM products_list pl
+
+        INNER JOIN products p ON pl.product_id = p.product_id
+        INNER JOIN shelves s ON s.shelf_id = p.shelf_id
+        
+        WHERE s.shelf_id = :shelf_id
+        AND pl.list_id = :list_id`
+
+            const products = await db.sequelize.query(sql,
+                {
+                    replacements: {
+                        list_id: list_id,
+                        shelf_id: closestPoint,
+                    }, type: db.sequelize.QueryTypes.SELECT,
+                });
+
+            route.push({
+                    nextStop: {
+                        shelf_id:parseInt(closestPoint),
+                        shelf_name:toShelveName[0].shelf_name,
+                        products:products
+                    }                 
+                });
+
+            const sourceIndex = points.findIndex(point => parseInt(point.shelf_id) === parseInt(source));
+            points.splice(sourceIndex, 1)
+            source = closestPoint;
+        }
+
+        route.push(
+            { 
+                end: {
+                    shelf_id:99,
+                    shelf_name:"Sortie"
+                }       
+            });
+        
+        res.json(route)
         
  } catch (error) {
         console.log(error)
