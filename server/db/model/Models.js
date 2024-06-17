@@ -16,7 +16,8 @@ const sequelize = new Sequelize(
         },
         define: {
             timestamps: false
-        }
+        },
+        //logging: false
     }
 );
 
@@ -32,36 +33,45 @@ db.Shelf = require("./Shelf.js")(sequelize, Sequelize)
 db.Group = require("./Group.js")(sequelize, Sequelize)
 db.List = require("./List.js")(sequelize, Sequelize)
 db.Product = require("./Product.js")(sequelize, Sequelize)
+db.ListRoute = require("./ListRoute.js")(sequelize, Sequelize)
 
 // Tables de jointures
 
 db.User.belongsToMany(db.Role, {
-    through: "user_role", foreignKey: 'user_id'
+    through: "user_role", foreignKey: 'user_id',
+    onDelete: 'CASCADE'
 });
 
 db.Role.belongsToMany(db.User, {
-    through: "user_role", foreignKey: 'role_id'
+    through: "user_role", foreignKey: 'role_id',
+    onDelete: 'CASCADE'
 });
 
 db.Group.belongsToMany(db.User, {
-    through: "group_members", foreignKey: 'group_id'
+    through: "group_members", foreignKey: 'group_id',
+    onDelete: 'CASCADE'
 });
+
 db.User.belongsToMany(db.Group, {
-    through: "group_members", foreignKey: 'user_id'
+    through: "group_members", foreignKey: 'user_id',
+    onDelete: 'CASCADE'
 });
 
 db.Product.belongsToMany(db.List, {
-    through: "products_list", foreignKey: 'product_id'
+    through: "products_list", foreignKey: 'product_id',
+    onDelete: 'CASCADE'
 });
 
 db.List.belongsToMany(db.Product, {
-    through: "products_list", foreignKey: 'list_id'
+    through: "products_list", foreignKey: 'list_id',
+    onDelete: 'CASCADE'
 });
 
 
 // Clés étrangères
 db.Shelf.belongsTo(db.Supermarket, {
-    foreignKey: 'supermarket_id'
+    foreignKey: 'supermarket_id',
+    onDelete: 'CASCADE'
 });
 
 db.Group.belongsTo(db.User, {
@@ -69,11 +79,19 @@ db.Group.belongsTo(db.User, {
 });
 
 db.List.belongsTo(db.Group, {
-    foreignKey: 'group_id'
+    foreignKey: 'group_id',
+    onDelete: 'CASCADE'
 });
 
 db.Product.belongsTo(db.Shelf, {
-    foreignKey: 'shelf_id'
+    foreignKey: 'shelf_id',
+    onDelete: 'CASCADE'
+});
+
+
+db.ListRoute.belongsTo(db.List, {
+    foreignKey: 'list_id',
+    onDelete: 'CASCADE'
 });
 
 db.ROLES = ["user", "admin", "moderator"];
