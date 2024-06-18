@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha 'tests/**/*.test.js'",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && nyc report --reporter=text-summary"
+  },
+  "nyc": {
+    "include": [
+      "server/**/*.js"
+    ],
+    "exclude": [
+      "node_modules/**/*",
+      "test/**/*"
+    ]
   },
   "author": "",
   "license": "ISC",
@@ -14,12 +24,18 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
     "express-session": "^1.18.0",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.3",
     "sequelize": "^6.37.2",
     "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "express": "^4.19.2",
+    "mocha": "^10.4.0",
+    "nyc": "^17.0.0",
+    "supertest": "^7.0.0"
   }
 }
