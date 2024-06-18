@@ -5,6 +5,7 @@ const User = db.User;
 verifyToken = (req, res, next) => {
     try {
         let token = req.session.token;
+
         if (!req.session) {
             return res.status(401).send({
                 message: "Aucune session n'a été trouvé.",
@@ -50,6 +51,7 @@ isAdmin = async (req, res, next) => {
         const user = await User.findByPk(decodedToken.id);
         const roles = await user.getRoles();
 
+        
         for (let i = 0; i < roles.length; i++) {
             if (roles[i].role_name === "admin") {
                 return next();

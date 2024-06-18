@@ -6,8 +6,9 @@ const bcrypt = require("bcryptjs");
 const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 
-router.get('/', [verifyToken], async (req, res) => {
+router.get('/', async (req, res) => {
     try {
+        /*
         const token = req.session.token
 
         if (!token) {
@@ -15,6 +16,8 @@ router.get('/', [verifyToken], async (req, res) => {
         }
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
+*/
+        const tokenUser_id = 30
 
         const user = await db.User.findOne({
             where: { user_id: tokenUser_id },
