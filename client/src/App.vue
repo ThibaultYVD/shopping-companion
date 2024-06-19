@@ -1,19 +1,21 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    
-  </main>
+  <div id="app">
+    <Navbar />
+    <router-view />
+  </div>
 </template>
 
-<style scoped>
+<script>
+import Navbar from './components/Navbar.vue';
 
+export default {
+  name: 'App',
+  components: {
+    Navbar
+  }
+};
+</script>
+
+<style>
+/* Styles globaux de l'application */
 </style>
