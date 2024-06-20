@@ -3,15 +3,30 @@
     <ul>
       <li><router-link to="/">Accueil</router-link></li>
       <li><router-link to="/about">À propos</router-link></li>
-      <li><router-link to="/login">Se connecter</router-link></li>
+      <li><router-link to="/contact">Contact</router-link></li>
+      <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
+      <li v-if="isAuthenticated"><a href="#" @click="logout">Se déconnecter</a></li>
     </ul>
   </nav>
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
-  name: "Navbar",
+  name: 'Navbar',
+  computed: {
+    ...mapGetters(['isAuthenticated']),
+  },
+  methods: {
+    ...mapMutations(['clearToken']),
+    logout() {
+      this.clearToken();
+      this.$router.push('/');
+    }
+  }
 };
+
 </script>
 
 <style scoped>
