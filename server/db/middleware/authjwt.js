@@ -4,18 +4,18 @@ const User = db.User;
 
 verifyToken = (req, res, next) => {
     try {
-        let token = req.session.token;
-        if (!req.session) {
-            return res.status(401).send({
-                message: "Aucune session n'a été trouvé.",
-            });
+        let token
+        if (!req.session.token) {
+            token = req.headers.authorization
+            req.session.token = req.headers.authorization
+        }
+        else {
+            token = req.session.token
         }
 
-        if (!token) {
-            return res.status(403).send({
-                message: "Aucun token n'a été fourni.",
-            });
-        }
+        if (!req.session) return res.status(401).send({ message: "Aucune session n'a été trouvé." });
+
+        if (!token) return res.status(403).send({ message: "Aucun token n'a été fourni." });
 
         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
             if (err) {
