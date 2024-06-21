@@ -26,8 +26,8 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.User = require("../model/User.js")(sequelize, Sequelize);
-db.Role = require("../model/Role.js")(sequelize, Sequelize)
+db.User = require("./User.js")(sequelize, Sequelize);
+db.Role = require("./Role.js")(sequelize, Sequelize)
 
 // Règles ManyToMany pour les user/roles
 
