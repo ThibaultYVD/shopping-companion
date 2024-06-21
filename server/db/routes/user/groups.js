@@ -8,6 +8,7 @@ const { escapeData } = require('../../middleware/validation')
 
 router.get('/', [verifyToken], async (req, res) => {
     try {
+
         const token = req.session.token
 
         if (!token) {
@@ -74,7 +75,7 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
             group_name: group_name,
             creation_date: new Date(),
             user_id: tokenUser_id,
-            is_open:"FALSE"
+            is_open: "FALSE"
         });
 
         const group_id = createdGroup.null
@@ -135,22 +136,22 @@ router.patch('/:groupId', [verifyToken], async (req, res) => {
 })
 
 
-router.patch('/createInvit/:groupId', [verifyToken], async(req,res)=>{
+router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
     try {
-        
+
         const token = req.session.token
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
         const verifCreator = await db.sequelize.query(`SELECT user_id FROM groupes WHERE group_id = :group_id`,
-        {
-            replacements: {
-                group_id: req.params.groupId
-            }, type: db.sequelize.QueryTypes.SELECT,
-        });
+            {
+                replacements: {
+                    group_id: req.params.groupId
+                }, type: db.sequelize.QueryTypes.SELECT,
+            });
 
-        if(!verifCreator || verifCreator.length == 0) return res.status(404).json({message:"Ce groupe n'existe pas."})
-        if(verifCreator[0].user_id != tokenUser_id) return res.status(403).json({message:"Vous n'êtes pas autorisé à créer un code d'invitation."})
+        if (!verifCreator || verifCreator.length == 0) return res.status(404).json({ message: "Ce groupe n'existe pas." })
+        if (verifCreator[0].user_id != tokenUser_id) return res.status(403).json({ message: "Vous n'êtes pas autorisé à créer un code d'invitation." })
 
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
         const length = 8
@@ -165,25 +166,25 @@ router.patch('/createInvit/:groupId', [verifyToken], async(req,res)=>{
         let hashedCode = bcrypt.hashSync(result, 8)
 
         await db.sequelize.query(`UPDATE groupes SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
-        {
-            replacements: {
-                invitation_code: hashedCode,
-                is_open: "TRUE",
-                group_id:req.params.groupId,
-            }, type: db.sequelize.QueryTypes.UPDATE,
-        });
+            {
+                replacements: {
+                    invitation_code: hashedCode,
+                    is_open: "TRUE",
+                    group_id: req.params.groupId,
+                }, type: db.sequelize.QueryTypes.UPDATE,
+            });
 
 
         setTimeout(async () => {
             await db.sequelize.query(`UPDATE groupes SET is_open = :is_open WHERE group_id = :group_id`,
-            {
-                replacements: {
-                    is_open: "FALSE",
-                    group_id: req.params.groupId,
-                },
-             type: db.sequelize.QueryTypes.UPDATE,
-            });
-        }, 600000); 
+                {
+                    replacements: {
+                        is_open: "FALSE",
+                        group_id: req.params.groupId,
+                    },
+                    type: db.sequelize.QueryTypes.UPDATE,
+                });
+        }, 600000);
 
         res.status(200).json(result);
     } catch (error) {
