@@ -36,7 +36,11 @@ export default {
         // Rediriger vers la page Dashboard
         router.push('/dashboard');
       } catch (error) {
-        alert('Invalid credentials');
+        if(error.response.status === 404) alert('Utilisateur inconnu')
+        else if(error.response.status === 403) alert('Mot de passe invalide');
+        else {alert('Erreur inconnu')
+          console.log(error)
+        }
       }
     };
 
