@@ -8,14 +8,14 @@
         </div>
       </div>
       <div v-else>
-        <p>Chargement... (ou aucune donnée)</p>
+        <p>Chargement des données ... (ou aucune donnée)</p>
       </div>
       
     </div>
   </template>
   
 <script>
-import axios from 'axios'
+import axios from '@/axios'
 export default {
   name:'groups',
 data(){
@@ -34,7 +34,7 @@ if (!token) {
   throw new Error('No token found');
 }
 
-axios.get('http://localhost:20241/user/groups', {
+axios.get('user/groups', {
   headers: {
     Authorization: token
   }
