@@ -2,56 +2,43 @@
 <template>
     <div>
       <h1>Dashboard</h1>
-      <ul v-if="groups.length">
-        <li v-for="group in groups">
-          {{ group.group_name }}
-        </li>
-      </ul>
-      <p v-else>Aucun groupe trouvé.</p>
+      <div v-for="(group, index) in this.groups" :key="index">
+      <p>{{ group.group_id }} {{ group.group_name }}</p>
+      </div>
     </div>
   </template>
   
 <script>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-
+import axios from 'axios'
 export default {
-
-
-    /*
-  setup() {
-    let groups;
-    const fetchGroups = async () => {
-      try {
-        const token = localStorage.token;
-        console.log(token)
-        if (!token) {
-          throw new Error('No token found');
-        }
-
-        const response = await axios.get('http://localhost:20241/user/groups', {
-          headers: {
-            Authorization: token
-          }
-        });
-
-
-        groups = response.data
-        console.log(groups)
-      } catch (error) {
-        console.error('Erreur lors de la récupération des groupes:', error);
-      }
-    };
-
-    onMounted(() => {
-      fetchGroups();
-    });
-
-    return {
-      groups
-    };
+  name:'groups',
+data(){
+  return {
+    groups: [],
   }
-  */
+},
+mounted(){
+  console.log('on est dans mounted')
+  this.getGroups()
+},
+methods:{
+  getGroups(){
+    const token = localStorage.token;
+
+if (!token) {
+  throw new Error('No token found');
+}
+
+axios.get('http://localhost:20241/user/groups', {
+  headers: {
+    Authorization: token
+  }
+}).then(res => {
+  this.groups = res.data
+})
+  }
+}
+
 };
 </script>
   
