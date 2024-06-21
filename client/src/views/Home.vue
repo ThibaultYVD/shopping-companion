@@ -1,34 +1,26 @@
+<!-- src/views/Home.vue -->
 <template>
-  <div class="home">
-    <h1>Bienvenue sur notre site</h1>
-    <p>C'est la page d'accueil.</p>
+  <div>
+    <h1>Home</h1>
     <div v-if="isAuthenticated">
-      <p>Contenu réservé aux utilisateurs connectés.</p>
+      <p>Welcome, you are logged in!</p>
+    </div>
+    <div v-else>
+      <p>Please log in to see this content.</p>
     </div>
   </div>
 </template>
 
 <script>
-import Navbar from './../components/Navbar.vue';
-import { mapGetters } from 'vuex';
+import { useAuthStore } from '../stores/auth';
 
 export default {
-  name: 'Home',
-  components: {
-    Navbar
+  setup() {
+    const authStore = useAuthStore();
+
+    return {
+      isAuthenticated: authStore.isAuthenticated,
+    };
   },
-  computed: {
-    ...mapGetters(['isAuthenticated'])
-  },
-  mounted() {
-    // Effectuer des actions si nécessaire lors du montage du composant
-  }
 };
 </script>
-
-<style scoped>
-.home {
-  text-align: center;
-  padding: 20px;
-}
-</style>
