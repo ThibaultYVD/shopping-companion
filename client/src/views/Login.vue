@@ -1,99 +1,46 @@
+<!-- src/views/Login.vue -->
 <template>
-  <div class="login">
-    <h1>Connexion</h1>
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" v-model="email" id="email" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input type="password" v-model="password" id="password" required />
-      </div>
-      <button type="submit">Se connecter</button>
-      <p v-if="error">{{ error }}</p>
+  <div>
+    <h1>Login</h1>
+    <form @submit.prevent="login">
+      <input v-model="email" placeholder="Email">
+      <input v-model="password" type="password" placeholder="Password">
+      <button type="submit">Login</button>
     </form>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue';
 import axios from 'axios';
-import { mapMutations } from 'vuex';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 
 export default {
-  name: 'Login',
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: null
-    };
-  },
-  methods: {
-    ...mapMutations(['setToken']),
-    async handleSubmit() {
+  setup() {
+    const email = ref('');
+    const password = ref('');
+    const router = useRouter();
+    const authStore = useAuthStore();
+
+    const login = async () => {
       try {
         const response = await axios.post('http://localhost:20241/auth/signin', {
-          email: this.email,
-          password: this.password
+          email: email.value,
+          password: password.value
         });
 
-        const token = response.data.token;
-        this.setToken(token);
+        const token = response.data;
+        authStore.setToken(token);
 
-        // Réinitialiser le formulaire après soumission
-        this.email = '';
-        this.password = '';
-        this.error = null;
-
-        // Rediriger l'utilisateur
-        this.$router.push('/');
+        // Rediriger vers la page Dashboard
+        router.push('/dashboard');
       } catch (error) {
-        this.error = 'Échec de la connexion. Veuillez vérifier vos identifiants.';
-        console.error('Erreur:', error);
+        alert('Invalid credentials');
       }
-    }
+    };
+
+    return { email, password, login };
   }
 };
 </script>
-
-<style scoped>
-.login {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-button {
-  padding: 10px 15px;
-  background-color: #333;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #555;
-}
-
-p {
-  color: red;
-  margin-top: 10px;
-}
-</style>
