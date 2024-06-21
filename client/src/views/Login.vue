@@ -25,12 +25,12 @@ export default {
 
     const login = async () => {
       try {
-        const response = await axios.post('http://localhost:20241/auth/signin', {
+        const response = await axios.post('http://localhost:20242/api/auth/signin', {
           email: email.value,
           password: password.value
         });
 
-        const token = response.data;
+        const token = response.data.token;
         authStore.setToken(token);
 
         // Rediriger vers la page Dashboard

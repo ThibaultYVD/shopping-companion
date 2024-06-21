@@ -1,10 +1,16 @@
 <!-- src/views/Dashboard.vue -->
 <template>
     <div>
-      <h1>Dashboard</h1>
-      <div v-for="(group, index) in this.groups" :key="index">
-      <p>{{ group.group_id }} {{ group.group_name }}</p>
+      <h1>Mes groupes</h1>
+      <div v-if="this.groups.length > 0">
+        <div v-for="(group, index) in this.groups" :key="index">
+          <p>{{ group.group_id }} {{ group.group_name }}</p>
+        </div>
       </div>
+      <div v-else>
+        <p>Chargement... (ou aucune donnée)</p>
+      </div>
+      
     </div>
   </template>
   
@@ -18,7 +24,6 @@ data(){
   }
 },
 mounted(){
-  console.log('on est dans mounted')
   this.getGroups()
 },
 methods:{
