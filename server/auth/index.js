@@ -4,7 +4,7 @@ const cors = require("cors")
 const cookieSession = require("cookie-session")
 app.use(cors())
 require('dotenv/config')
-const db = require("./model");
+const db = require("./model/Models");
 
 // db.sequelize.sync({ force: true }).then(() => {
 //     console.log('Drop and Resync Db');
@@ -34,7 +34,6 @@ app.get("/", (req, res) => {
 
 // Routes
 require('./routes/auth')(app)
-require('./routes/user')(app);
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
