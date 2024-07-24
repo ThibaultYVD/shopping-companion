@@ -3,7 +3,7 @@ const router = express.Router()
 const db = require('../../model/Models');
 const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
-router.get('/', [verifyToken, isAdmin], async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const lists = await db.List.findAll();
         res.status(200).json(lists);
@@ -13,7 +13,7 @@ router.get('/', [verifyToken, isAdmin], async (req, res) => {
     }
 });
 
-router.get('/:listId', [verifyToken, isAdmin], async (req, res) => {
+router.get('/:listId', async (req, res) => {
     try {
         const list = await db.List.findByPk(req.params.listId)
         if (list === null) {

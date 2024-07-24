@@ -7,12 +7,14 @@ const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 
 // Récupérer les listes du groupe
-router.get('/:groupId', [verifyToken], async (req, res) => {
+router.get('/:groupId', async (req, res) => {
     try {
+        /*
         const token = req.session.token
 
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        */
+        const tokenUser_id = 30
 
         let sql = `SELECT DISTINCT l.* 
         FROM lists l 
@@ -40,11 +42,13 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
     }
 });
 
-router.get('/:groupId/:listId', [verifyToken], async (req, res) => {
+router.get('/:groupId/:listId', async (req, res) => {
     try {
+        /*
         const token = req.session.token
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        */
+        const tokenUser_id = 30
 
         let sql = `SELECT DISTINCT l.* 
         FROM lists l 

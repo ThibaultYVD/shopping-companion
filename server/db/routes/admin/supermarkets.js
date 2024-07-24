@@ -3,7 +3,7 @@ const router = express.Router()
 const db = require('../../model/Models');
 const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
-router.get('/', [verifyToken, isAdmin], async (req, res) => {
+router.get('/',  async (req, res) => {
     try {
         const supermarkets = await db.Supermarket.findAll();
         res.status(200).json(supermarkets);
@@ -13,7 +13,7 @@ router.get('/', [verifyToken, isAdmin], async (req, res) => {
     }
 });
 
-router.get('/:supermarketId', [verifyToken, isAdmin], async (req, res) => {
+router.get('/:supermarketId', async (req, res) => {
     try {
         const supermarket = await db.Supermarket.findByPk(req.params.supermarketId)
         if (supermarket === null) {

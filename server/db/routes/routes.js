@@ -20,7 +20,7 @@ async function routes(app) {
     app.use('/admin/shelves/', shelvesRoute)
 
     const supermarketsRoute = require('./admin/supermarkets')
-    app.use('/supermarkets/', supermarketsRoute)
+    app.use('/admin/supermarkets/', supermarketsRoute)
 
 
     /* ROUTES USERS */

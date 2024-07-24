@@ -3,7 +3,7 @@ const router = express.Router()
 const db = require('../../model/Models');
 const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
-router.get('/', [verifyToken, isAdmin], async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const products = await db.Product.findAll();
         res.status(200).json(products);
@@ -13,7 +13,7 @@ router.get('/', [verifyToken, isAdmin], async (req, res) => {
     }
 });
 
-router.get('/:productId', [verifyToken, isAdmin], async (req, res) => {
+router.get('/:productId', async (req, res) => {
     try {
         const product = await db.Product.findByPk(req.params.productId)
         if (product === null) {

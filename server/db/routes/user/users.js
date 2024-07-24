@@ -6,10 +6,12 @@ const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 const bcrypt = require("bcryptjs");
 
-router.get('/', [verifyToken], async (req, res) => {
+router.get('/', async (req, res) => {
+    /*
     const token = req.session.token
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const tokenUser_id = decodedToken.id
+    */
+    const tokenUser_id = 30
     try {
         const user = await db.sequelize.query(`SELECT * FROM users WHERE user_id = :user_id`,
             {

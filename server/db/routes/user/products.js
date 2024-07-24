@@ -7,12 +7,14 @@ const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 
 
-router.get('/getall/:listId', [verifyToken], async (req, res) => {
+router.get('/getall/:listId', async (req, res) => {
     try {
+        /*
         const token = req.session.token
 
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        */
+        const tokenUser_id = 30
 
         let sql = `SELECT DISTINCT p.product_id, p.product_name, p.price, s.shelf_name, s.location_x, s.location_y
         FROM products p
@@ -43,12 +45,14 @@ router.get('/getall/:listId', [verifyToken], async (req, res) => {
     }
 });
 
-router.get('/:listId', [verifyToken], async (req, res) => {
+router.get('/:listId', async (req, res) => {
     try {
+        /*
         const token = req.session.token
 
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        */
+        const tokenUser_id = 30
 
         let sql = `SELECT DISTINCT p.product_id, p.product_name, p.price, pl.quantity, pl.added_at, s.shelf_name, s.location_x, s.location_y
         FROM products_list pl

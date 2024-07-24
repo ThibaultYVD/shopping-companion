@@ -5,7 +5,7 @@ const { verifyToken, isAdmin } = require('../../middleware/authjwt')
 
 
 
-router.get('/', [verifyToken, isAdmin], async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const groups = await db.Group.findAll();
         res.status(200).json(groups);
@@ -16,7 +16,7 @@ router.get('/', [verifyToken, isAdmin], async (req, res) => {
 });
 
 
-router.get('/:groupId', [verifyToken, isAdmin], async (req, res) => {
+router.get('/:groupId', async (req, res) => {
     try {
         const group = await db.Group.findByPk(req.params.groupId)
         if (group === null) {
