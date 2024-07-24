@@ -1,7 +1,7 @@
 const User = require("./User");
 
 module.exports = (sequelize, Sequelize) => {
-    const Group = sequelize.define("groupes", {
+    const Group = sequelize.define("users_groups", {
         group_id: {
             type: Sequelize.INTEGER,
             primaryKey: true
