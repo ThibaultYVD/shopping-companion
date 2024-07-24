@@ -298,9 +298,12 @@ router.delete('/:listId/:productId', [verifyToken], async (req, res) => {
 
         if (!list || !product) return res.status(404).json({error: "Ce produit ou cette liste n'existe pas."});
         
-        sql = `DELETE FROM products_list WHERE product_id = :product_id AND list_id = :list_id`
+        sql = `
+        DELETE FROM products_list 
+        WHERE product_id = :product_id 
+        AND list_id = :list_id`
 
-        const del = await db.sequelize.query(sql,
+        await db.sequelize.query(sql,
             {
                 replacements: {
                     product_id: req.params.productId,
