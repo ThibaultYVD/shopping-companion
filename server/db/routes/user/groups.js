@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
-const { body, validationResult } = require('express-validator');
 
 router.get('/', [verifyToken], async (req, res) => {
     try {
@@ -42,12 +41,7 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
-        const userGroup = await db.sequelize.query(`
-            SELECT DISTINCT g.* 
-            FROM groupes g 
-            INNER JOIN group_members m ON m.user_id = :user_id 
-            AND m.group_id = :group_id 
-            WHERE g.group_id = :group_id`,
+        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM groupes g INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id WHERE g.group_id = :group_id`,
             {
                 replacements: {
                     user_id: tokenUser_id,
@@ -86,9 +80,7 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
 
         const group_id = createdGroup.null
 
-        await db.sequelize.query(`
-            INSERT INTO group_members (user_id, group_id, joined_at) 
-            VALUES (:user_id, :group_id, :joined_at)`,
+        await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
             {
                 replacements: {
                     user_id: tokenUser_id,
@@ -107,14 +99,7 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
 })
 
 
-router.patch('/:groupId', [verifyToken,
-    param('groupId').isInt().withMessage('ID de groupe invalide'),
-    body('group_name')
-        .optional() 
-        .trim()
-        .escape()
-        .isLength({ min: 1 }).withMessage('Nom du groupe ne peut pas être vide'),
-    escapeData], async (req, res) => {
+router.patch('/:groupId', [verifyToken], async (req, res) => {
     try {
         const { group_name } = req.body
 
@@ -137,9 +122,9 @@ router.patch('/:groupId', [verifyToken,
                 group_name: group_name,
                 creator_id: creator_id
             },
-            {
-                where: { group_id: req.params.groupId },
-            })
+                {
+                    where: { group_id: req.params.groupId },
+                })
 
         res.status(200).json(patchedGroup)
 
@@ -180,18 +165,14 @@ router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
 
         let hashedCode = bcrypt.hashSync(result, 8)
 
-        await db.sequelize.query(`
-            UPDATE groupes 
-            SET invitation_code = :invitation_code, is_open = :is_open 
-            WHERE group_id = :group_id`,
+        await db.sequelize.query(`UPDATE groupes SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
             {
                 replacements: {
                     invitation_code: hashedCode,
                     is_open: "TRUE",
                     group_id: req.params.groupId,
                 }, type: db.sequelize.QueryTypes.UPDATE,
-            }
-        );
+            });
 
 
         setTimeout(async () => {
