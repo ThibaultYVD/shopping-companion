@@ -31,14 +31,15 @@ router.get('/:groupId', async (req, res) => {
     }
 })
 
-router.post('/', [verifyToken, isAdmin], async (req, res) => {
+router.post('/', async (req, res) => {
     const { group_name, creator_id } = req.body;
 
     try {
         const createdGroup = await db.Group.create({
             group_name: group_name,
             creation_date: new Date(),
-            creator_id: creator_id
+            user_id: creator_id,
+            is_open: 'FALSE'
         });
 
         res.status(201).json(createdGroup);
@@ -48,7 +49,7 @@ router.post('/', [verifyToken, isAdmin], async (req, res) => {
     }
 })
 
-router.delete('/:groupId', [verifyToken, isAdmin], async (req, res) => {
+router.delete('/:groupId', async (req, res) => {
     try {
         const existingGroup = await db.Group.findByPk(req.params.groupId)
 
@@ -66,7 +67,7 @@ router.delete('/:groupId', [verifyToken, isAdmin], async (req, res) => {
     }
 })
 
-router.patch('/:groupId', [verifyToken, isAdmin], async (req, res) => {
+router.patch('/:groupId', async (req, res) => {
 
     const { group_name, creator_id } = req.body
 
