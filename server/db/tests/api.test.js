@@ -46,8 +46,151 @@ describe('GET /admin/groups/:groupId', () => {
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch('application/json');
   });
+  it('should return an error if retrieving groups fails', async () => {
+    jest.spyOn(db.Group, 'findByPk').mockImplementation(() => {
+        throw new Error('Simulated error');
+    });
+
+    const response = await request(app).get('/admin/groups/9999');
+
+    expect(response.status).toBe(500);
+
+    db.Group.findByPk.mockRestore();
+  })
+  it('should return 404 if the group is not found', async () => {
+    const response = await request(app)
+        .get('/admin/groups/9999') // Utilisez un ID qui n'existe pas
+  
+    expect(response.status).toBe(404);
+  
+  });
 
   
+});
+
+describe('POST /admin/groups', () => {
+
+  it('should create a new group', async () => {
+      const groupData = {
+          group_name: 'Test Group',
+          creator_id: 30
+      };
+
+      const res = await request(app)
+          .post('/admin/groups')
+          .send(groupData);
+
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty('group_name', 'Test Group');
+      expect(res.body).toHaveProperty('user_id', 30);
+
+      const createdGroup = await db.Group.findOne({ where: { group_name: 'Test Group' } });
+      expect(createdGroup).not.toBeNull();
+
+  });
+
+});
+
+
+
+describe('PATCH /admin/groups/:groupId', () => {
+  let group;
+
+  beforeAll(async () => {
+      // Créez un groupe pour les tests
+      
+        group = await db.Group.create({
+          group_name: 'Initial Group',
+          creation_date: new Date(),
+          user_id: 30,
+          is_open: "FALSE"
+      });
+  });
+
+  afterAll(async () => {
+      await group.destroy();
+  });
+
+  it('should update the group name', async () => {
+      const updatedData = {
+          group_id: group.group_id,
+          group_name: 'Updated Group'
+      };
+
+      const res = await request(app)
+          .patch(`/admin/groups/${group.group_id}`)
+          .send(updatedData);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([1]);
+
+      // Vérifiez que le groupe a été mis à jour dans la base de données
+      const updatedGroup = await db.Group.findByPk(group.group_id);
+      expect(updatedGroup.group_name).toBe('Updated Group');
+  });
+});
+
+
+
+
+
+describe('DELETE /admin/groups/:groupId', () => {
+  let group;
+
+  beforeAll(async () => {
+      // Créez un groupe pour les tests
+      
+        group = await db.Group.create({
+          group_name: 'Initial Group',
+          creation_date: new Date(),
+          user_id: 30,
+          is_open: "FALSE"
+      });
+
+  });
+
+  afterAll(async () => {
+      // Supprimez le groupe de test et fermez la connexion à la base de données
+      if (group) {
+        await group.destroy();
+    }
+  });
+
+  it('should delete the group', async () => {
+    const response = await request(app)
+        .delete(`/admin/groups/${group.group_id}`)
+
+    expect(response.status).toBe(204);
+
+    // Vérifiez que le groupe a été supprimé de la base de données
+    const deletedGroup = await db.Group.findByPk(group.group_id);
+    expect(deletedGroup).toBeNull();
+
+    // Mettez la variable group à null pour éviter une tentative de suppression dans afterAll
+    group = null;
+});
+it('should return 404 if the group is not found', async () => {
+  const response = await request(app)
+      .delete('/admin/groups/9999') // Utilisez un ID qui n'existe pas
+
+  expect(response.status).toBe(404);
+
+});
+
+it('should return an error if deletion fails', async () => {
+  jest.spyOn(db.Group, 'destroy').mockImplementation(() => {
+      throw new Error('Simulated error');
+  });
+
+  const response = await request(app)
+      .delete(`/admin/groups/${group.group_id}`)
+
+  expect(response.status).toBe(500);
+  expect(response.body).toHaveProperty('error', 'Error dans suppression du groupe');
+
+  db.Group.destroy.mockRestore();
+});
+
 });
 
 
@@ -224,127 +367,3 @@ describe('GET /dijkstra', () => {
 
 
 
-describe('POST /admin/groups', () => {
-
-  it('should create a new group', async () => {
-      const groupData = {
-          group_name: 'Test Group',
-          creator_id: 30
-      };
-
-      const res = await request(app)
-          .post('/admin/groups')
-          .send(groupData);
-
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('group_name', 'Test Group');
-      expect(res.body).toHaveProperty('user_id', 30);
-
-      const createdGroup = await db.Group.findOne({ where: { group_name: 'Test Group' } });
-      expect(createdGroup).not.toBeNull();
-
-  });
-});
-
-
-
-describe('PATCH /admin/groups/:groupId', () => {
-  let group;
-
-  beforeAll(async () => {
-      // Créez un groupe pour les tests
-      
-        group = await db.Group.create({
-          group_name: 'Initial Group',
-          creation_date: new Date(),
-          user_id: 30,
-          is_open: "FALSE"
-      });
-  });
-
-  afterAll(async () => {
-      // Supprimez le groupe de test et fermez la connexion à la base de données
-      await group.destroy();
-  });
-
-  it('should update the group name', async () => {
-      const updatedData = {
-          group_id: group.group_id,
-          group_name: 'Updated Group'
-      };
-
-      const res = await request(app)
-          .patch(`/admin/groups/${group.group_id}`)
-          .send(updatedData);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual([1]);
-
-      // Vérifiez que le groupe a été mis à jour dans la base de données
-      const updatedGroup = await db.Group.findByPk(group.group_id);
-      expect(updatedGroup.group_name).toBe('Updated Group');
-  });
-});
-
-
-
-
-
-describe('DELETE /admin/groups/:groupId', () => {
-  let group;
-
-  beforeAll(async () => {
-      // Créez un groupe pour les tests
-      
-        group = await db.Group.create({
-          group_name: 'Initial Group',
-          creation_date: new Date(),
-          user_id: 30,
-          is_open: "FALSE"
-      });
-
-  });
-
-  afterAll(async () => {
-      // Supprimez le groupe de test et fermez la connexion à la base de données
-      if (group) {
-        await group.destroy();
-    }
-  });
-
-  it('should delete the group', async () => {
-    const response = await request(app)
-        .delete(`/admin/groups/${group.group_id}`)
-
-    expect(response.status).toBe(204);
-
-    // Vérifiez que le groupe a été supprimé de la base de données
-    const deletedGroup = await db.Group.findByPk(group.group_id);
-    expect(deletedGroup).toBeNull();
-
-    // Mettez la variable group à null pour éviter une tentative de suppression dans afterAll
-    group = null;
-});
-it('should return 404 if the group is not found', async () => {
-  const response = await request(app)
-      .delete('/admin/groups/9999') // Utilisez un ID qui n'existe pas
-
-  expect(response.status).toBe(404);
-
-});
-/*
-it('should return an error if deletion fails', async () => {
-  jest.spyOn(db.Group, 'destroy').mockImplementation(() => {
-      throw new Error('Simulated error');
-  });
-
-  const response = await request(app)
-      .delete(`/admin/groups/${group.group_id}`)
-
-  expect(response.status).toBe(500);
-  expect(response.body).toHaveProperty('error', 'Error dans suppression du groupe');
-
-  db.Group.destroy.mockRestore();
-});
-*/
-});

@@ -26,7 +26,7 @@ router.get('/:groupId', async (req, res) => {
         }
 
     } catch (error) {
-        console.error(`Error dans récupération du groupe ${req.params.groupId} :`, err);
+        console.error(`Error dans récupération du groupe ${req.params.groupId} :`, error);
         res.status(500).json({ error: 'Error dans récupération du groupe' });
     }
 })
