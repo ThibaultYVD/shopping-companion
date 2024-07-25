@@ -60,8 +60,6 @@ router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) =
             }
             )
 
-            console.log(alreadyJoined.length)
-
             if(alreadyJoined.length != 0) return res.status(200).json({error: "Vous êtes déjà membre de ce groupe."})
         
             await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,

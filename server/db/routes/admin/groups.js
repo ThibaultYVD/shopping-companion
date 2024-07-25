@@ -26,7 +26,7 @@ router.get('/:groupId', [verifyToken, isAdmin], async (req, res) => {
         }
 
     } catch (error) {
-        console.error(`Error dans récupération du groupe ${req.params.groupId} :`, err);
+        console.error(`Error dans récupération du groupe ${req.params.groupId} :`, error);
         res.status(500).json({ error: 'Error dans récupération du groupe' });
     }
 })
@@ -38,7 +38,8 @@ router.post('/', [verifyToken, isAdmin], async (req, res) => {
         const createdGroup = await db.Group.create({
             group_name: group_name,
             creation_date: new Date(),
-            creator_id: creator_id
+            creator_id: creator_id,
+            is_open: 'FALSE'
         });
 
         res.status(201).json(createdGroup);

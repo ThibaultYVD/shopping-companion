@@ -23,7 +23,7 @@ router.get('/:shelfId', [verifyToken, isAdmin], async (req, res) => {
         }
 
     } catch (error) {
-        console.error(`Error dans récupération du rayon ${req.params.shelfId} :`, err);
+        console.error(`Error dans récupération du rayon ${req.params.shelfId} :`, error);
         res.status(500).json({ error: 'Error dans récupération du rayon' });
     }
 })

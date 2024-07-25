@@ -23,7 +23,7 @@ router.get('/:roleId', [verifyToken, isAdmin], async (req, res) => {
         }
 
     } catch (error) {
-        console.error(`Error dans récupération du role ${req.params.roleId} :`, err);
+        console.error(`Error dans récupération du role ${req.params.roleId} :`, error);
         res.status(500).json({ error: 'Error dans récupération du role' });
     }
 })

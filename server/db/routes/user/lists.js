@@ -84,7 +84,7 @@ router.post('/:groupId', [verifyToken], async (req, res) => {
         const tokenUser_id = decodedToken.id
 
         let sql = `SELECT DISTINCT user_id 
-        FROM groupes 
+        FROM users_groups 
         WHERE group_id = :group_id`
         
         const creator_id = await db.sequelize.query(sql,
@@ -129,7 +129,7 @@ router.patch('/:groupId/:listId', [verifyToken], async (req, res) => {
         const tokenUser_id = decodedToken.id
 
         let sql = `SELECT DISTINCT g.user_id 
-        FROM groupes g
+        FROM users_groups g
         INNER JOIN lists l ON l.group_id = g.group_id 
         WHERE g.group_id = :group_id
         AND l.list_id = :list_id`
@@ -182,7 +182,7 @@ router.delete('/:groupId/:listId', [verifyToken], async (req, res) => {
         const tokenUser_id = decodedToken.id
 
         let sql = `SELECT DISTINCT g.user_id 
-        FROM groupes g
+        FROM users_groups g
         INNER JOIN lists l ON l.group_id = g.group_id 
         WHERE g.group_id = :group_id
         AND l.list_id = :list_id`

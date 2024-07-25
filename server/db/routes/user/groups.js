@@ -10,10 +10,6 @@ router.get('/', [verifyToken], async (req, res) => {
     try {
 
         const token = req.session.token
-
-        if (!token) {
-            return res.status(401).json({ error: 'Token d\'accès manquant' });
-        }
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
@@ -41,7 +37,7 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
-        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM groupes g INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id WHERE g.group_id = :group_id`,
+        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM users_groups g INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id WHERE g.group_id = :group_id`,
             {
                 replacements: {
                     user_id: tokenUser_id,
@@ -143,7 +139,7 @@ router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
-        const verifCreator = await db.sequelize.query(`SELECT user_id FROM groupes WHERE group_id = :group_id`,
+        const verifCreator = await db.sequelize.query(`SELECT user_id FROM users_groups WHERE group_id = :group_id`,
             {
                 replacements: {
                     group_id: req.params.groupId
@@ -165,7 +161,7 @@ router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
 
         let hashedCode = bcrypt.hashSync(result, 8)
 
-        await db.sequelize.query(`UPDATE groupes SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
+        await db.sequelize.query(`UPDATE users_groups SET invitation_code = :invitation_code, is_open = :is_open WHERE group_id = :group_id`,
             {
                 replacements: {
                     invitation_code: hashedCode,
@@ -176,7 +172,7 @@ router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
 
 
         setTimeout(async () => {
-            await db.sequelize.query(`UPDATE groupes SET is_open = :is_open WHERE group_id = :group_id`,
+            await db.sequelize.query(`UPDATE users_groups SET is_open = :is_open WHERE group_id = :group_id`,
                 {
                     replacements: {
                         is_open: "FALSE",
