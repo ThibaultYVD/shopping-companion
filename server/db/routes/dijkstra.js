@@ -106,7 +106,7 @@ router.get('/:listId', async (req, res) => {
             
             INNER JOIN supermarkets sm ON sm.supermarket_id = s.supermarket_id
             INNER JOIN lists l ON sm.supermarket_id = l.supermarket_id
-            INNER JOIN groupes g ON g.group_id = l.group_id
+            INNER JOIN users_groups g ON g.group_id = l.group_id
             INNER JOIN group_members gm ON gm.group_id = g.group_id
 
             WHERE l.list_id = :list_id
@@ -131,7 +131,7 @@ router.get('/:listId', async (req, res) => {
             INNER JOIN products p ON p.shelf_id = s.shelf_id
             INNER JOIN products_list pl ON pl.product_id = p.product_id
             INNER JOIN lists l ON l.list_id = pl.list_id
-            INNER JOIN groupes g ON g.group_id = l.group_id
+            INNER JOIN users_groups g ON g.group_id = l.group_id
             INNER JOIN group_members gm ON gm.group_id = g.group_id
             INNER JOIN supermarkets sm ON sm.supermarket_id = l.supermarket_id
             

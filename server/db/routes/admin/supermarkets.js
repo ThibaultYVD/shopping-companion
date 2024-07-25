@@ -23,7 +23,7 @@ router.get('/:supermarketId', [verifyToken, isAdmin], async (req, res) => {
         }
 
     } catch (error) {
-        console.error(`Error dans récupération du produit ${req.params.supermarketId} :`, err);
+        console.error(`Error dans récupération du produit ${req.params.supermarketId} :`, error);
         res.status(500).json({ error: 'Error dans récupération du produit' });
     }
 })

@@ -4,7 +4,8 @@ module.exports = (sequelize, Sequelize) => {
     const Group = sequelize.define("users_groups", {
         group_id: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         group_name: {
             type: Sequelize.STRING,
