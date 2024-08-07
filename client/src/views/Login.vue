@@ -77,7 +77,7 @@ export default {
 .login-container {
   background-color: #F5F0F6;
   border-radius: 30px;
-  box-shadow: rgba(0, 0, 0, 0.49) 0px 0px 37px 0px;
+  box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 37px 0px;
   text-align: center;
 }
 
@@ -149,5 +149,30 @@ export default {
 .register-container p {
   font-size: 16px;
   font-weight: 200;
+}
+
+
+
+@media (max-width: 768px) {
+  .login-container {
+  background-color: #F5F0F6;
+  border-radius: 30px;
+  text-align: center;
+
+  width: 80%;
+}
+
+.login-container button {
+  width: 50%;
+  padding: 10px;
+  background-color: #F5F0F6;
+  border: solid 3px #2C7C45;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: Arial, Helvetica, sans-serif;
+}
 }
 </style>

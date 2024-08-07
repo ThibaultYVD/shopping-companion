@@ -17,8 +17,5 @@ export default {
 </script>
 
 <style>
-@font-face {
-    font-family: Inter;
-    src: url('~@/assets/fonts/Inter_19pt-Black.ttf');
-}
+
 </style>
