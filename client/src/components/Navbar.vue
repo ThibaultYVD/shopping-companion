@@ -48,12 +48,17 @@ export default {
 
 <style scoped>
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #2C7C45;
   padding: 1rem;
   box-shadow: inset rgba(0, 0, 0, 0.48) 0px 30px 50px -30px;
+  z-index: 1000;
 }
 
 .burger {

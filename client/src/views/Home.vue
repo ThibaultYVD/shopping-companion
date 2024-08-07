@@ -1,6 +1,6 @@
 <!-- src/views/Home.vue -->
 <template>
-  <div>
+  <div class="content">
     <h1>Home</h1>
     <div v-if="isAuthenticated">
       <p>Welcome, you are logged in!</p>
@@ -24,3 +24,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.content{
+  padding-top: 70px;
+}
+
+</style>
