@@ -2,11 +2,13 @@
 <template>
   <div class="background" id="wrapper">
     <div class="login-container">
-      <h2>Se connecter</h2>
+      <div class="title-container">
+        <h2>Connexion</h2>
+      </div>
       <form @submit.prevent="login">
         <input v-model="email" type="email" placeholder="Email">
         <input v-model="password" type="password" placeholder="Mot de passe">
-        <button type="submit">Se connecter</button>
+        <button type="submit">S'identifier</button>
         <a href="#">Mot de passe oublié ?</a>
         <div class="register-container">
           <p>Pas encore inscrit ? <a href="#">S'inscrire</a></p>
@@ -66,46 +68,63 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 94vh;
   margin: 0;
   background-color: #2C7C45;
-  font-family: Arial, sans-serif;
+  font-family: Inter, sans-serif;
 }
 
 .login-container {
-  background-color: #f5f5f5;
-  padding: 20px 40px;
-  border-radius: 15px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #F5F0F6;
+  border-radius: 30px;
+  box-shadow: rgba(0, 0, 0, 0.49) 0px 0px 37px 0px;
   text-align: center;
 }
 
+.title-container {
+  display: flex;
+  justify-content: center;
+}
+
 .login-container h2 {
+  margin-top: 20px;
   margin-bottom: 20px;
   color: #333;
+  border-bottom: #2C7C45 solid 3px;
+  font-size: 25px;
 }
 
 .login-container input {
-  width: 100%;
+  width: 80%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: lightgrey;
+  
+}
+
+.login-container input::placeholder {
+ font-size: 15px;
+  font-family: Inter;
 }
 
 .login-container button {
-  width: 100%;
-  padding: 10px;
-  background-color: #2C7C45;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  width: 50%;
+  padding: 15px;
+  background-color: #F5F0F6;
+  border: solid 3px #2C7C45;
+  border-radius: 10px;
   cursor: pointer;
   margin-top: 10px;
+  font-size: 18px;
+  font-weight: 400;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .login-container button:hover {
-  background-color: #27663a;
+  background-color: #2C7C45;
+  color: #F5F0F6;
 }
 
 .login-container a {
@@ -122,7 +141,13 @@ export default {
 .register-container {
   background-color: #e0e0e0;
   padding: 10px;
-  border-radius: 0 0 15px 15px;
+  border-radius: 0 0 30px 30px;
   margin-top: 20px;
+}
+
+
+.register-container p {
+  font-size: 16px;
+  font-weight: 200;
 }
 </style>
