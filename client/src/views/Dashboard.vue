@@ -35,6 +35,7 @@ export default {
         throw new Error('No token found');
       }
 
+      /*
       axios.get('/user/groups', {
         headers: {
           Authorization: token
@@ -42,6 +43,7 @@ export default {
       }).then(res => {
         this.groups = res.data
       })
+        */
     }
   }
 
