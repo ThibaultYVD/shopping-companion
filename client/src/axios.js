@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: 'http://localhost:20241/',
+    baseURL: process.env.DATA_API,
+});
+
+const auth_api = axios.create({
+    baseURL: process.env.AUTH_API,
 });
 
 
@@ -20,4 +24,4 @@ function clearLocalStorage() {
     localStorage.clear();
 }
 
-export default instance;
+export default {instance, auth_api};
