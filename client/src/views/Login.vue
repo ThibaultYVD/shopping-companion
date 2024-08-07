@@ -15,6 +15,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { auth_api } from '../axios';
 
 export default {
   setup() {
@@ -25,7 +26,7 @@ export default {
 
     const login = async () => {
       try {
-        const response = await axios.post('http://localhost:20242/api/auth/signin', {
+        const response = await axios.post(`${auth_api}/signin`, {
           email: email.value,
           password: password.value
         });
