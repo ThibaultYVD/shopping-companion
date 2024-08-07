@@ -68,7 +68,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 94vh;
+  height: 100vh;
   margin: 0;
   background-color: #2C7C45;
 }
