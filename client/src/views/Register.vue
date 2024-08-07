@@ -45,16 +45,16 @@ export default {
         const value = form.first_name
         console.log(email.value)
 
-        /*
+        
         const response = await axios.post('/auth/signup', {
           first_name: first_name.value,
           last_name: last_name.value,
           email: email.value,
           password: password.value
         });
-*/
+
         // Rediriger vers la page Login
-        //router.push('/login');
+        router.push('/login');
       } catch (error) {
         console.error(error);
         if (error.response.status === 404) {
