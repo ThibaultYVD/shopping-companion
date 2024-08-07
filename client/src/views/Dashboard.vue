@@ -1,6 +1,6 @@
 <!-- src/views/Dashboard.vue -->
 <template>
-  <div class="group-list">
+  <div class="content">
     <h1>Mes groupes</h1>
     <div v-if="this.groups.length > 0">
       <div v-for="(group, index) in this.groups" :key="index">
@@ -49,7 +49,7 @@ export default {
 </script>
 
 <style scoped>
-.group-list{
+.content{
   margin-top: 70px;
 }
 h1 {
