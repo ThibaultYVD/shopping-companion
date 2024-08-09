@@ -117,7 +117,7 @@ export default {
 
 .login-container button {
   width: 50%;
-  padding: 15px;
+  padding: 10px;
   background-color: #F5F0F6;
   border: solid 3px #2C7C45;
   border-radius: 10px;
