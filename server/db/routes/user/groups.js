@@ -74,7 +74,9 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
             is_open: "FALSE"
         });
 
-        const group_id = createdGroup.null
+        const group_id = createdGroup.group_id
+
+        console.log(createdGroup.group_id)
 
         await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
             {
@@ -115,14 +117,13 @@ router.patch('/:groupId', [verifyToken], async (req, res) => {
 
         const patchedGroup = await db.Group.update
             ({
-                group_name: group_name,
-                creator_id: creator_id
+                group_name: group_name
             },
                 {
                     where: { group_id: req.params.groupId },
                 })
 
-        res.status(200).json(patchedGroup)
+        res.status(200).json({ "group_id": req.params.groupId, "old_name": existingGroup.group_name, "new_name:": group_name })
 
     } catch (error) {
         console.error(`Error dans maj du groupe ${req.params.groupId} :`, error);
@@ -182,7 +183,7 @@ router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
                 });
         }, 600000);
 
-        res.status(200).json(result);
+        res.status(200).json({ "invitation_code": result });
     } catch (error) {
         console.error(`Error dans création de l'invitation du groupe ${req.params.groupId}`)
         res.status(500).json({ error: "Error dans création de l'invitation." });
@@ -210,7 +211,7 @@ router.delete('/:groupId', [verifyToken], async (req, res) => {
         const removeGroup = await db.Group.destroy({
             where: { group_id: req.params.groupId }
         })
-        res.status(204).json(removeGroup)
+        res.status(204).json({ "Deleted group": existingGroup.group_name })
 
     } catch (error) {
         console.error(`Error dans suppression du groupe ${req.params.groupId} :`, error);

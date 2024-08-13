@@ -11,7 +11,7 @@ router.get('/', [verifyToken], async (req, res) => {
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     const tokenUser_id = decodedToken.id
     try {
-        const user = await db.sequelize.query(`SELECT * FROM users WHERE user_id = :user_id`,
+        const user = await db.sequelize.query(`SELECT user_id, first_name, last_name, email, created_at FROM users WHERE user_id = :user_id`,
             {
                 replacements: {
                     user_id: tokenUser_id,
@@ -34,6 +34,8 @@ router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) =
 
     const existingGroup = await db.Group.findByPk(req.params.groupId)
 
+    const { invitation_code } = req.body
+
     const token = req.session.token
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     const tokenUser_id = decodedToken.id
@@ -41,44 +43,44 @@ router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) =
     try {
 
         if (!existingGroup) return res.status(404).json({ error: 'Groupe introuvable' })
-        
+
         if (existingGroup.is_open == "FALSE") return res.status(403).json({ error: 'Vous ne pouvez pas rejoindre ce groupe' })
 
-        bcrypt.compare(req.body.code, existingGroup.invitation_code, async function(err, response) {
-            if (err){ 
+        bcrypt.compare(invitation_code, existingGroup.invitation_code, async function (err, response) {
+            if (err) {
                 //console.log(err)
                 return res.status(500).json(err)
-            } 
+            }
             if (response) {
-                
-            const alreadyJoined = await db.sequelize.query(`SELECT * FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
-            {
-                replacements:{
-                    user_id : tokenUser_id,
-                    group_id:req.params.groupId,
-                },type: db.sequelize.QueryTypes.SELECT
-            }
-            )
 
-            if(alreadyJoined.length != 0) return res.status(200).json({error: "Vous êtes déjà membre de ce groupe."})
-        
-            await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
-            {
-                replacements: {
-                    user_id: tokenUser_id,
-                    group_id: req.params.groupId,
-                    joined_at: new Date(),
-                }, type: db.sequelize.QueryTypes.INSERT,
-            }
-            );
+                const alreadyJoined = await db.sequelize.query(`SELECT * FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
+                    {
+                        replacements: {
+                            user_id: tokenUser_id,
+                            group_id: req.params.groupId,
+                        }, type: db.sequelize.QueryTypes.SELECT
+                    }
+                )
 
-            res.status(201).json(existingGroup);
+                if (alreadyJoined.length != 0) return res.status(200).json({ error: "Vous êtes déjà membre de ce groupe." })
+
+                await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
+                    {
+                        replacements: {
+                            user_id: tokenUser_id,
+                            group_id: req.params.groupId,
+                            joined_at: new Date(),
+                        }, type: db.sequelize.QueryTypes.INSERT,
+                    }
+                );
+
+                res.status(201).json(existingGroup);
             }
             else {
-                res.status(403).json({message:"Code invalide"});
+                res.status(403).json({ message: "Code invalide" });
             }
         });
-  
+
     } catch (error) {
         console.error(`Error pour rejoindre le groupe ${req.params.groupId}`, error);
         res.status(500).json({ error: "Erreur pour rejoindre le groupe." });
@@ -93,18 +95,26 @@ router.patch('/', [verifyToken], async (req, res) => {
     const tokenUser_id = decodedToken.id
 
     try {
-        const { first_name, last_name } = req.body
+
+        const existingUser = await db.User.findByPk(tokenUser_id)
+
+
+        const { first_name, last_name, email } = req.body
 
         const patchedUser = await db.User.update
             ({
                 first_name: first_name,
-                last_name: last_name
+                last_name: last_name,
+                email: email
             },
                 {
                     where: { user_id: tokenUser_id },
                 })
 
-        res.status(200).json(patchedUser)
+        res.status(200).json({
+            "old_first_name": existingUser.first_name, "old_last_name": existingUser.last_name, "old_email": existingUser.email,
+            "new_first_name": first_name, "new_last_name": last_name, "new_email": email
+        })
 
     } catch (error) {
         console.error(`Error dans maj de l'utilisateur ${tokenUser_id} :`, error);
