@@ -1,0 +1,49 @@
+version: '3'
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - auth
+
+  db:
+    build:
+      context: ./server/db
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=shopping_companion_db
+
+  auth:
+    build:
+      context: ./server/auth
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=shopping_companion_db
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: shopping_companion_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
