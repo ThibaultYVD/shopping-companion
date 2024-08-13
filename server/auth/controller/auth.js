@@ -92,8 +92,7 @@ exports.signout = async (req, res) => {
                 });
             }
 
-            // Supprimer le cookie de session côté client
-            res.clearCookie('connect.sid'); // 'connect.sid' est le nom par défaut du cookie de session
+            res.clearCookie('connect.sid'); 
 
             return res.status(200).json({
                 message: "Vous avez été déconnecté."
