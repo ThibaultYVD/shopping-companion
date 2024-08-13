@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
+
 const db = require("../model/Models");
 const User = db.User;
 
 verifyToken = (req, res, next) => {
     try {
+
+        console.log(req.session)
         let token
         if (!req.session.token) {
             token = req.headers.authorization
@@ -12,6 +15,7 @@ verifyToken = (req, res, next) => {
         else {
             token = req.session.token
         }
+        
 
         if (!req.session) return res.status(401).send({ message: "Aucune session n'a été trouvé." });
 

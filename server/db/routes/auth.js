@@ -23,6 +23,7 @@ router.post('/signup', async (req, res) => {
         res.status(200).json({response});
     } catch (error) {
 
+        console.log(error)
         if (error.response) {
             res.status(error.response.status).json({ message: error.response.data.message });
         } else {

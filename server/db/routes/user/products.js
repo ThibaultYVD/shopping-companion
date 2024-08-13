@@ -107,7 +107,7 @@ router.get('/:listId/:productId', [verifyToken], async (req, res) => {
         );
 
         if(!supermarketProducts || supermarketProducts.length == 0){
-            res.status(403).json({message: "Vous n'êtes pas autorisé à accéder à cette liste de produit."})
+            res.status(403).json({message: "La liste ou le produit n'existe pas."})
         }else{
             res.status(200).json(supermarketProducts);
         }
@@ -156,7 +156,7 @@ router.post('/:listId/:productId', [verifyToken], async (req, res) => {
                 }, type: db.sequelize.QueryTypes.SELECT,
             }
         );
-        console.log(checkQuantity)
+
         if(!checkQuantity || checkQuantity.length == 0)
         {
             sql = `INSERT INTO products_list(product_id, list_id, quantity, user_id, added_at) VALUES (:product_id, :list_id, :quantity, :user_id, :added_at)`
@@ -194,7 +194,7 @@ router.post('/:listId/:productId', [verifyToken], async (req, res) => {
     }
 })
 
-router.patch('/:listId/:productId', [verifyToken, isAdmin], async (req, res) => {
+router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
 
     try {
         const token = req.session.token
