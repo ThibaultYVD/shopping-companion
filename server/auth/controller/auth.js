@@ -18,7 +18,7 @@ exports.signup = async (req, res) => {
         });
 
         const result = user.setRoles([1])
-        if (result) res.send({ message: "User registered successfully!" });
+        if (result) res.status(200).json({ message: "Utilisateur enregistré avec succès!" });
 
     } catch (error) {
         res.status(500).send({ message: error.message });
@@ -60,7 +60,7 @@ exports.signin = async (req, res) => {
                 }
 
                 req.session.token = token;
-                console.log(req.session)
+
                 return res.status(200).send({
                     id: user.id,
                     email: user.email,
@@ -81,11 +81,28 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
     try {
-        req.session = null;
-        return res.status(200).json({
-            message: "Vous avez été déconnecté."
+
+        if (!req.session || !req.session.token) return res.status(200).json({ message: "Vous n'êtes pas connecté." }); 
+
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Erreur lors de la destruction de la session:', err);
+                return res.status(500).json({
+                    message: "Erreur lors de la déconnexion."
+                });
+            }
+
+            // Supprimer le cookie de session côté client
+            res.clearCookie('connect.sid'); // 'connect.sid' est le nom par défaut du cookie de session
+
+            return res.status(200).json({
+                message: "Vous avez été déconnecté."
+            });
         });
     } catch (err) {
-        this.next(err);
+        console.error('Erreur interne:', err);
+        return res.status(500).json({
+            message: "Erreur interne du serveur."
+        });
     }
 };
