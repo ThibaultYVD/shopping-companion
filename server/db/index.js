@@ -8,7 +8,7 @@ const redis = require('redis');
 const app = express()
 const bodyParser = require('body-parser')
 const routes = require('./routes/routes')
-const cookieParser = require('cookie-parser');
+
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 const cors = require("cors")
@@ -42,7 +42,6 @@ app.use(session({
     }
 }));
 
-app.use(cookieParser());
 
 routes(app)
 
