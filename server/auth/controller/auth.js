@@ -60,6 +60,7 @@ exports.signin = async (req, res) => {
                 }
 
                 req.session.token = token;
+                console.log(req.session)
                 return res.status(200).send({
                     id: user.id,
                     email: user.email,
