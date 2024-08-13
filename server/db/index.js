@@ -17,13 +17,13 @@ app.use(express.json());
 app.use(bodyParser.json())
 app.use(cors())
 app.use(session({
-    secret: process.env.SECRET_KEY, // Utilisez une clé secrète pour signer le cookie de session
-    resave: false, // Ne pas sauvegarder la session si elle n'est pas modifiée
-    saveUninitialized: false, // Ne pas créer de session jusqu'à ce qu'il y ait des données à sauvegarder
+    secret: process.env.SECRET_KEY, 
+    resave: false, 
+    saveUninitialized: false,
     cookie: {
-        //secure: process.env.NODE_ENV === 'production', // Cookie sécurisé en production
-        httpOnly: true, // Empêche l'accès au cookie par JavaScript côté client
-        maxAge: 24 * 60 * 60 * 1000 // 30 minutes
+        //secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
