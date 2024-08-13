@@ -1,6 +1,10 @@
 require('dotenv/config')
 const express = require("express")
+
 const session = require('express-session');
+const RedisStore = require('connect-redis').default
+const redis = require('redis');
+
 const app = express()
 const bodyParser = require('body-parser')
 const routes = require('./routes/routes')
@@ -16,14 +20,25 @@ db.sequelize.sync()
 app.use(express.json());
 app.use(bodyParser.json())
 app.use(cors())
+
+const redisClient = redis.createClient({
+    url: process.env.REDIS_CONNECTION_STRING 
+});
+
+redisClient.connect() 
+
+redisClient.on('error', (err) => {
+    console.error('Erreur Redis:', err);
+});
+
 app.use(session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SECRET_KEY, 
     resave: false, 
-    saveUninitialized: false,
+    saveUninitialized: false, 
     cookie: {
-        //secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
+        httpOnly: true, 
+        maxAge: 86400000 // 1 jour
     }
 }));
 
