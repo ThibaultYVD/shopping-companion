@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <Navbar />
+  <Navbar />
+  <div class= "app" id="app">
     <router-view></router-view>
   </div>
 </template>
@@ -17,5 +17,7 @@ export default {
 </script>
 
 <style>
-/* Styles globaux de l'application */
+.app {
+  padding-top: 0px; /* Ajustez cette valeur en fonction de la hauteur de votre navbar */
+}
 </style>
