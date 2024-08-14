@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 /*
 const instance = axios.create({
   baseURL: import.meta.env.VUE_APP_DATA_API,
@@ -25,7 +26,7 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   response => response,
   error => {
     if (error.response && error.response.status === 401) {
