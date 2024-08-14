@@ -197,9 +197,7 @@ router.post('/:listId/:productId', [verifyToken], async (req, res) => {
 router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
 
     try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT m.user_id 
         FROM lists l
@@ -272,9 +270,7 @@ router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
 router.delete('/:listId/:productId', [verifyToken], async (req, res) => {
     try {
 
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT m.user_id 
         FROM lists l

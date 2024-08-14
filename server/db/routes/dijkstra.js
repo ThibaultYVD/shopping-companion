@@ -82,9 +82,9 @@ function buildGraph(points) {
 
 
 
-router.get('/:listId', async (req, res) => {
+router.get('/:listId', [verifyToken], async (req, res) => {
     try {
-        const user_id = 30;
+        const user_id = req.userId;
 
         const checkIfExist = await db.sequelize.query(
             `SELECT * FROM list_routes WHERE list_id = :list_id`,
