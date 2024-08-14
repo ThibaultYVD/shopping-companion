@@ -18,6 +18,6 @@ export default {
 
 <style>
 .app {
-  padding-top: 0px; /* Ajustez cette valeur en fonction de la hauteur de votre navbar */
+  padding-top: 0px;
 }
 </style>
