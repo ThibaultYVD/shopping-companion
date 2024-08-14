@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { instance as axios } from '../axios'
+import { instance as axios } from '../services/axios'
 export default {
   name: 'groups',
   data() {
@@ -28,30 +28,27 @@ export default {
   },
   methods: {
     getGroups() {
-      console.log(localStorage)
       const token = localStorage.token;
-
       if (!token) {
         throw new Error('No token found');
       }
 
-      axios.get('/user/groups', {
-        headers: {
-          Authorization: token
-        }
-      }).then(res => {
-        this.groups = res.data
-      })
+      axios.get('/user/groups')
+        .then(res => {
+          this.groups = res.data
+        }).catch(error => {
+          console.error('Error fetching groups:', error);
+        })
     }
   }
-
 };
 </script>
 
 <style scoped>
-.content{
+.content {
   margin-top: 70px;
 }
+
 h1 {
   margin-bottom: 1rem;
 }

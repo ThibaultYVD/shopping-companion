@@ -6,8 +6,8 @@
         <h2>Connexion</h2>
       </div>
       <form @submit.prevent="login">
-        <input v-model="email" type="email" placeholder="Email">
-        <input v-model="password" type="password" placeholder="Mot de passe">
+        <input v-model="email" type="email" placeholder="Email" required>
+        <input v-model="password" type="password" placeholder="Mot de passe" required>
         <button type="submit">S'identifier</button>
         <a href="#">Mot de passe oublié ?</a>
         <div class="register-container">
@@ -23,7 +23,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import { instance as axios } from '../axios';
+import { auth_api as axios } from '../services/axios';
 
 export default {
   setup() {
@@ -34,18 +34,23 @@ export default {
 
     const login = async () => {
       try {
-        const response = await axios.post('/auth/signin', {
+        const response = await axios.post('/api/auth/signin', {
           email: email.value,
           password: password.value
         });
 
         const token = response.data.token;
-        authStore.setToken(token);
+        if (token) {
+          authStore.setToken(token);
 
-        console.log(authStore)
-
-        // Rediriger vers la page Dashboard
-        router.push('/dashboard');
+          if (localStorage.getItem('token')) {
+            router.push('/dashboard');
+          } else {
+            console.error('Token non stocké correctement');
+          }
+        } else {
+          console.error('Token non reçu du serveur');
+        }
       } catch (error) {
         console.error(error);
         if (error.response.status === 404) {
@@ -100,11 +105,11 @@ export default {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: lightgrey;
-  
+
 }
 
 .login-container input::placeholder {
- font-size: 15px;
+  font-size: 15px;
   font-family: Inter;
 }
 
@@ -161,24 +166,24 @@ export default {
 
 @media (max-width: 768px) {
   .login-container {
-  background-color: #F5F0F6;
-  border-radius: 30px;
-  text-align: center;
+    background-color: #F5F0F6;
+    border-radius: 30px;
+    text-align: center;
 
-  width: 85%;
-}
+    width: 85%;
+  }
 
-.login-container button {
-  width: 50%;
-  padding: 10px;
-  background-color: #F5F0F6;
-  border: solid 3px #2C7C45;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: 400;
-  font-family: Arial, Helvetica, sans-serif;
-}
+  .login-container button {
+    width: 50%;
+    padding: 10px;
+    background-color: #F5F0F6;
+    border: solid 3px #2C7C45;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
+  }
 }
 </style>
