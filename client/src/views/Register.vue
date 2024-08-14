@@ -6,12 +6,11 @@
         <h2>Inscription</h2>
       </div>
       <form @submit.prevent="register">
-
-        <input v-model="first_name" type="text" placeholder="Nom" >
-        <input v-model="last_name" type="text" placeholder="Prénom">
-        <input v-model="email" type="email" placeholder="Email">
-        <input v-model="password" type="password" placeholder="Mot de passe">
-        <input v-model="verify_password" type="password" placeholder="Confirmer le mot de passe">
+        <input v-model="first_name" type="text" placeholder="Nom" />
+        <input v-model="last_name" type="text" placeholder="Prénom" />
+        <input v-model="email" type="email" placeholder="Email" />
+        <input v-model="password" type="password" placeholder="Mot de passe" />
+        <input v-model="verify_password" type="password" placeholder="Confirmer le mot de passe" />
         <button type="submit">S'inscrire</button>
 
         <div class="login-container">
@@ -20,14 +19,12 @@
       </form>
     </div>
   </div>
-
 </template>
 
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth';
-import { instance as axios } from '../services/axios';
+import { auth_api as axios } from '../services/axios'; // Assurez-vous que le chemin est correct
 
 export default {
   setup() {
@@ -35,39 +32,49 @@ export default {
     const last_name = ref('');
     const email = ref('');
     const password = ref('');
+    const verify_password = ref('');
     const router = useRouter();
-    const authStore = useAuthStore();
 
-    //console.log(first_name)
+    // Regex pour vérifier le format de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const register = async () => {
-      try {
-        const value = form.first_name
-        console.log(email.value)
+      if (password.value !== verify_password.value) {
+        alert('Les mots de passe ne correspondent pas.');
+        return;
+      }
 
-        
-        const response = await axios.post('/auth/signup', {
+      if (!emailRegex.test(email.value)) {
+        alert('Adresse email invalide.');
+        return;
+      }
+
+      try {
+        await axios.post('/api/auth/signup', {
           first_name: first_name.value,
           last_name: last_name.value,
           email: email.value,
           password: password.value
         });
 
-        // Rediriger vers la page Login
         router.push('/login');
       } catch (error) {
         console.error(error);
-        if (error.response.status === 404) {
-          alert('Utilisateur inconnu');
-        } else if (error.response.status === 403) {
-          alert('Mot de passe invalide');
+        if (error.response && error.response.status) {
+          if (error.response.status === 404) {
+            alert('Utilisateur inconnu');
+          } else if (error.response.status === 403) {
+            alert('Mot de passe invalide');
+          } else {
+            alert('Erreur inconnue');
+          }
         } else {
-          alert('Erreur inconnue');
+          alert('Erreur lors de la connexion au serveur');
         }
       }
     };
 
-    return { email, password, register };
+    return { first_name, last_name, email, password, verify_password, register };
   }
 };
 </script>
