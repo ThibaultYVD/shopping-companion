@@ -13,7 +13,7 @@ verifyToken = (req, res, next) => {
             if (!token.startsWith('Bearer ')) return res.status(403).send({ message: "Format de token invalide." });
             
             token = token.slice(7, token.length);
-            req.session.token = token; // On sauvegarde le token dans la session pour les requêtes suivantes
+            req.session.token = token;
         } else {
             return res.status(403).send({ message: "Aucun token n'a été fourni." });
         }
