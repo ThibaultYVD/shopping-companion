@@ -27,7 +27,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import { instance as axios } from '../axios';
+import { instance as axios } from '../services/axios';
 
 export default {
   setup() {
