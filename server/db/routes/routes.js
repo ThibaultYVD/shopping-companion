@@ -38,11 +38,6 @@ async function routes(app) {
 
     const dijkstra = require('./dijkstra')
     app.use('/dijkstra/', dijkstra)
-
-
-    /* ROUTE AUTH */
-    const authRoute = require('./auth')
-    app.use('/auth/', authRoute)
 }
 
 

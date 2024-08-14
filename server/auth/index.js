@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 const redisClient = redis.createClient({
-    url: process.env.REDIS_CONNECTION_STRING // Utilisation d'URL complète
+    url: process.env.REDIS_CONNECTION_STRING
 });
 
 redisClient.connect() 
@@ -49,8 +49,6 @@ app.get("/", (req, res) => {
     res.json({ message: "Auth Server" });
 });
 
-
-// Routes
 require('./routes/auth')(app)
 
 const PORT = process.env.PORT
