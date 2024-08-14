@@ -9,7 +9,6 @@ const app = express()
 const bodyParser = require('body-parser')
 const routes = require('./routes/routes')
 
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 const cors = require("cors")
 const db = require("./model/Models");

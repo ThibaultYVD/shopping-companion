@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 
-// Récupérer les listes du groupe
 router.get('/:groupId', [verifyToken], async (req, res) => {
     try {
         const tokenUser_id = req.userId
