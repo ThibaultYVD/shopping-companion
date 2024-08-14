@@ -43,7 +43,6 @@ export default {
         if (token) {
           authStore.setToken(token);
 
-          // Vérifiez que le token est bien dans le localStorage avant de rediriger
           if (localStorage.getItem('token')) {
             router.push('/dashboard');
           } else {

@@ -24,7 +24,7 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { auth_api as axios } from '../services/axios'; // Assurez-vous que le chemin est correct
+import { auth_api as axios } from '../services/axios';
 
 export default {
   setup() {
