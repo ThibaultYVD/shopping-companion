@@ -9,10 +9,7 @@ const { escapeData } = require('../../middleware/validation')
 // Récupérer les listes du groupe
 router.get('/:groupId', [verifyToken], async (req, res) => {
     try {
-        const token = req.session.token
-
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT l.* 
         FROM lists l 
@@ -42,9 +39,7 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
 
 router.get('/:groupId/:listId', [verifyToken], async (req, res) => {
     try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT l.* 
         FROM lists l 
@@ -76,12 +71,12 @@ router.get('/:groupId/:listId', [verifyToken], async (req, res) => {
 })
 
 router.post('/:groupId', [verifyToken], async (req, res) => {
-    const { list_name, shopping_date, supermarket_id } = req.body;
+    
 
     try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const { list_name, shopping_date, supermarket_id } = req.body;
+
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT user_id 
         FROM users_groups 
@@ -121,13 +116,10 @@ router.post('/:groupId', [verifyToken], async (req, res) => {
 
 
 router.patch('/:groupId/:listId', [verifyToken], async (req, res) => {
-
-    const { list_name, shopping_date } = req.body
-
     try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const { list_name, shopping_date } = req.body
+
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT g.user_id 
         FROM users_groups g
@@ -185,9 +177,7 @@ router.patch('/:groupId/:listId', [verifyToken], async (req, res) => {
 
 router.delete('/:groupId/:listId', [verifyToken], async (req, res) => {
     try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         let sql = `SELECT DISTINCT g.user_id 
         FROM users_groups g

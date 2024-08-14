@@ -8,19 +8,16 @@ const { escapeData } = require('../../middleware/validation')
 
 router.get('/', [verifyToken], async (req, res) => {
     try {
+        const tokenUser_id = req.userId
 
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
-
-        const user = await db.User.findOne({
-            where: { user_id: tokenUser_id },
-            include: [{
-                model: db.Group,
-                through: { attributes: [] },
-            }]
-        });
-        res.status(200).json(user.groupes)
+        const groups = await db.sequelize.query(`SELECT DISTINCT g.* FROM users_groups g INNER JOIN group_members m ON m.user_id = :user_id`,
+            {
+                replacements: {
+                    user_id: tokenUser_id
+                }, type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
+        res.status(200).json(groups)
 
     } catch (error) {
         console.error(`Error dans récupération des groupes`, error);
@@ -33,9 +30,7 @@ router.get('/', [verifyToken], async (req, res) => {
 router.get('/:groupId', [verifyToken], async (req, res) => {
     try {
 
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM users_groups g INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id WHERE g.group_id = :group_id`,
             {
@@ -61,9 +56,8 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
 
 router.post('/', [verifyToken, escapeData], async (req, res) => {
     const { group_name } = req.body;
-    const token = req.session.token
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const tokenUser_id = decodedToken.id
+   
+    const tokenUser_id = req.userId
 
 
     try {
@@ -75,8 +69,6 @@ router.post('/', [verifyToken, escapeData], async (req, res) => {
         });
 
         const group_id = createdGroup.group_id
-
-        console.log(createdGroup.group_id)
 
         await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
             {
@@ -101,9 +93,7 @@ router.patch('/:groupId', [verifyToken], async (req, res) => {
     try {
         const { group_name } = req.body
 
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         const existingGroup = await db.Group.findByPk(req.params.groupId)
 
@@ -136,9 +126,7 @@ router.patch('/:groupId', [verifyToken], async (req, res) => {
 router.patch('/createInvit/:groupId', [verifyToken], async (req, res) => {
     try {
 
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         const verifCreator = await db.sequelize.query(`SELECT user_id FROM users_groups WHERE group_id = :group_id`,
             {
@@ -196,9 +184,7 @@ router.delete('/:groupId', [verifyToken], async (req, res) => {
     try {
         const existingGroup = await db.Group.findByPk(req.params.groupId)
 
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         if (!existingGroup) {
             return res.status(404).json({ error: 'Groupe introuvable' })

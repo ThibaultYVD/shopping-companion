@@ -7,10 +7,9 @@ const { escapeData } = require('../../middleware/validation')
 const bcrypt = require("bcryptjs");
 
 router.get('/', [verifyToken], async (req, res) => {
-    const token = req.session.token
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const tokenUser_id = decodedToken.id
     try {
+        const tokenUser_id = req.userId
+        
         const user = await db.sequelize.query(`SELECT user_id, first_name, last_name, email, created_at FROM users WHERE user_id = :user_id`,
             {
                 replacements: {
@@ -31,16 +30,12 @@ router.get('/', [verifyToken], async (req, res) => {
 })
 
 router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) => {
-
-    const existingGroup = await db.Group.findByPk(req.params.groupId)
-
-    const { invitation_code } = req.body
-
-    const token = req.session.token
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const tokenUser_id = decodedToken.id
-
     try {
+        const existingGroup = await db.Group.findByPk(req.params.groupId)
+
+        const { invitation_code } = req.body
+
+        const tokenUser_id = req.userId
 
         if (!existingGroup) return res.status(404).json({ error: 'Groupe introuvable' })
 
@@ -90,14 +85,10 @@ router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) =
 
 
 router.patch('/', [verifyToken], async (req, res) => {
-    const token = req.session.token
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const tokenUser_id = decodedToken.id
-
     try {
+        const tokenUser_id = req.userId
 
         const existingUser = await db.User.findByPk(tokenUser_id)
-
 
         const { first_name, last_name, email } = req.body
 
@@ -126,9 +117,7 @@ router.patch('/', [verifyToken], async (req, res) => {
 
 router.delete('/', [verifyToken], async (req, res) => {
     try {
-        const token = req.session.token
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-        const tokenUser_id = decodedToken.id
+        const tokenUser_id = req.userId
 
         const removeUser = await db.User.destroy({
             where: { user_id: tokenUser_id }
