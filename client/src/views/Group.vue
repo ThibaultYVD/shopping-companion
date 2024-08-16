@@ -8,7 +8,7 @@
                 <div v-if="isGroupCreator" class="admin-buttons">
                     <button @click="editGroupName" class="edit-button">Modifier le nom du groupe</button>
                     <button @click="createInvitation" class="invitation-button">Créer un code d'invitation</button>
-                    <button @click="deleteGroup" class="invitation-button">Supprimer le groupe</button>
+                    <button @click="deleteGroup" class="delete-button">Supprimer le groupe</button>
                 </div>
 
                 <div v-if="isGroupMember" class="members-buttons">
@@ -20,7 +20,8 @@
                 <div v-if="lists.length > 0" class="lists-container">
                     <div v-for="list in displayedLists" :key="list.list_id" class="list-card">
                         <h3>{{ list.list_name }}</h3>
-                        <p>Nombre d'éléments: {{ list.item_count }}</p>
+                        <p>Date de course prévu: {{ formatDate(list.shopping_date) }}</p>
+                        <p>{{ list.supermarket_name }}</p>
                         <button @click="goToListPage(list.list_id)" class="list-button">Voir la liste</button>
                     </div>
                 </div>
@@ -77,7 +78,7 @@ export default {
         }
     },
     mounted() {
-        this.listId = this.$route.params.groupId;
+        this.groupId = this.$route.params.groupId;
         this.getUserIdFromToken();
         this.getGroup(this.groupId);
         this.getLists(this.groupId);
@@ -215,6 +216,7 @@ export default {
 
 .edit-button,
 .invitation-button,
+.delete-button,
 .leave-button {
     margin-right: 10px;
     padding: 10px 20px;
@@ -227,6 +229,7 @@ export default {
 
 .edit-button:hover,
 .invitation-button:hover,
+.delete-button:hover,
 .leave-button:hover {
     background-color: #2C7C45;
     color: white

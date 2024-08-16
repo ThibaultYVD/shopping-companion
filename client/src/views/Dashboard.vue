@@ -25,7 +25,9 @@
         <div v-if="lists.length > 0" class="lists-container">
           <div v-for="list in displayedLists" :key="list.list_id" class="list-card">
             <h3>{{ list.list_name }}</h3>
-            <p>Nombre d'éléments: {{ list.item_count }}</p>
+            <p>{{ list.group_name }}</p>
+            <p>Date de course prévu: {{ formatDate(list.shopping_date) }}</p>
+            <p>{{ list.supermarket_name }}</p>
             <button @click="goToListPage(list.group_id, list.list_id)" class="list-button">Voir la liste</button>
           </div>
         </div>
@@ -105,6 +107,11 @@ export default {
       } catch (error) {
         console.error('Error fetching lists:', error);
       }
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('fr-FR', options);
     },
     goToGroupPage(groupId) {
       this.$router.push(`/group/${groupId}`);
