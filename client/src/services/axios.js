@@ -36,7 +36,7 @@ instance.interceptors.response.use(
       alert('Session expirée, veuillez vous reconnecter.');
     }
     return Promise.reject(error);
-  }
+  } 
 );
 
 export { instance, auth_api };
