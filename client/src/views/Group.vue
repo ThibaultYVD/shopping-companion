@@ -14,6 +14,7 @@
                 <div v-if="isGroupMember" class="members-buttons">
                     <button @click="leaveGroup" class="leave-button">Quitter le groupe</button>
                 </div>
+
             </div>
             <div class="lists">
                 <h1>Listes du groupe</h1>
@@ -25,8 +26,12 @@
                         <button @click="goToListPage(list.list_id)" class="list-button">Voir la liste</button>
                     </div>
                 </div>
+
                 <div v-else>
                     <p>Il n'y a aucune liste dans ce groupe. Commencez par en créer une !</p>
+                </div>
+                <div class="create-list-container">
+                    <button @click="createList()" class="create-list-button">Créer une liste</button>
                 </div>
             </div>
         </div>
@@ -50,6 +55,15 @@
         </div>
     </div>
 
+    <div v-if="isCreating" class="create-modal">
+        <div class="modal-content">
+            <h2>Nommez votre liste</h2>
+            <input v-model="group_name" placeholder="Nom de la liste" />
+            <button @click="submitList">Enregistrer</button>
+            <button @click="cancelListCreate">Annuler</button>
+        </div>
+    </div>
+
 </template>
 
 <script>
@@ -65,6 +79,7 @@ export default {
             userId: null,
             isEditing: false,
             isCreatingInvit: false,
+            isCreating: false,
             newGroupName: '',
             invitation_code: null
         };
@@ -174,7 +189,24 @@ export default {
         },
         closeInvitationCode() {
             this.isCreatingInvit = false;
-        }
+        },
+        createList() {
+            this.isCreating = true;
+        },
+        cancelListCreate() {
+            this.isCreating = false;
+        },
+        async submitList() {
+            try {
+                const response = await axios.post(`/user/list/${this.groupId}`, { list_name: this.list_name });
+                this.isCreating = false;
+                this.$router.push(`/group/${response.data.group_id}`);
+
+            } catch (error) {
+                console.error('Error creating group:', error);
+                alert('Une erreur est survenue lors de la création du groupe.');
+            }
+        },
     }
 };
 </script>
@@ -286,6 +318,7 @@ export default {
 }
 
 .edit-modal,
+.create-modal,
 .invitation-modal {
     position: fixed;
     top: 50%;
@@ -353,5 +386,36 @@ export default {
 
 .invitation-code:focus {
     border: 1px solid #2C7C45;
+}
+
+.create-list-button {
+    width: 100%;
+    padding: 5px;
+    background-color: white;
+    border: solid 2px #2C7C45;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.create-list-button:hover {
+    background: #2C7C45;
+    color: white;
+}
+
+.create-group-button {
+    margin-top: 20px;
+    border: 2px solid #2C7C45;
+    background-color: white;
+    width: 50%;
+    padding: 15px;
+}
+
+.create-group-container {
+    display: flexbox;
+    justify-content: center;
+    margin-top: 20px;
 }
 </style>
