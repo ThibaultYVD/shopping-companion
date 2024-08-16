@@ -5,15 +5,36 @@
                 <h1>{{ list.list_name }}</h1>
 
                 <div v-if="isGroupCreator" class="admin-buttons">
-                    <button @click="editGroupName" class="edit-button">Modifier le nom du groupe</button>
-                    <button @click="createInvitation" class="invitation-button">Créer un code d'invitation</button>
-                    <button @click="deleteGroup" class="invitation-button">Supprimer le groupe</button>
-                </div>
-
-                <div v-if="isGroupMember" class="members-buttons">
-                    <button @click="leaveGroup" class="leave-button">Quitter le groupe</button>
+                    <button @click="editList" class="edit-button">Modifier le nom de la liste</button>
+                    <button @click="deleteList" class="delete-button">Supprimer la liste</button>
                 </div>
             </div>
+
+            <div class="products">
+                <h1>Produits de la liste</h1>
+                <div v-if="products.length > 0" class="products-container">
+                    <div v-for="product in products" :key="product.product_id" class="product-card">
+                        <h3>{{ product.product_name }}</h3>
+                        <p>Qté: {{ product.quantity }}</p>
+                        <p>Prix: {{ product.price }}</p>
+                    </div>
+                </div>
+                <div v-else>
+                    <p>Aucun produit dans cette liste pour l'instant.</p>
+                </div>
+            </div>
+
+
+            <div v-if="isEditing" class="edit-modal">
+                <div class="modal-content">
+                    <h2>Modifier le nom de la liste</h2>
+                    <input v-model="newListName" placeholder="Nouveau nom de la liste" />
+                    <input v-model="newShoppingDate" placeholder="Nouvelle date de course" />
+                    <button @click="saveListName">Enregistrer</button>
+                    <button @click="cancelEdit">Annuler</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -26,32 +47,32 @@ export default {
     name: 'List',
     data() {
         return {
-            list: [],
+            list: {},
+            products: [],
             userId: null,
             isEditing: false,
             newListName: '',
+            newShoppingDate: '',
             invitation_code: null
         };
     },
     computed: {
-        /*
+
         isGroupCreator() {
-            return this.userId === this.group.user_id;
+            return this.userId === this.list.user_id;
         },
         isGroupMember() {
-            return this.userId !== this.group.user_id;
+            return this.userId !== this.list.user_id;
         }
-            */
+
     },
     mounted() {
         this.groupId = this.$route.params.groupId;
         this.listId = this.$route.params.listId;
         this.getUserIdFromToken();
-        /*
-        this.getGroup(this.groupId);
-        */
         this.getList(this.groupId, this.listId);
-        
+        this.getProducts(this.listId);
+
     },
     methods: {
         getUserIdFromToken() {
@@ -70,7 +91,34 @@ export default {
 
             }
         },
-        
+        editList() {
+            this.isEditing = true;
+            this.newListName = this.list.list_name;
+            this.newShoppingDate = this.list.shopping_date;
+        },
+        async saveListName() {
+            try {
+                await axios.patch(`/user/lists/${this.groupId}/${this.listId}`, { list_name: this.newListName, shopping_date: this.newShoppingDate });
+                this.list.list_name = this.newListName;
+                this.list.shopping_date = this.newShoppingDate;
+                this.isEditing = false;
+            } catch (error) {
+                console.error('Error updating list name:', error);
+            }
+        },
+        cancelEdit() {
+            this.isEditing = false;
+        },
+        async getProducts(listId) {
+            try {
+                const response = await axios.get(`/user/products/${listId}`)
+                this.products = response.data
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
     }
 };
 </script>
@@ -97,22 +145,13 @@ export default {
     margin-bottom: 10px;
 }
 
-.group p {
-    margin: 0;
-    padding: 0;
-    margin-bottom: 20px;
-    font-size: 16px;
-}
-
 .admin-buttons {
     display: flex;
     flex-wrap: wrap;
-
 }
 
 .edit-button,
-.invitation-button,
-.leave-button {
+.delete-button {
     margin-right: 10px;
     padding: 10px 20px;
     background-color: white;
@@ -123,42 +162,42 @@ export default {
 }
 
 .edit-button:hover,
-.invitation-button:hover,
-.leave-button:hover {
+.delete-button:hover {
     background-color: #2C7C45;
-    color: white
+    color: white;
 }
 
-.lists {
+.products {
     width: 50%;
+    padding-left: 3rem;
 }
 
-.lists h1 {
+.products h1 {
     margin-top: 20px;
 }
 
-.lists-container {
+.products-container {
     width: 100%;
     display: flex;
     justify-content: left;
     flex-wrap: wrap;
 }
 
-.list-card {
+.product-card {
     background: white;
     padding: 1rem;
-    margin: 1rem;
+    margin: 0.5rem;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.30) 0px 0px 10px 0px;
     border: solid 2px #2C7C45;
 }
 
-.list-card h3 {
+.product-card h3 {
     margin: 0 0 0.5rem 0;
     font-weight: bold;
 }
 
-.list-card p {
+.product-card p {
     margin: 0.2rem 0;
 }
 
@@ -224,28 +263,5 @@ export default {
 .modal-content button:hover {
     background-color: #2C7C45;
     color: white;
-}
-
-.invitation-modal p {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-
-.invitation-code {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 25px !important;
-    letter-spacing: 0.1cm;
-    font-weight: bold;
-    background-color: #f9f9f9;
-    text-align: center;
-}
-
-.invitation-code:focus {
-    border: 1px solid #2C7C45;
 }
 </style>
