@@ -49,7 +49,7 @@ exports.signin = async (req, res) => {
 
                 const token = jwt.sign(payload, process.env.SECRET_KEY, {
                     algorithm: 'HS256',
-                    expiresIn: '30m'
+                    expiresIn: '4h'
                 });
 
 
@@ -60,13 +60,14 @@ exports.signin = async (req, res) => {
                 }
 
                 req.session.token = token;
-
                 return res.status(200).send({
                     id: user.id,
                     email: user.email,
                     roles: authorities,
                     token: token
                 });
+
+                
             } else {
                 res.status(403).json({ message: "Mot de passe invalide" });
             }

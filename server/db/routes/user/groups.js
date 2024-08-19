@@ -10,11 +10,17 @@ router.get('/', [verifyToken], async (req, res) => {
     try {
         const tokenUser_id = req.userId
 
-        const groups = await db.sequelize.query(`SELECT DISTINCT g.* FROM users_groups g INNER JOIN group_members m ON m.user_id = :user_id`,
+        const groups = await db.sequelize.query(
+            `SELECT DISTINCT g.* 
+             FROM users_groups g 
+             INNER JOIN group_members m 
+             ON g.group_id = m.group_id 
+             WHERE m.user_id = :user_id`,
             {
                 replacements: {
                     user_id: tokenUser_id
-                }, type: db.sequelize.QueryTypes.SELECT,
+                },
+                type: db.sequelize.QueryTypes.SELECT,
             }
         );
         res.status(200).json(groups)
@@ -32,7 +38,10 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
 
         const tokenUser_id = req.userId
 
-        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.* FROM users_groups g INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id WHERE g.group_id = :group_id`,
+        const userGroup = await db.sequelize.query(`SELECT DISTINCT g.*, u.first_name, u.last_name FROM users_groups g 
+            INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id 
+            INNER JOIN users u ON u.user_id = g.user_id
+            WHERE g.group_id = :group_id`,
             {
                 replacements: {
                     user_id: tokenUser_id,

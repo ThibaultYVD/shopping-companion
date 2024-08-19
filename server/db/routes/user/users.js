@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs");
 router.get('/', [verifyToken], async (req, res) => {
     try {
         const tokenUser_id = req.userId
-        
+
         const user = await db.sequelize.query(`SELECT user_id, first_name, last_name, email, created_at FROM users WHERE user_id = :user_id`,
             {
                 replacements: {
@@ -29,59 +29,121 @@ router.get('/', [verifyToken], async (req, res) => {
     }
 })
 
-router.post('/joingroup/:groupId', [verifyToken, escapeData], async (req, res) => {
+router.post('/joingroup', [verifyToken, escapeData], async (req, res) => {
     try {
-        const existingGroup = await db.Group.findByPk(req.params.groupId)
+        const bcrypt = require('bcrypt');
+        const { invitation_code } = req.body;  // Extraction des données du corps de la requête
+        const tokenUser_id = req.userId;  // ID de l'utilisateur connecté
 
-        const { invitation_code } = req.body
-
-        const tokenUser_id = req.userId
-
-        if (!existingGroup) return res.status(404).json({ error: 'Groupe introuvable' })
-
-        if (existingGroup.is_open == "FALSE") return res.status(403).json({ error: 'Vous ne pouvez pas rejoindre ce groupe' })
-
-        bcrypt.compare(invitation_code, existingGroup.invitation_code, async function (err, response) {
-            if (err) {
-                //console.log(err)
-                return res.status(500).json(err)
+        console.log(invitation_code)
+        // Récupération des groupes avec un code d'invitation ou ouverts
+        const existingGroups = await db.sequelize.query(
+            `SELECT * FROM users_groups WHERE (invitation_code IS NOT NULL OR is_open = TRUE) `,
+            {
+                type: db.sequelize.QueryTypes.SELECT
             }
-            if (response) {
+        );
 
-                const alreadyJoined = await db.sequelize.query(`SELECT * FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
-                    {
-                        replacements: {
-                            user_id: tokenUser_id,
-                            group_id: req.params.groupId,
-                        }, type: db.sequelize.QueryTypes.SELECT
-                    }
-                )
+        console.log(existingGroups)
 
-                if (alreadyJoined.length != 0) return res.status(200).json({ error: "Vous êtes déjà membre de ce groupe." })
+        // Vérification du code d'invitation avec chaque code haché
+        let groupMatch = null;
+        for (const group of existingGroups) {
+            const match = await bcrypt.compare(invitation_code, group.invitation_code);  // Comparer avec bcrypt
 
-                await db.sequelize.query(`INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
-                    {
-                        replacements: {
-                            user_id: tokenUser_id,
-                            group_id: req.params.groupId,
-                            joined_at: new Date(),
-                        }, type: db.sequelize.QueryTypes.INSERT,
-                    }
-                );
-
-                res.status(201).json(existingGroup);
+            if (match || group.is_open === true) {  // Correspondance du code ou groupe ouvert
+                groupMatch = group;
+                break;  // Arrêter la boucle dès qu'une correspondance est trouvée
             }
-            else {
-                res.status(403).json({ message: "Code invalide" });
+        }
+
+        console.log(groupMatch)
+        // Si le groupe est trouvé
+        if (groupMatch) {
+            // Vérification si l'utilisateur a déjà rejoint ce groupe
+            const alreadyJoined = await db.sequelize.query(
+                `SELECT * FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
+                {
+                    replacements: {
+                        user_id: tokenUser_id,
+                        group_id: groupMatch.group_id,  // Utilisation de groupMatch.group_id
+                    },
+                    type: db.sequelize.QueryTypes.SELECT
+                }
+            );
+
+            console.log(alreadyJoined)
+
+            if (alreadyJoined.length > 0) {
+                return res.status(403).json({ error: "Vous êtes déjà membre de ce groupe." });
             }
-        });
+
+            // Ajout de l'utilisateur au groupe
+            await db.sequelize.query(
+                `INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
+                {
+                    replacements: {
+                        user_id: tokenUser_id,
+                        group_id: groupMatch.group_id,
+                        joined_at: new Date(),
+                    },
+                    type: db.sequelize.QueryTypes.INSERT
+                }
+            );
+
+            res.status(201).json({ message: "Rejoint avec succès", group: groupMatch });
+        } else {
+            res.status(403).json({ message: "Code d'invitation invalide ou groupe non trouvé." });
+        }
+    } catch (error) {
+        console.error(`Erreur pour rejoindre le groupe ${req.body.groupId}`, error);
+        res.status(500).json({ error: "Erreur lors de la tentative de rejoindre le groupe." });
+    }
+});
+
+router.delete('/leavegroup/:groupId', [verifyToken], async (req, res) => {
+    try {
+        const tokenUser_id = req.userId; 
+        const group_id = req.params.groupId
+
+        const existingGroup = await db.Group.findByPk(group_id)
+
+        if (!existingGroup) {
+            return res.status(404).json({ error: 'Groupe introuvable' })
+        }
+
+        const alreadyJoined = await db.sequelize.query(
+            `SELECT * FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
+            {
+                replacements: {
+                    user_id: tokenUser_id,
+                    group_id: group_id, 
+                },
+                type: db.sequelize.QueryTypes.SELECT
+            }
+        );
+
+        if (alreadyJoined.length = 0) {
+            return res.status(403).json({ error: "Vous n'êtes pas membre de ce groupe." });
+        }
+
+        await db.sequelize.query(
+            `DELETE FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
+            {
+                replacements: {
+                    user_id: tokenUser_id,
+                    group_id: group_id,
+
+                },
+                type: db.sequelize.QueryTypes.DELETE
+            }
+        );
 
     } catch (error) {
-        console.error(`Error pour rejoindre le groupe ${req.params.groupId}`, error);
-        res.status(500).json({ error: "Erreur pour rejoindre le groupe." });
+        console.error(`Erreur pour quitter le groupe ${req.body.group_id}`, error);
+        res.status(500).json({ error: "Erreur lors de la tentative de quitter le groupe." });
     }
-
-})
+});
 
 
 router.patch('/', [verifyToken], async (req, res) => {
