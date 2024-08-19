@@ -231,7 +231,7 @@ router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
                 }, type: db.sequelize.QueryTypes.SELECT,
             }
         );
-        console.log(checkQuantity)
+
         if(checkQuantity[0].quantity > 1) 
         {
             sql = `UPDATE products_list SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`

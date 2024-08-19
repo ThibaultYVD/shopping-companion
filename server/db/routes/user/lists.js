@@ -6,13 +6,44 @@ const jwt = require("jsonwebtoken");
 const { verifyToken } = require('../../middleware/authjwt')
 const { escapeData } = require('../../middleware/validation')
 
+router.get('/', [verifyToken], async (req, res) => {
+    try {
+        const tokenUser_id = req.userId
+
+        let sql = `SELECT DISTINCT l.*, s.supermarket_name, g.group_name
+        FROM lists l 
+        INNER JOIN group_members m ON m.user_id = :user_id AND m.user_id = :user_id
+        INNER JOIN users_groups g ON g.group_id = l.group_id
+        INNER JOIN supermarkets s ON l.supermarket_id = s.supermarket_id`
+
+        const groupLists = await db.sequelize.query(sql,
+            {
+                replacements: {
+                    user_id: tokenUser_id
+                }, type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
+
+        if (!groupLists || groupLists.length == 0) {
+            res.status(403).json({ message: "Vous n'êtes pas autorisé à accéder à ces listes." })
+        } else {
+            res.status(200).json(groupLists);
+        }
+
+    } catch (err) {
+        console.error('Error dans récupération des listes :', err);
+        res.status(500).json({ error: 'Error dans récupération des listes' });
+    }
+});
+
 router.get('/:groupId', [verifyToken], async (req, res) => {
     try {
         const tokenUser_id = req.userId
 
-        let sql = `SELECT DISTINCT l.* 
+        let sql = `SELECT DISTINCT l.*, s.supermarket_name
         FROM lists l 
-        INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id 
+        INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id
+        INNER JOIN supermarkets s ON l.supermarket_id = s.supermarket_id 
         WHERE l.group_id = :group_id`
 
         const groupLists = await db.sequelize.query(sql,
@@ -40,9 +71,11 @@ router.get('/:groupId/:listId', [verifyToken], async (req, res) => {
     try {
         const tokenUser_id = req.userId
 
-        let sql = `SELECT DISTINCT l.* 
+        let sql = `SELECT DISTINCT l.*, s.supermarket_name, g.user_id
         FROM lists l 
-        INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id 
+        INNER JOIN group_members m ON m.user_id = :user_id AND m.group_id = :group_id
+        INNER JOIN users_groups g ON g.group_id = l.group_id
+        INNER JOIN supermarkets s ON l.supermarket_id = s.supermarket_id 
         WHERE l.group_id = :group_id AND l.list_id = :list_id`
 
         const groupList = await db.sequelize.query(sql,
