@@ -18,8 +18,6 @@ verifyToken = (req, res, next) => {
             return res.status(403).send({ message: "Aucun token n'a été fourni." });
         }
 
-        console.log(token)
-
         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
             if (err) {
                 console.error("JWT Verification Error:", err);
