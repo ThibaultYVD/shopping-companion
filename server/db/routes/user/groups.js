@@ -3,8 +3,8 @@ const router = express.Router()
 const db = require('../../model/Models');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { verifyToken } = require('../../middleware/authjwt')
-const { escapeData } = require('../../middleware/validation')
+const { verifyToken } = require('../../security/authjwt')
+const { escapeData } = require('../../security/validation')
 
 router.get('/', [verifyToken], async (req, res) => {
     try {
@@ -56,7 +56,7 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
 
 router.post('/', [verifyToken, escapeData], async (req, res) => {
     const { group_name } = req.body;
-   
+
     const tokenUser_id = req.userId
 
 
