@@ -4,12 +4,16 @@ import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
 import Register from '@/views/Register.vue';
+import Group from '@/views/Group.vue';
+import List from '@/views/List.vue';
 
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
   { path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/group/:groupId', component: Group, meta: { requiresAuth: true }},
+  { path: '/group/:groupId/list/:listId', component: List, meta: { requiresAuth: true }}
 
 ];
 

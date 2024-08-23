@@ -5,10 +5,10 @@
       ☰
     </button>
     <ul :class="{ open: menuOpen }">
-      <li><router-link to="/">Accueil</router-link></li>
+      <li v-if="!isAuthenticated"><router-link to="/">Accueil</router-link></li>
       <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
       <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
-      <li v-if="isAuthenticated"><router-link to="/dashboard">Dashboard</router-link></li>
+      <li v-if="isAuthenticated"><router-link to="/dashboard">Tableau de bord</router-link></li>
       <li v-if="isAuthenticated"><a href="#" @click="logout">Se déconnecter</a></li>
     </ul>
   </nav>
