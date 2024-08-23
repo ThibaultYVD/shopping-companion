@@ -3,8 +3,8 @@ const router = express.Router()
 const db = require('../../model/Models');
 const jwt = require("jsonwebtoken");
 
-const { verifyToken } = require('../../middleware/authjwt')
-const { escapeData } = require('../../middleware/validation')
+const { verifyToken } = require('../../security/authjwt')
+const { escapeData } = require('../../security/validation')
 
 
 router.get('/getall/:listId', [verifyToken], async (req, res) => {
