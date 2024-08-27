@@ -1,33 +1,16 @@
 <!-- src/views/Dashboard.vue -->
 <template>
   <div class="background">
-    <div class="spacing"></div>
-    <div class="dashboard">
+    <Spacing />
+
+    <div class="main-container">
       <div class="group-container">
-        <div class="buttons-container">
-          <h1>Vos groupes</h1>
-          <div class="buttons">
-            <button @click="createGroup()" class="action-button">
-              Créer un groupe
-            </button>
-            <button @click="joinGroup()" class="action-button">
-              Rejoindre un groupe
-            </button>
-          </div>
-        </div>
+        <CustomTitleSeparator title="Vos groupes" :buttons="groupButtons" />
+
         <div v-if="groups.length > 0" class="container">
-          <div v-for="group in displayedGroups" :key="group.group_id" class="card">
-            <div class="card-infos">
-              <h3>{{ group.group_name }}</h3>
-              <p>Nombre de personnes: {{ group.user_count }}</p>
-              <p>Listes actives: {{ group.active_list_count }}</p>
-            </div>
-            <div class="card-footer">
-              <button @click="goToGroupPage(group.group_id)" class="go-to-button">
-                Voir le groupe
-              </button>
-            </div>
-          </div>
+          <Card v-for="group in displayedGroups" :key="group.group_id" :title="group.group_name"
+            :userCount="group.user_count" :activeListCount="group.active_list_count" :groupId="group.group_id" buttonText="Voir le groupe"
+            @go-to-group="() => goToGroupPage(group.group_id)" />
         </div>
 
         <div v-else>
@@ -39,22 +22,12 @@
       </div>
 
       <div class="list-container">
-        <div class="buttons-container">
-          <h1>Vos listes</h1>
-        </div>
+        <TitleSeparator title="Vos listes" />
 
         <div v-if="lists.length > 0" class="container">
-          <div v-for="list in displayedLists" :key="list.list_id" class="card">
-            <div class="card-infos">
-              <h3>{{ list.list_name }}</h3>
-              <p>{{ list.group_name }}</p>
-              <p>Date de course prévu: {{ formatDate(list.shopping_date) }}</p>
-              <p>{{ list.supermarket_name }}</p>
-            </div>
-            <div class="card-footer">
-              <button @click="goToListPage(list.group_id, list.list_id)" class="go-to-button">Voir la liste</button>
-            </div>
-          </div>
+          <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name" :groupName="list.group_name"
+            :shoppingDate="list.shopping_date" :supermarketName="list.supermarket_name" :listId="list.list_id" :groupId="list.group_id" buttonText="Voir la liste"
+            @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
         </div>
         <div v-else>
           <p>Vous n'avez aucune liste. Commencez par créer un groupe.</p>
@@ -63,25 +36,23 @@
       </div>
     </div>
 
-    <div class="spacing"></div>
-    <!--
-      
-      -->
+    <Spacing />
+
   </div>
 
   <div v-if="isCreating" class="modal">
-    <div class="modal-content">
+    <div class="rename-modal-content">
       <h2>Nommez votre groupe</h2>
-      <input v-model="group_name" placeholder="Nouveau nom du groupe" />
+      <input v-model="group_name" placeholder="Nouveau nom" />
       <button @click="submitGroup">Enregistrer</button>
       <button @click="cancelGroupCreate">Annuler</button>
     </div>
   </div>
 
   <div v-if="isJoining" class="modal">
-    <div class="modal-content">
+    <div class="joining-modal-content">
       <h2>Indiquez le code du groupe</h2>
-      <input v-model="invitation_code" placeholder="Code d'invitation" />
+      <input v-model="invitation_code" />
       <button @click="joiningGroup">Rejoindre</button>
       <button @click="cancelGroupJoin">Annuler</button>
     </div>
@@ -91,9 +62,19 @@
 <script>
 import { instance as axios } from "../services/axios";
 import { useRouter } from "vue-router";
+import Card from '@/components/Card.vue'
+import TitleSeparator from '@/components/TitleSeparator.vue'
+import CustomTitleSeparator from '@/components/TitleSeparator.vue'
+import Spacing from '@/components/Spacing.vue'
 
 export default {
   name: "Dashboard",
+  components: {
+    Card,
+    TitleSeparator,
+    Spacing,
+    CustomTitleSeparator
+  },
   data() {
     return {
       groups: [],
@@ -104,6 +85,10 @@ export default {
       invitation_code: null,
       isCreating: false,
       isJoining: false,
+      groupButtons: [
+        { label: 'Créer', action: this.createGroup },
+        { label: 'Rejoindre', action: this.joinGroup },
+      ],
     };
   },
   mounted() {
@@ -208,7 +193,6 @@ export default {
         }
 
         this.isJoining = false;
-        //console.error('Erreur lors de la tentative de rejoindre le groupe:', error);
       }
     },
   },
@@ -223,40 +207,9 @@ export default {
   display: flex;
 }
 
-.spacing {
-  display: block;
-  width: 15%;
-}
-
-.dashboard {
+.main-container {
   padding-top: 60px;
   width: 70%;
-}
-
-.buttons-container {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.buttons {
-  display: flex;
-  gap: 20px;
-  height: 5vh;
-}
-
-.action-button {
-  background-color: white;
-  border: 2px solid #2c7c45;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.action-button:hover {
-  background-color: #2c7c45;
-  color: white
 }
 
 .container {
@@ -266,115 +219,83 @@ export default {
   height: 30vh;
 }
 
-.card {
-  background: white;
-  width: 20%;
-  margin: 1rem;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px 0px;
-  border: solid 2px #2c7c45;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-infos {
-  height: 20px;
-  padding: 1rem;
-}
-
-.card-footer {
-  background-color: #e0e0e0;
-  padding: 20px;
-  border-radius: 0 0 10px 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card h3 {
-  margin: 0 0 0.5rem 0;
-  font-weight: bold;
-}
-
-.card p {
-  margin: 0.2rem 0;
-}
-
-.go-to-button {
-  background-color: white;
-  padding: 5px;
-  width: 70%;
-  border: 2px solid #2c7c45;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.go-to-button:hover {
-  background-color: #2c7c45;
-  color: white
-}
-
 .modal {
-  width: 30%;
+  width: 20%;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
   padding: 20px;
-  border-radius: 10px;
-  border: solid 2px #2c7c45;
+  border-radius: 20px;
+  border: solid 3px #2c7c45;
   box-shadow: #0000004d 0px 0px 50px 0px;
   z-index: 1000;
+  font-family: Inter;
 }
 
-.modal-content {
+.rename-modal-content,
+.joining-modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: Inter;
 }
 
-.modal-content h2 {
+.rename-modal-content,
+.joining-modal-content h2 {
   margin-bottom: 15px;
+  font-family: Inter;
 }
 
-.modal-content input {
-  margin-bottom: 15px;
+.rename-modal-content input,
+.joining-modal-content input {
+  width: 100%;
   padding: 10px;
-  font-size: 16px;
-  width: 100%;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 20px !important;
+  background-color: #f9f9f9;
+  text-align: center;
+  font-family: Inter;
 }
 
-.modal-content button {
+.joining-modal-content input {
+  letter-spacing: 0.1cm;
+  font-weight: bold;
+  font-size: 26px !important;
+}
+
+.rename-modal input {
   width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 25px !important;
+  font-weight: bold;
+  background-color: #f9f9f9;
+  text-align: center;
+  font-family: Inter;
+}
+
+.rename-modal-content button,
+.joining-modal-content button {
+  width: 70%;
   padding: 10px;
   background-color: #2C7C45;
-  color: white;
   border: none;
+  color: white;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
-}
-
-.modal-content button:hover {
-  background-color: #2C7C45;
-  color: white;
+  font-size: 18px;
+  font-family: Inter;
 }
 
 @media (max-width:1444px) {
-  .card-infos {
-    height: 20%;
-  }
 
-  .card-footer {
-    padding: 10px;
-  }
-
-  .card {
-    width: 25%;
-  }
 }
 
 @media (max-width:1244px) {
@@ -382,29 +303,15 @@ export default {
     width: 50%;
   }
 
-  .spacing {
-    width: 5%;
-  }
-
-  .dashboard {
+  .main-container {
     width: 90%;
-  }
-
-  .card-infos {
-    height: 20%;
-  }
-
-  .card-footer {
-    padding: 10px;
   }
 
   .container {
     justify-content: space-between;
   }
 
-  .card {
-    width: 45%;
-  }
+
 }
 
 @media (max-width: 768px) {
@@ -412,46 +319,23 @@ export default {
     width: 90%;
   }
 
-  .spacing {
-    display: none;
-  }
-
-  .group-container, .list-container{
+  .group-container,
+  .list-container {
     height: 70%;
   }
-  .buttons {
-    gap: 10px;
-    display: flex;
-    justify-content: center;
-  }
 
-  .buttons-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dashboard {
+  .main-container {
     width: 100%;
+    padding-left:5px;
+    padding-right:5px;
   }
 
   .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
   }
 
-  .card {
-    width: 80%;
-    height: 100vh;
-  }
-
-  .card-infos {
-    height: 20%;
-  }
-
-  .card-footer {
-    padding: 10px;
-  }
 }
 </style>
