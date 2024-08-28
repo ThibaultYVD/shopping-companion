@@ -33,7 +33,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     border-bottom: #2C7C45 solid 5px;
-    border-radius: 0 0px 10px 10px;
+    /*border-radius: 0 0px 10px 10px;*/
 }
 
 .buttons {
