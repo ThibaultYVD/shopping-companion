@@ -15,6 +15,11 @@ export default {
     width: 15%;
 }
 
+@media (max-width:1444px) {
+    .spacing {
+        width: 10%;
+    }
+}
 
 @media (max-width:1244px) {
 

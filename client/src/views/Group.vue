@@ -2,7 +2,6 @@
     <div class="background">
         <Spacing />
         <div class="main-container">
-
             <div class="group-container">
                 <CustomTitleSeparator :title="group.group_name" :buttons="groupButtons" />
                 <p>Créé par {{ group.first_name }} {{ group.last_name }} le {{ formatDate(group.creation_date) }}</p>
@@ -12,6 +11,7 @@
                 <div class="member-container">
                     <TitleSeparator title="Membres" :buttons="memberButtons" />
                 </div>
+
                 <div class="list-container">
                     <TitleSeparator title="Listes" :buttons="listButtons" />
                     <div v-if="lists.length > 0" class="lists">
@@ -20,11 +20,9 @@
                             :supermarketName="list.supermarket_name" :listId="list.list_id" :groupId="list.group_id"
                             buttonText="Voir la liste" @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
                     </div>
-
                     <div v-else>
                         <p>Il n'y a aucune liste dans ce groupe. Commencez par en créer une !</p>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -52,7 +50,7 @@
     <div v-if="isCreating" class="create-modal">
         <div class="modal-content">
             <h2>Nommez votre liste</h2>
-            <input v-model="group_name" placeholder="Nom de la liste" />
+            <input v-model="list_name" placeholder="Nom de la liste" />
             <button @click="submitList">Enregistrer</button>
             <button @click="cancelListCreate">Annuler</button>
         </div>
@@ -63,10 +61,11 @@
 <script>
 import { instance as axios } from '../services/axios';
 import { useRouter } from 'vue-router';
-import CustomTitleSeparator from '@/components/CustomTitleSeparator.vue'
-import TitleSeparator from '@/components/TitleSeparator.vue'
-import Spacing from '@/components/Spacing.vue'
+import CustomTitleSeparator from '@/components/CustomTitleSeparator.vue';
+import TitleSeparator from '@/components/TitleSeparator.vue';
+import Spacing from '@/components/Spacing.vue';
 import Card from '@/components/Card.vue';
+import Modal from '@/components/Modal.vue';
 
 export default {
     name: 'Group',
@@ -74,7 +73,8 @@ export default {
         CustomTitleSeparator,
         TitleSeparator,
         Spacing,
-        Card
+        Card,
+        Modal
     },
     data() {
         return {
@@ -85,6 +85,7 @@ export default {
             isCreatingInvit: false,
             isCreating: false,
             newGroupName: '',
+            list_name: null,
             invitation_code: null,
             listButtons: [
                 { label: "Créer", action: this.createList }
@@ -189,7 +190,6 @@ export default {
 
             if (isConfirmed) {
                 try {
-                    console.log(this.groupId)
                     await axios.delete(`/user/users/leavegroup/${this.groupId}`);
 
                     this.$router.push('/dashboard');
@@ -222,13 +222,13 @@ export default {
         },
         async submitList() {
             try {
-                const response = await axios.post(`/user/list/${this.groupId}`, { list_name: this.list_name });
+                const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: '2024-08-28', supermarket_id: 1 });
                 this.isCreating = false;
                 this.$router.push(`/group/${response.data.group_id}`);
 
             } catch (error) {
-                console.error('Error creating group:', error);
-                alert('Une erreur est survenue lors de la création du groupe.');
+                console.error('Error creating list:', error);
+                alert('Une erreur est survenue lors de la création de la liste.');
             }
         },
     }
@@ -250,13 +250,17 @@ export default {
 }
 
 .center-container {
+    margin-top: 10px;
     display: flex;
-    margin-top: 50px;
+    flex-direction: row;
     width: 100%;
-    height: 60vh;
-    border-radius: 30px;
+    padding: 10px;
     background: rgb(241, 238, 238);
     box-shadow: #0000004d 0px 0px 10px 0px;
+    border-radius: 30px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    height: auto;
 }
 
 .member-container {
@@ -272,9 +276,22 @@ export default {
 
 .lists {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    margin-top: 10px;
 }
 
+.lists .card {
+    flex-basis: calc(50% - 10px);
+    box-sizing: border-box;
+}
+
+.group-container p {
+    padding: 10px;
+}
 
 .edit-modal,
 .create-modal,
@@ -347,6 +364,7 @@ export default {
     border: 1px solid #2C7C45;
 }
 
+
 .create-list-button {
     width: 100%;
     padding: 5px;
@@ -378,6 +396,11 @@ export default {
     margin-top: 20px;
 }
 
+@media (max-width:1444px) {
+    .main-container {
+        width: 80%;
+    }
+}
 
 @media (max-width:1244px) {
     .modal {
@@ -411,6 +434,10 @@ export default {
     }
 
     .list-container {
+        width: 100%;
+    }
+
+    .lists .card {
         width: 100%;
     }
 

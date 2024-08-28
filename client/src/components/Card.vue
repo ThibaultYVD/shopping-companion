@@ -83,7 +83,6 @@ export default {
 .card {
     background: #ffffff;
     width: 30%;
-    margin: 1rem;
     border-radius: 20px;
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 10px 0px;
     display: flex;

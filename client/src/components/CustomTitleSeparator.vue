@@ -17,6 +17,7 @@ export default {
         title: {
             type: String,
             required: true,
+            default: 'Titre par défaut',
         },
         buttons: {
             type: Array,
