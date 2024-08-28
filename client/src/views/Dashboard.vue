@@ -9,8 +9,8 @@
 
         <div v-if="groups.length > 0" class="container">
           <Card v-for="group in displayedGroups" :key="group.group_id" :title="group.group_name"
-            :userCount="group.user_count" :activeListCount="group.active_list_count" :groupId="group.group_id" buttonText="Voir le groupe"
-            @go-to-group="() => goToGroupPage(group.group_id)" />
+            :userCount="group.user_count" :activeListCount="group.active_list_count" :groupId="group.group_id"
+            buttonText="Voir le groupe" @go-to-group="() => goToGroupPage(group.group_id)" />
         </div>
 
         <div v-else>
@@ -26,7 +26,8 @@
 
         <div v-if="lists.length > 0" class="container">
           <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name" :groupName="list.group_name"
-            :shoppingDate="list.shopping_date" :supermarketName="list.supermarket_name" :listId="list.list_id" :groupId="list.group_id" buttonText="Voir la liste"
+            :shoppingDate="list.shopping_date" :supermarketName="list.supermarket_name" :listId="list.list_id"
+            :groupId="list.group_id" buttonText="Voir la liste"
             @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
         </div>
         <div v-else>
@@ -40,23 +41,26 @@
 
   </div>
 
+
   <div v-if="isCreating" class="modal">
-    <div class="rename-modal-content">
+    <div class="modal-content">
       <h2>Nommez votre groupe</h2>
-      <input v-model="group_name" placeholder="Nouveau nom" />
+      <input v-model="group_name" placeholder="Nom du groupe" />
       <button @click="submitGroup">Enregistrer</button>
       <button @click="cancelGroupCreate">Annuler</button>
     </div>
   </div>
 
   <div v-if="isJoining" class="modal">
-    <div class="joining-modal-content">
+    <div class="modal-content">
       <h2>Indiquez le code du groupe</h2>
-      <input v-model="invitation_code" />
+      <input v-model="invitation_code" placeholder="Code d'invitation" />
       <button @click="joiningGroup">Rejoindre</button>
       <button @click="cancelGroupJoin">Annuler</button>
     </div>
   </div>
+
+
 </template>
 
 <script>
@@ -66,6 +70,7 @@ import Card from '@/components/Card.vue'
 import TitleSeparator from '@/components/TitleSeparator.vue'
 import CustomTitleSeparator from '@/components/TitleSeparator.vue'
 import Spacing from '@/components/Spacing.vue'
+import Modal from "@/components/Modal.vue";
 
 export default {
   name: "Dashboard",
@@ -73,7 +78,8 @@ export default {
     Card,
     TitleSeparator,
     Spacing,
-    CustomTitleSeparator
+    CustomTitleSeparator,
+    Modal
   },
   data() {
     return {
@@ -96,6 +102,14 @@ export default {
     this.getLists();
   },
   methods: {
+
+    updateGroupName({ index, value }) {
+      this.group_name = value;
+    },
+
+    updateInvitationCode({ index, value }) {
+      this.invitation_code = value;
+    },
     async getGroups() {
       try {
         const response = await axios.get("/user/groups");
@@ -193,6 +207,7 @@ export default {
         }
 
         this.isJoining = false;
+        //console.error('Erreur lors de la tentative de rejoindre le groupe:', error);
       }
     },
   },
@@ -217,86 +232,58 @@ export default {
   flex-direction: row;
   align-content: center;
   height: 30vh;
+  gap: 20px;
+  margin-top: 10px;
 }
 
 .modal {
-  width: 20%;
+  width: 30%;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
   padding: 20px;
-  border-radius: 20px;
-  border: solid 3px #2c7c45;
+  border-radius: 10px;
+  border: solid 2px #2c7c45;
   box-shadow: #0000004d 0px 0px 50px 0px;
   z-index: 1000;
-  font-family: Inter;
 }
 
-.rename-modal-content,
-.joining-modal-content {
+.modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: Inter;
 }
 
-.rename-modal-content,
-.joining-modal-content h2 {
+.modal-content h2 {
   margin-bottom: 15px;
-  font-family: Inter;
 }
 
-.rename-modal-content input,
-.joining-modal-content input {
-  width: 100%;
+.modal-content input {
+  margin-bottom: 15px;
   padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 20px !important;
-  background-color: #f9f9f9;
-  text-align: center;
-  font-family: Inter;
-}
-
-.joining-modal-content input {
-  letter-spacing: 0.1cm;
-  font-weight: bold;
-  font-size: 26px !important;
-}
-
-.rename-modal input {
+  font-size: 16px;
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 25px !important;
-  font-weight: bold;
-  background-color: #f9f9f9;
-  text-align: center;
-  font-family: Inter;
 }
 
-.rename-modal-content button,
-.joining-modal-content button {
-  width: 70%;
+.modal-content button {
+  width: 100%;
   padding: 10px;
   background-color: #2C7C45;
-  border: none;
   color: white;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
-  font-size: 18px;
-  font-family: Inter;
 }
 
-@media (max-width:1444px) {
-
+.modal-content button:hover {
+  background-color: #2C7C45;
+  color: white;
 }
+
+@media (max-width:1444px) {}
 
 @media (max-width:1244px) {
   .modal {
@@ -310,8 +297,6 @@ export default {
   .container {
     justify-content: space-between;
   }
-
-
 }
 
 @media (max-width: 768px) {
@@ -326,8 +311,8 @@ export default {
 
   .main-container {
     width: 100%;
-    padding-left:5px;
-    padding-right:5px;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
   .container {
