@@ -6,7 +6,7 @@
         <h2>Connexion</h2>
       </div>
       <form @submit.prevent="login">
-        <input v-model="email" type="email" placeholder="Email" required>
+        <input v-model="email" type="text" placeholder="Email" required>
         <input v-model="password" type="password" placeholder="Mot de passe" required>
         <button type="submit">S'identifier</button>
         <a href="#">Mot de passe oublié ?</a>
