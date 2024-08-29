@@ -153,7 +153,7 @@ export default {
                         this.products = this.products.filter(product => product.product_id !== productId);
                     } catch (error) {
                         console.error('Error deleting group:', error);
-                        alert("Une erreur est survenue lors de la suppression du groupe.");
+                        alert("Une erreur est survenue lors de la suppression du produit.");
                     }
                 }
             } catch (error) {
