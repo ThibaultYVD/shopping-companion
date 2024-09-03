@@ -63,7 +63,7 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
 
 
 
-router.post('/', [verifyToken, escapeData], async (req, res) => {
+router.post('/', [verifyToken], async (req, res) => {
     const { group_name } = req.body;
 
     const tokenUser_id = req.userId
