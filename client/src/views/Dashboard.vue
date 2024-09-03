@@ -1,33 +1,16 @@
 <!-- src/views/Dashboard.vue -->
 <template>
   <div class="background">
-    <div class="spacing"></div>
-    <div class="dashboard">
+    <Spacing />
+
+    <div class="main-container">
       <div class="group-container">
-        <div class="buttons-container">
-          <h1>Vos groupes</h1>
-          <div class="buttons">
-            <button @click="createGroup()" class="action-button">
-              Créer un groupe
-            </button>
-            <button @click="joinGroup()" class="action-button">
-              Rejoindre un groupe
-            </button>
-          </div>
-        </div>
+        <CustomTitleSeparator title="Vos groupes" :buttons="groupButtons" />
+
         <div v-if="groups.length > 0" class="container">
-          <div v-for="group in displayedGroups" :key="group.group_id" class="card">
-            <div class="card-infos">
-              <h3>{{ group.group_name }}</h3>
-              <p>Nombre de personnes: {{ group.user_count }}</p>
-              <p>Listes actives: {{ group.active_list_count }}</p>
-            </div>
-            <div class="card-footer">
-              <button @click="goToGroupPage(group.group_id)" class="go-to-button">
-                Voir le groupe
-              </button>
-            </div>
-          </div>
+          <Card v-for="group in displayedGroups" :key="group.group_id" :title="group.group_name"
+            :userCount="group.user_count" :activeListCount="group.active_list_count" :groupId="group.group_id"
+            buttonText="Voir le groupe" @go-to-group="() => goToGroupPage(group.group_id)" />
         </div>
 
         <div v-else>
@@ -39,22 +22,13 @@
       </div>
 
       <div class="list-container">
-        <div class="buttons-container">
-          <h1>Vos listes</h1>
-        </div>
+        <TitleSeparator title="Vos listes" />
 
         <div v-if="lists.length > 0" class="container">
-          <div v-for="list in displayedLists" :key="list.list_id" class="card">
-            <div class="card-infos">
-              <h3>{{ list.list_name }}</h3>
-              <p>{{ list.group_name }}</p>
-              <p>Date de course prévu: {{ formatDate(list.shopping_date) }}</p>
-              <p>{{ list.supermarket_name }}</p>
-            </div>
-            <div class="card-footer">
-              <button @click="goToListPage(list.group_id, list.list_id)" class="go-to-button">Voir la liste</button>
-            </div>
-          </div>
+          <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name" :groupName="list.group_name"
+            :shoppingDate="list.shopping_date" :supermarketName="list.supermarket_name" :listId="list.list_id"
+            :groupId="list.group_id" buttonText="Voir la liste"
+            @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
         </div>
         <div v-else>
           <p>Vous n'avez aucune liste. Commencez par créer un groupe.</p>
@@ -63,16 +37,15 @@
       </div>
     </div>
 
-    <div class="spacing"></div>
-    <!--
-      
-      -->
+    <Spacing />
+
   </div>
+
 
   <div v-if="isCreating" class="modal">
     <div class="modal-content">
       <h2>Nommez votre groupe</h2>
-      <input v-model="group_name" placeholder="Nouveau nom du groupe" />
+      <input v-model="group_name" placeholder="Nom du groupe" />
       <button @click="submitGroup">Enregistrer</button>
       <button @click="cancelGroupCreate">Annuler</button>
     </div>
@@ -86,14 +59,28 @@
       <button @click="cancelGroupJoin">Annuler</button>
     </div>
   </div>
+
+
 </template>
 
 <script>
 import { instance as axios } from "../services/axios";
 import { useRouter } from "vue-router";
+import Card from '@/components/Card.vue'
+import TitleSeparator from '@/components/TitleSeparator.vue'
+import CustomTitleSeparator from '@/components/TitleSeparator.vue'
+import Spacing from '@/components/Spacing.vue'
+import Modal from "@/components/Modal.vue";
 
 export default {
   name: "Dashboard",
+  components: {
+    Card,
+    TitleSeparator,
+    Spacing,
+    CustomTitleSeparator,
+    Modal
+  },
   data() {
     return {
       groups: [],
@@ -104,6 +91,10 @@ export default {
       invitation_code: null,
       isCreating: false,
       isJoining: false,
+      groupButtons: [
+        { label: 'Créer', action: this.createGroup },
+        { label: 'Rejoindre', action: this.joinGroup },
+      ],
     };
   },
   mounted() {
@@ -111,6 +102,14 @@ export default {
     this.getLists();
   },
   methods: {
+
+    updateGroupName({ index, value }) {
+      this.group_name = value;
+    },
+
+    updateInvitationCode({ index, value }) {
+      this.invitation_code = value;
+    },
     async getGroups() {
       try {
         const response = await axios.get("/user/groups");
@@ -223,40 +222,9 @@ export default {
   display: flex;
 }
 
-.spacing {
-  display: block;
-  width: 15%;
-}
-
-.dashboard {
+.main-container {
   padding-top: 60px;
   width: 70%;
-}
-
-.buttons-container {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.buttons {
-  display: flex;
-  gap: 20px;
-  height: 5vh;
-}
-
-.action-button {
-  background-color: white;
-  border: 2px solid #2c7c45;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.action-button:hover {
-  background-color: #2c7c45;
-  color: white
 }
 
 .container {
@@ -264,56 +232,8 @@ export default {
   flex-direction: row;
   align-content: center;
   height: 30vh;
-}
-
-.card {
-  background: white;
-  width: 20%;
-  margin: 1rem;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px 0px;
-  border: solid 2px #2c7c45;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-infos {
-  height: 20px;
-  padding: 1rem;
-}
-
-.card-footer {
-  background-color: #e0e0e0;
-  padding: 20px;
-  border-radius: 0 0 10px 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card h3 {
-  margin: 0 0 0.5rem 0;
-  font-weight: bold;
-}
-
-.card p {
-  margin: 0.2rem 0;
-}
-
-.go-to-button {
-  background-color: white;
-  padding: 5px;
-  width: 70%;
-  border: 2px solid #2c7c45;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.go-to-button:hover {
-  background-color: #2c7c45;
-  color: white
+  gap: 20px;
+  margin-top: 10px;
 }
 
 .modal {
@@ -363,47 +283,19 @@ export default {
   color: white;
 }
 
-@media (max-width:1444px) {
-  .card-infos {
-    height: 20%;
-  }
-
-  .card-footer {
-    padding: 10px;
-  }
-
-  .card {
-    width: 25%;
-  }
-}
+@media (max-width:1444px) {}
 
 @media (max-width:1244px) {
   .modal {
     width: 50%;
   }
 
-  .spacing {
-    width: 5%;
-  }
-
-  .dashboard {
+  .main-container {
     width: 90%;
-  }
-
-  .card-infos {
-    height: 20%;
-  }
-
-  .card-footer {
-    padding: 10px;
   }
 
   .container {
     justify-content: space-between;
-  }
-
-  .card {
-    width: 45%;
   }
 }
 
@@ -412,46 +304,23 @@ export default {
     width: 90%;
   }
 
-  .spacing {
-    display: none;
-  }
-
-  .group-container, .list-container{
+  .group-container,
+  .list-container {
     height: 70%;
   }
-  .buttons {
-    gap: 10px;
-    display: flex;
-    justify-content: center;
-  }
 
-  .buttons-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dashboard {
+  .main-container {
     width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
   .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
   }
 
-  .card {
-    width: 80%;
-    height: 100vh;
-  }
-
-  .card-infos {
-    height: 20%;
-  }
-
-  .card-footer {
-    padding: 10px;
-  }
 }
 </style>

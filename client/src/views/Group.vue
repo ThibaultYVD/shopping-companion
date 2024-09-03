@@ -1,40 +1,32 @@
 <template>
     <div class="background">
+        <Spacing />
         <div class="main-container">
-            <div class="group">
-                <h1>{{ group.group_name }}</h1>
+            <div class="group-container">
+                <CustomTitleSeparator :title="group.group_name" :buttons="groupButtons" />
                 <p>Créé par {{ group.first_name }} {{ group.last_name }} le {{ formatDate(group.creation_date) }}</p>
-
-                <div v-if="isGroupCreator" class="admin-buttons">
-                    <button @click="editGroupName" class="edit-button">Modifier le nom du groupe</button>
-                    <button @click="createInvitation" class="invitation-button">Créer un code d'invitation</button>
-                    <button @click="deleteGroup" class="delete-button">Supprimer le groupe</button>
-                </div>
-
-                <div v-if="isGroupMember" class="members-buttons">
-                    <button @click="leaveGroup" class="leave-button">Quitter le groupe</button>
-                </div>
-
             </div>
-            <div class="lists">
-                <h1>Listes du groupe</h1>
-                <div v-if="lists.length > 0" class="lists-container">
-                    <div v-for="list in displayedLists" :key="list.list_id" class="list-card">
-                        <h3>{{ list.list_name }}</h3>
-                        <p>Date de course prévu: {{ formatDate(list.shopping_date) }}</p>
-                        <p>{{ list.supermarket_name }}</p>
-                        <button @click="goToListPage(list.list_id)" class="list-button">Voir la liste</button>
-                    </div>
+
+            <div class="center-container">
+                <div class="member-container">
+                    <TitleSeparator title="Membres" :buttons="memberButtons" />
                 </div>
 
-                <div v-else>
-                    <p>Il n'y a aucune liste dans ce groupe. Commencez par en créer une !</p>
-                </div>
-                <div class="create-list-container">
-                    <button @click="createList()" class="create-list-button">Créer une liste</button>
+                <div class="list-container">
+                    <TitleSeparator title="Listes" :buttons="listButtons" />
+                    <div v-if="lists.length > 0" class="lists">
+                        <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name"
+                            :groupName="list.group_name" :shoppingDate="list.shopping_date"
+                            :supermarketName="list.supermarket_name" :listId="list.list_id" :groupId="list.group_id"
+                            buttonText="Voir la liste" @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
+                    </div>
+                    <div v-else>
+                        <p>Il n'y a aucune liste dans ce groupe. Commencez par en créer une !</p>
+                    </div>
                 </div>
             </div>
         </div>
+        <Spacing />
     </div>
 
     <div v-if="isEditing" class="edit-modal">
@@ -58,7 +50,7 @@
     <div v-if="isCreating" class="create-modal">
         <div class="modal-content">
             <h2>Nommez votre liste</h2>
-            <input v-model="group_name" placeholder="Nom de la liste" />
+            <input v-model="list_name" placeholder="Nom de la liste" />
             <button @click="submitList">Enregistrer</button>
             <button @click="cancelListCreate">Annuler</button>
         </div>
@@ -69,9 +61,21 @@
 <script>
 import { instance as axios } from '../services/axios';
 import { useRouter } from 'vue-router';
+import CustomTitleSeparator from '@/components/CustomTitleSeparator.vue';
+import TitleSeparator from '@/components/TitleSeparator.vue';
+import Spacing from '@/components/Spacing.vue';
+import Card from '@/components/Card.vue';
+import Modal from '@/components/Modal.vue';
 
 export default {
     name: 'Group',
+    components: {
+        CustomTitleSeparator,
+        TitleSeparator,
+        Spacing,
+        Card,
+        Modal
+    },
     data() {
         return {
             group: {},
@@ -81,7 +85,14 @@ export default {
             isCreatingInvit: false,
             isCreating: false,
             newGroupName: '',
-            invitation_code: null
+            list_name: null,
+            invitation_code: null,
+            listButtons: [
+                { label: "Créer", action: this.createList }
+            ],
+            memberButtons: [
+                { label: "Inviter", action: this.createInvitation }
+            ],
         };
     },
     computed: {
@@ -90,6 +101,21 @@ export default {
         },
         isGroupMember() {
             return this.userId !== this.group.user_id;
+        },
+        groupButtons() {
+            const buttons = []
+            if (this.isGroupCreator) {
+                buttons.push(
+                    { label: 'Modifier', action: this.editGroupName },
+                    { label: "Supprimer", action: this.deleteGroup },
+                )
+            }
+            if (this.isGroupMember) {
+                buttons.push(
+                    { label: 'Quitter le groupe', action: this.leaveGroup, class: 'leave-button' }
+                );
+            }
+            return buttons
         }
     },
     mounted() {
@@ -143,7 +169,6 @@ export default {
         },
         async createInvitation() {
             const response = await axios.patch(`/user/groups/createInvit/${this.groupId}`);
-            console.log(response.data.invitation_code)
             this.invitation_code = response.data.invitation_code
             this.isCreatingInvit = true;
         },
@@ -165,7 +190,6 @@ export default {
 
             if (isConfirmed) {
                 try {
-                    console.log(this.groupId)
                     await axios.delete(`/user/users/leavegroup/${this.groupId}`);
 
                     this.$router.push('/dashboard');
@@ -198,13 +222,13 @@ export default {
         },
         async submitList() {
             try {
-                const response = await axios.post(`/user/list/${this.groupId}`, { list_name: this.list_name });
+                const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: '2024-08-28', supermarket_id: 1 });
                 this.isCreating = false;
                 this.$router.push(`/group/${response.data.group_id}`);
 
             } catch (error) {
-                console.error('Error creating group:', error);
-                alert('Une erreur est survenue lors de la création du groupe.');
+                console.error('Error creating list:', error);
+                alert('Une erreur est survenue lors de la création de la liste.');
             }
         },
     }
@@ -216,105 +240,57 @@ export default {
     height: 100vh;
     margin: 0;
     background-color: white;
+    display: flex;
 }
 
 .main-container {
+    padding-top: 60px;
+    width: 70%;
+
+}
+
+.center-container {
+    margin-top: 10px;
     display: flex;
-    padding-top: 50px;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px;
+    background: rgb(241, 238, 238);
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    border-radius: 30px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    height: auto;
 }
 
-.group {
-    width: 50%;
-    padding-left: 3rem;
+.member-container {
+    width: 40%;
+    padding: 10px;
+    border-right: grey solid 1px;
 }
 
-.group h1 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.group p {
-    margin: 0;
-    padding: 0;
-    margin-bottom: 20px;
-    font-size: 16px;
-}
-
-.admin-buttons {
-    display: flex;
-    flex-wrap: wrap;
-
-}
-
-.edit-button,
-.invitation-button,
-.delete-button,
-.leave-button {
-    margin-right: 10px;
-    padding: 10px 20px;
-    background-color: white;
-    color: black;
-    border: solid 2px #2C7C45;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.edit-button:hover,
-.invitation-button:hover,
-.delete-button:hover,
-.leave-button:hover {
-    background-color: #2C7C45;
-    color: white
+.list-container {
+    padding: 10px;
+    width: 60%;
 }
 
 .lists {
-    width: 50%;
-}
-
-.lists h1 {
-    margin-top: 20px;
-}
-
-.lists-container {
-    width: 100%;
     display: flex;
-    justify-content: left;
     flex-wrap: wrap;
-}
-
-.list-card {
-    background: white;
-    padding: 1rem;
-    margin: 1rem;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.30) 0px 0px 10px 0px;
-    border: solid 2px #2C7C45;
-}
-
-.list-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-weight: bold;
-}
-
-.list-card p {
-    margin: 0.2rem 0;
-}
-
-.list-button {
+    gap: 20px;
     width: 100%;
-    padding: 5px;
-    background-color: white;
-    border: solid 2px #2C7C45;
-    border-radius: 10px;
-    cursor: pointer;
+    box-sizing: border-box;
+    margin: 0 auto;
     margin-top: 10px;
-    font-size: 15px;
-    font-weight: 400;
 }
 
-.list-button:hover {
-    background: #2C7C45;
-    color: white;
+.lists .card {
+    flex-basis: calc(50% - 10px);
+    box-sizing: border-box;
+}
+
+.group-container p {
+    padding: 10px;
 }
 
 .edit-modal,
@@ -388,6 +364,7 @@ export default {
     border: 1px solid #2C7C45;
 }
 
+
 .create-list-button {
     width: 100%;
     padding: 5px;
@@ -417,5 +394,56 @@ export default {
     display: flexbox;
     justify-content: center;
     margin-top: 20px;
+}
+
+@media (max-width:1444px) {
+    .main-container {
+        width: 80%;
+    }
+}
+
+@media (max-width:1244px) {
+    .modal {
+        width: 50%;
+    }
+
+    .main-container {
+        width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .main-container {
+        width: 100%;
+    }
+
+    .center-container {
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: flex-end;
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
+        height: 100vh;
+    }
+
+    .lists {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .list-container {
+        width: 100%;
+    }
+
+    .lists .card {
+        width: 100%;
+    }
+
+    .member-container {
+        width: 100%;
+        border: none;
+    }
 }
 </style>
