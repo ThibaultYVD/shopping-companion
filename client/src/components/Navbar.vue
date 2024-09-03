@@ -93,6 +93,10 @@ export default {
     display: block;
   }
 
+  .navbar{
+    padding: 0.65rem;
+  }
+
   .navbar ul {
     display: none;
     flex-direction: column;

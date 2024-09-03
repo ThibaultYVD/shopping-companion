@@ -1,50 +1,61 @@
 <template>
     <div class="background">
+        <Spacing />
         <div class="main-container">
-            <div class="list">
-                <h1>{{ list.list_name }}</h1>
-
-                <div v-if="isGroupCreator" class="admin-buttons">
-                    <button @click="editList" class="edit-button">Modifier le nom de la liste</button>
-                    <button @click="deleteList" class="delete-button">Supprimer la liste</button>
-                </div>
+            <div class="group-container">
+                <CustomTitleSeparator :title="list.list_name" :buttons="listButtons" />
+                <p>Infos</p>
             </div>
 
-            <div class="products">
-                <h1>Produits de la liste</h1>
-                <div v-if="products.length > 0" class="products-container">
-                    <div v-for="product in products" :key="product.product_id" class="product-card">
-                        <h3>{{ product.product_name }}</h3>
-                        <p>Qté: {{ product.quantity }}</p>
-                        <p>Prix: {{ product.price }}</p>
+
+            <div class="center-container">
+                <div class="products-container">
+                    <TitleSeparator title="Produits" :buttons="productsButtons" />
+
+
+                    <div v-if="products.length > 0" class="products">
+                        <Product v-for="product in products" :key="product.product_id" :product="product"
+                            @remove="handleRemove" />
                     </div>
+                    <div v-else>
+                        <p>Il n'y a aucun produit dans cette liste. Commencez par en ajouter un !</p>
+                    </div>
+
                 </div>
-                <div v-else>
-                    <p>Aucun produit dans cette liste pour l'instant.</p>
-                </div>
+
+
             </div>
+        </div>
+        <Spacing />
+    </div>
 
-
-            <div v-if="isEditing" class="edit-modal">
-                <div class="modal-content">
-                    <h2>Modifier le nom de la liste</h2>
-                    <input v-model="newListName" placeholder="Nouveau nom de la liste" />
-                    <input v-model="newShoppingDate" placeholder="Nouvelle date de course" />
-                    <button @click="saveListName">Enregistrer</button>
-                    <button @click="cancelEdit">Annuler</button>
-                </div>
-            </div>
-
+    <div v-if="isEditing" class="edit-modal">
+        <div class="modal-content">
+            <h2>Modifier le nom de la liste</h2>
+            <input v-model="newListName" placeholder="Nouveau nom de la liste" />
+            <input v-model="newShoppingDate" placeholder="Nouvelle date de course" />
+            <button @click="saveListName">Enregistrer</button>
+            <button @click="cancelEdit">Annuler</button>
         </div>
     </div>
 </template>
 
 <script>
+import TitleSeparator from '@/components/TitleSeparator.vue';
 import { instance as axios } from '../services/axios';
 import { useRouter } from 'vue-router';
+import CustomTitleSeparator from '@/components/CustomTitleSeparator.vue';
+import Spacing from '@/components/Spacing.vue';
+import Product from '@/components/Product.vue';
 
 export default {
     name: 'List',
+    components: {
+        TitleSeparator,
+        CustomTitleSeparator,
+        Spacing,
+        Product
+    },
     data() {
         return {
             list: {},
@@ -53,7 +64,10 @@ export default {
             isEditing: false,
             newListName: '',
             newShoppingDate: '',
-            invitation_code: null
+            invitation_code: null,
+            productsButtons: [
+                { label: "Ajouter", action: this.createList }
+            ]
         };
     },
     computed: {
@@ -63,6 +77,16 @@ export default {
         },
         isGroupMember() {
             return this.userId !== this.list.user_id;
+        },
+        listButtons() {
+            const buttons = []
+            if (this.isGroupCreator) {
+                buttons.push(
+                    { label: 'Modifier', action: this.editList },
+                    { label: "Supprimer", action: this.deleteList },
+                )
+            }
+            return buttons
         }
 
     },
@@ -75,6 +99,7 @@ export default {
 
     },
     methods: {
+
         getUserIdFromToken() {
             const token = localStorage.getItem('token');
             if (token) {
@@ -117,6 +142,23 @@ export default {
                 console.log(error)
             }
 
+        },
+        async handleRemove(productId) {
+            try {
+                const isConfirmed = confirm("Voulez vous vraiment supprimer ce produit ?")
+
+                if (isConfirmed) {
+                    try {
+                        await axios.delete(`/user/products/${this.listId}/${productId}`);
+                        this.products = this.products.filter(product => product.product_id !== productId);
+                    } catch (error) {
+                        console.error('Error deleting group:', error);
+                        alert("Une erreur est survenue lors de la suppression du produit.");
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors de la suppression du produit:', error);
+            }
         }
 
     }
@@ -128,140 +170,79 @@ export default {
     height: 100vh;
     margin: 0;
     background-color: white;
+    display: flex;
 }
 
 .main-container {
+    padding-top: 60px;
+    width: 70%;
+}
+
+.center-container {
+    margin-top: 10px;
     display: flex;
-    padding-top: 50px;
-}
-
-.list {
-    width: 50%;
-    padding-left: 3rem;
-}
-
-.list h1 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.admin-buttons {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.edit-button,
-.delete-button {
-    margin-right: 10px;
-    padding: 10px 20px;
-    background-color: white;
-    color: black;
-    border: solid 2px #2C7C45;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.edit-button:hover,
-.delete-button:hover {
-    background-color: #2C7C45;
-    color: white;
-}
-
-.products {
-    width: 50%;
-    padding-left: 3rem;
-}
-
-.products h1 {
-    margin-top: 20px;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px;
+    background: rgb(241, 238, 238);
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    border-radius: 30px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    height: auto;
 }
 
 .products-container {
-    width: 100%;
-    display: flex;
-    justify-content: left;
-    flex-wrap: wrap;
-}
-
-.product-card {
-    background: white;
-    padding: 1rem;
-    margin: 0.5rem;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.30) 0px 0px 10px 0px;
-    border: solid 2px #2C7C45;
-}
-
-.product-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-weight: bold;
-}
-
-.product-card p {
-    margin: 0.2rem 0;
-}
-
-.list-button {
-    width: 100%;
-    padding: 5px;
-    background-color: white;
-    border: solid 2px #2C7C45;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 10px;
-    font-size: 15px;
-    font-weight: 400;
-}
-
-.list-button:hover {
-    background: #2C7C45;
-    color: white;
-}
-
-.edit-modal,
-.invitation-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    border: solid 2px #2C7C45;
-    box-shadow: #0000004d 0px 0px 10px 0px;
-    z-index: 1000;
-}
-
-.modal-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.modal-content h2 {
-    margin-bottom: 15px;
-}
-
-.modal-content input {
-    margin-bottom: 15px;
     padding: 10px;
-    font-size: 16px;
     width: 100%;
 }
 
-.modal-content button {
-    width: 100%;
-    padding: 10px;
-    background-color: #2C7C45;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
+.products-mobile {
+    display: none;
 }
 
-.modal-content button:hover {
-    background-color: #2C7C45;
-    color: white;
+
+
+@media (max-width:1444px) {
+    .main-container {
+        width: 80%;
+    }
+}
+
+@media (max-width:1244px) {
+    .modal {
+        width: 50%;
+    }
+
+    .main-container {
+        width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .main-container {
+        width: 100%;
+    }
+
+    .center-container {
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: flex-end;
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
+        height: 100vh;
+    }
+
+    .products {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .products .card {
+        width: 100%;
+    }
+
 }
 </style>
