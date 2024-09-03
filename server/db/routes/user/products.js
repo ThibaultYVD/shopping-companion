@@ -50,12 +50,13 @@ router.get('/:listId', [verifyToken], async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         const tokenUser_id = decodedToken.id
 
-        let sql = `SELECT DISTINCT p.product_id, p.product_name, p.price, pl.quantity, pl.added_at, s.shelf_name, s.location_x, s.location_y
+        let sql = `SELECT DISTINCT p.product_id, p.product_name, p.price, pl.quantity, pl.added_at, u.first_name, s.shelf_name, s.location_x, s.location_y
         FROM products_list pl
         INNER JOIN products p ON pl.product_id = p.product_id
         INNER JOIN shelves s ON p.shelf_id = s.shelf_id
         INNER JOIN lists l ON l.list_id = pl.list_id
 		INNER JOIN group_members m ON m.group_id = l.group_id AND m.user_id = :user_id
+        INNER JOIN users u ON m.user_id = u.user_id
 		WHERE pl.list_id = :list_id`
 
         const listProducts = await db.sequelize.query(sql,
