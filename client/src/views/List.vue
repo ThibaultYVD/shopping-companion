@@ -231,8 +231,8 @@ export default {
         justify-content: flex-end;
         margin-left: auto;
         margin-right: auto;
-        width: 90%;
-        height: 100vh;
+        width: 95%;
+        height: 80%;
     }
 
     .products {
