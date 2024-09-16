@@ -29,6 +29,8 @@
         <Spacing />
     </div>
 
+    <SearchProduct v-if="isSearchModalVisible" @close="closeSearchModal" />
+
     <div v-if="isEditing" class="edit-modal">
         <div class="modal-content">
             <h2>Modifier le nom de la liste</h2>
@@ -47,6 +49,7 @@ import { useRouter } from 'vue-router';
 import CustomTitleSeparator from '@/components/CustomTitleSeparator.vue';
 import Spacing from '@/components/Spacing.vue';
 import Product from '@/components/Product.vue';
+import SearchProduct from '@/components/SearchProduct.vue';
 
 export default {
     name: 'List',
@@ -54,7 +57,8 @@ export default {
         TitleSeparator,
         CustomTitleSeparator,
         Spacing,
-        Product
+        Product,
+        SearchProduct
     },
     data() {
         return {
@@ -66,8 +70,9 @@ export default {
             newShoppingDate: '',
             invitation_code: null,
             productsButtons: [
-                { label: "Ajouter", action: this.createList }
-            ]
+                { label: "Ajouter", action: this.openSearchModal }
+            ],
+            isSearchModalVisible: false
         };
     },
     computed: {
@@ -159,7 +164,15 @@ export default {
             } catch (error) {
                 console.error('Erreur lors de la suppression du produit:', error);
             }
+        },
+        openSearchModal() {
+            console.log(this.isSearchModalVisible)
+            this.isSearchModalVisible = true;
+        },
+        closeSearchModal() {
+            this.isSearchModalVisible = false; 
         }
+
 
     }
 };
@@ -201,6 +214,24 @@ export default {
     display: none;
 }
 
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
 
 
 @media (max-width:1444px) {
