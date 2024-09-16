@@ -10,6 +10,18 @@
             <div class="center-container">
                 <div class="member-container">
                     <TitleSeparator title="Membres" :buttons="memberButtons" />
+                    <div v-if="members.length > 0" class="members">
+                        <div class="member" v-for="member in displayedMembers" :key="member.user_id">
+                            <div class="member-name">
+                                <p>{{ member.first_name }}</p>
+                                <p>{{ member.last_name }}</p>
+                            </div>
+                            <div class="joined-at">
+                                <p>A rejoint le {{ formatDate(member.joined_at) }}</p>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
 
                 <div class="list-container">
@@ -80,6 +92,7 @@ export default {
         return {
             group: {},
             lists: [],
+            members: [],
             userId: null,
             isEditing: false,
             isCreatingInvit: false,
@@ -123,6 +136,7 @@ export default {
         this.getUserIdFromToken();
         this.getGroup(this.groupId);
         this.getLists(this.groupId);
+        this.getMembers(this.groupId)
     },
     methods: {
         getUserIdFromToken() {
@@ -138,6 +152,18 @@ export default {
                 this.group = response.data[0];
             } catch (error) {
                 console.error('Error fetching group:', error);
+                this.$router.push('/dashboard');
+            }
+        },
+        async getMembers(groupId) {
+            try {
+                const response = await axios.get(`/user/groups/groupmembers/${groupId}`);
+                this.members = response.data.map(member => ({
+                    ...member
+                }));
+                this.displayedMembers = this.members
+            } catch (error) {
+                console.error('Error fetching members:', error);
                 this.$router.push('/dashboard');
             }
         },
@@ -260,13 +286,13 @@ export default {
     border-radius: 30px;
     box-sizing: border-box;
     margin: 0 auto;
-    height: auto;
+    height: 80%;
 }
 
 .member-container {
     width: 40%;
     padding: 10px;
-    border-right: grey solid 1px;
+    border-right: grey solid 2px;
 }
 
 .list-container {
@@ -306,6 +332,42 @@ export default {
     border: solid 2px #2C7C45;
     box-shadow: #0000004d 0px 0px 10px 0px;
     z-index: 1000;
+}
+
+
+.members {
+    padding: 5px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.member {
+    padding-left: 5px;
+    background-color: white;
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    width: 100%;
+    height: 6%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.member-name {
+    width: 50%;
+    display: flex;
+    gap: 10px;
+}
+
+.joined-at {
+    width: 50%;
+    font-size: 12px;
+    font-style: italic;
 }
 
 .modal-content {
@@ -426,6 +488,25 @@ export default {
         margin-right: auto;
         width: 90%;
         height: 100vh;
+    }
+
+    .members {
+        padding: 5px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .member {
+        padding-left: 5px;
+        background-color: white;
+        box-shadow: #0000004d 0px 0px 10px 0px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        width: 100%;
+        height: 25%;
+
     }
 
     .lists {
