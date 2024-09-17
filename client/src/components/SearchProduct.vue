@@ -12,7 +12,7 @@
                     <li v-for="product in products" :key="product.product_id" class="product-item">
                         <span>{{ product.product_name }}</span>
                         <span>{{ product.shelf_name }}</span>
-                        <span>Prix/u : {{ product.price }}</span>
+                        <span>Prix/u : {{ product.price }}€</span>
                         <button @click="addProductToList(product)" class="add-button">Ajouter</button>
                     </li>
                 </ul>

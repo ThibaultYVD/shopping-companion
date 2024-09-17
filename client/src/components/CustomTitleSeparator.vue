@@ -28,13 +28,16 @@ export default {
 </script>
 
 <style scoped>
+h1{
+    font-weight: 400;
+}
+
 .custom-title-container {
     padding: 15px 0px 10px 0px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: #2C7C45 solid 5px;
-    /*border-radius: 0 0px 10px 10px;*/
 }
 
 .buttons {

@@ -29,17 +29,15 @@
         <Spacing />
     </div>
 
-    <SearchProduct v-if="isSearchModalVisible" @close="closeSearchModal" />
+    <SearchProduct v-if="isSearchModalVisible" @close="closeSearchModal" @product-added="getProducts(this.listId)"/>
 
-    <div v-if="isEditing" class="edit-modal">
-        <div class="modal-content">
-            <h2>Modifier le nom de la liste</h2>
-            <input v-model="newListName" placeholder="Nouveau nom de la liste" />
-            <input v-model="newShoppingDate" placeholder="Nouvelle date de course" />
-            <button @click="saveListName">Enregistrer</button>
-            <button @click="cancelEdit">Annuler</button>
-        </div>
-    </div>
+    <Modal :visible="isEditModalVisible" title="Modifier le nom de la liste" :actions="actions" @close="closeEditModal">
+        <template v-slot:body>
+            <input v-model="newListName" class="modal-input" placeholder="Nouveau nom de la liste" />
+            <input v-model="newShoppingDate" class="modal-input" placeholder="Nouvelle date de course" />
+        </template>
+    </Modal>
+
 </template>
 
 <script>
@@ -50,6 +48,7 @@ import CustomTitleSeparator from '@/components/CustomTitleSeparator.vue';
 import Spacing from '@/components/Spacing.vue';
 import Product from '@/components/Product.vue';
 import SearchProduct from '@/components/SearchProduct.vue';
+import Modal from '@/components/Modal.vue';
 
 export default {
     name: 'List',
@@ -58,25 +57,28 @@ export default {
         CustomTitleSeparator,
         Spacing,
         Product,
-        SearchProduct
+        SearchProduct,
+        Modal
     },
     data() {
         return {
             list: {},
             products: [],
             userId: null,
-            isEditing: false,
+            isEditModalVisible: false,
             newListName: '',
             newShoppingDate: '',
             invitation_code: null,
             productsButtons: [
                 { label: "Ajouter", action: this.openSearchModal }
             ],
-            isSearchModalVisible: false
+            isSearchModalVisible: false,
+            actions: [
+                { label: 'Enregistrer', handler: this.saveListName }
+            ]
         };
     },
     computed: {
-
         isGroupCreator() {
             return this.userId === this.list.user_id;
         },
@@ -87,13 +89,12 @@ export default {
             const buttons = []
             if (this.isGroupCreator) {
                 buttons.push(
-                    { label: 'Modifier', action: this.editList },
+                    { label: 'Modifier', action: this.openEditModal },
                     { label: "Supprimer", action: this.deleteList },
                 )
             }
             return buttons
         }
-
     },
     mounted() {
         this.groupId = this.$route.params.groupId;
@@ -112,39 +113,52 @@ export default {
                 this.userId = payload.id;
             }
         },
+        async deleteList() {
+            try {
+                const isConfirmed = confirm("Voulez vous vraiment supprimer cette liste ?")
+
+                if (isConfirmed) {
+                    try {
+                        await axios.delete(`/user/lists/${this.groupId}/${this.listId}`);
+                        this.$router.push(`/group/${this.groupId}`);
+                    } catch (error) {
+                        console.error('Error deleting list:', error);
+                        alert("Une erreur est survenue lors de la suppression de la liste.");
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors de la suppression du produit:', error);
+            }
+        },
         async getList(groupId, listId) {
             try {
-                const response = await axios.get(`/user/lists/${groupId}/${listId}`);
+                const response = await axios.get(`/user/lists/${this.groupId}/${this.listId}`);
                 this.list = response.data[0];
+                this.newShoppingDate = this.list.shopping_date
             } catch (error) {
                 console.error('Error fetching lists:', error);
 
             }
-        },
-        editList() {
-            this.isEditing = true;
-            this.newListName = this.list.list_name;
-            this.newShoppingDate = this.list.shopping_date;
         },
         async saveListName() {
             try {
                 await axios.patch(`/user/lists/${this.groupId}/${this.listId}`, { list_name: this.newListName, shopping_date: this.newShoppingDate });
                 this.list.list_name = this.newListName;
                 this.list.shopping_date = this.newShoppingDate;
-                this.isEditing = false;
+                this.isEditModalVisible = false;
             } catch (error) {
                 console.error('Error updating list name:', error);
             }
-        },
-        cancelEdit() {
-            this.isEditing = false;
         },
         async getProducts(listId) {
             try {
                 const response = await axios.get(`/user/products/${listId}`)
                 this.products = response.data
             } catch (error) {
-                console.log(error)
+                if (error.status == 403) {
+                    return
+                }
+                console.error(error)
             }
 
         },
@@ -165,12 +179,17 @@ export default {
                 console.error('Erreur lors de la suppression du produit:', error);
             }
         },
+        openEditModal() {
+            this.isEditModalVisible = true;
+        },
+        closeEditModal() {
+            this.isEditModalVisible = false;
+        },
         openSearchModal() {
-            console.log(this.isSearchModalVisible)
             this.isSearchModalVisible = true;
         },
         closeSearchModal() {
-            this.isSearchModalVisible = false; 
+            this.isSearchModalVisible = false;
         }
 
 
@@ -180,19 +199,18 @@ export default {
 
 <style scoped>
 .background {
-    height: 100vh;
     margin: 0;
     background-color: white;
     display: flex;
 }
 
 .main-container {
-    padding-top: 60px;
     width: 70%;
 }
 
 .center-container {
     margin-top: 10px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -201,12 +219,10 @@ export default {
     box-shadow: #0000004d 0px 0px 10px 0px;
     border-radius: 30px;
     box-sizing: border-box;
-    margin: 0 auto;
-    height: auto;
+
 }
 
 .products-container {
-    padding: 10px;
     width: 100%;
 }
 
@@ -232,6 +248,15 @@ export default {
     font-size: 24px;
     cursor: pointer;
 }
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
 
 
 @media (max-width:1444px) {
@@ -263,7 +288,8 @@ export default {
         margin-left: auto;
         margin-right: auto;
         width: 95%;
-        height: 80%;
+        min-height: 80%;
+        overflow: auto;
     }
 
     .products {

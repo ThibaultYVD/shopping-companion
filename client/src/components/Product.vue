@@ -47,10 +47,6 @@ export default {
             type: Object,
             required: true
         },
-        name: {
-            type: String,
-            required: true
-        }
     },
     methods: {
         incrementQuantity() {
@@ -76,8 +72,6 @@ export default {
             if (this.product.quantity === '' || isNaN(this.product.quantity)) {
                 return;
             }
-
-            console.log(this.product.quantity)
             const response = await axios.patch(`/user/products/quantity/${this.$route.params.listId}/${this.product.product_id}`, {
                 quantity: this.product.quantity
             });
