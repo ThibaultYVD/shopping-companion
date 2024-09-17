@@ -19,7 +19,6 @@
                             <div class="joined-at">
                                 <p>A rejoint le {{ formatDate(member.joined_at) }}</p>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -63,6 +62,14 @@
         <div class="modal-content">
             <h2>Nommez votre liste</h2>
             <input v-model="list_name" placeholder="Nom de la liste" />
+
+            <select v-model="selectedSupermarket">
+                <option v-for="supermarket in supermarkets" :key="supermarket.supermarket_id"
+                    :value="supermarket.supermarket_id">
+                    {{ supermarket.supermarket_name }}
+                </option>
+            </select>
+
             <button @click="submitList">Enregistrer</button>
             <button @click="cancelListCreate">Annuler</button>
         </div>
@@ -93,11 +100,13 @@ export default {
             group: {},
             lists: [],
             members: [],
+            supermarkets: [],
             userId: null,
             isEditing: false,
             isCreatingInvit: false,
             isCreating: false,
             newGroupName: '',
+            selectedSupermarket: null,
             list_name: null,
             invitation_code: null,
             listButtons: [
@@ -137,6 +146,7 @@ export default {
         this.getGroup(this.groupId);
         this.getLists(this.groupId);
         this.getMembers(this.groupId)
+        this.getSupermarkets()
     },
     methods: {
         getUserIdFromToken() {
@@ -153,6 +163,17 @@ export default {
             } catch (error) {
                 console.error('Error fetching group:', error);
                 this.$router.push('/dashboard');
+            }
+        },
+        async getSupermarkets() {
+            try {
+                const response = await axios.get(`/user/supermarkets/`);
+                this.supermarkets = response.data.map(supermarket => ({
+                    ...supermarket
+                }));
+                this.displayedSupermarkets = this.supermarkets
+            } catch (error) {
+                console.error('Error fetching supermarket:', error);
             }
         },
         async getMembers(groupId) {
@@ -248,7 +269,7 @@ export default {
         },
         async submitList() {
             try {
-                const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: '2024-08-28', supermarket_id: 1 });
+                const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: '2024-08-28', supermarket_id: this.selectedSupermarket });
                 this.isCreating = false;
                 this.$router.push(`/group/${response.data.group_id}`);
 

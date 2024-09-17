@@ -66,9 +66,12 @@ export default {
 }
 
 @media (max-width: 768px) {
+    .footer-content{
+        flex-direction: column;
+        gap:10px
+    }
     .social-media .social-icon {
-    margin: 0 5px;
+        margin: 0 5px;
+    }
 }
-}
-
 </style>
