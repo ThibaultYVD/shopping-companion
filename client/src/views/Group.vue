@@ -263,30 +263,25 @@ export default {
 
 <style scoped>
 .background {
-    height: 100vh;
     margin: 0;
     background-color: white;
     display: flex;
 }
 
 .main-container {
-    padding-top: 60px;
     width: 70%;
-
 }
 
 .center-container {
     margin-top: 10px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding: 10px;
     background: rgb(241, 238, 238);
     box-shadow: #0000004d 0px 0px 10px 0px;
     border-radius: 30px;
     box-sizing: border-box;
-    margin: 0 auto;
-    height: 80%;
 }
 
 .member-container {
@@ -487,7 +482,6 @@ export default {
         margin-left: auto;
         margin-right: auto;
         width: 90%;
-        height: 100vh;
     }
 
     .members {
