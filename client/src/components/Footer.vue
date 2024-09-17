@@ -3,7 +3,7 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="legal-mentions">
-                <p><router-link to="/">Mentions légales</router-link></p>
+                <p><router-link to="/mentions-legales">Mentions légales</router-link></p>
             </div>
             <div class="author">
                 <p>Made by Thibault Yvard - 2024</p>

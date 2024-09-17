@@ -103,8 +103,8 @@ export default {
             const buttons = []
             if (this.isGroupCreator) {
                 buttons.push(
-                    { label: 'Modifier', action: this.openEditModal },
-                    { label: "Supprimer", action: this.deleteList },
+                    { label: '', action: this.openEditModal, icon:"fa-solid fa-pen-to-square" },
+                    { label: "", action: this.deleteList, icon:"fa-solid fa-trash" },
                 )
             }
             return buttons
@@ -170,13 +170,10 @@ export default {
         },
         async getProducts(listId) {
             try {
-                const response = await axios.get(`/user/products/${listId}`)
+                const response = await axios.get(`/user/products/${this.listId}`)
                 this.products = response.data
             } catch (error) {
-                if (error.status == 403) {
-                    return
-                }
-                console.error(error)
+                //console.error(error)
             }
 
         },
@@ -253,7 +250,7 @@ export default {
     display: none;
 }
 
-.list-details{
+.list-details {
     padding: 10px;
 }
 

@@ -7,7 +7,7 @@
         <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i></router-link></li>
       </ul>
       <ul>
-        <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-user"></i></a></li>
+        <li v-if="isAuthenticated"><router-link to="/account" ><i class="fa-solid fa-user"></i></router-link></li>
         <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i
               class="fa-solid fa-right-from-bracket"></i></a></li>
       </ul>
@@ -21,9 +21,12 @@
         <ul>
           <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
           <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
-          <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i> Tableau de bord</router-link></li>
-          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-user"></i> Mon compte</a></li>
-          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-right-from-bracket"></i> Se déconnecter</a></li>
+          <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i> Tableau de
+              bord</router-link></li>
+          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-user"></i> Mon compte</a>
+          </li>
+          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-right-from-bracket"></i>
+              Se déconnecter</a></li>
         </ul>
       </div>
     </div>
@@ -56,7 +59,10 @@ export default {
       const authStore = useAuthStore();
       authStore.clearToken();
       const router = useRouter();
-      router.push('/');
+      router.push('/login');
+    },
+    account(){
+
     },
     handleResize() {
       this.isMobile = window.innerWidth <= 768;
@@ -88,7 +94,7 @@ export default {
   z-index: 1000;
 }
 
-i{
+i {
   font-size: 25px;
 }
 
