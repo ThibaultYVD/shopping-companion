@@ -27,6 +27,10 @@ export default {
 </script>
 
 <style scoped>
+h1{
+    font-weight: 400;
+}
+
 .buttons-container {
     padding: 15px 0px 10px 0px;
     display: flex;
