@@ -1,6 +1,8 @@
 <!-- src/views/Login.vue -->
 <template>
   <div class="background" id="wrapper">
+
+
     <div class="login-container">
       <div class="title-container">
         <h2>Connexion</h2>
@@ -73,7 +75,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 89.2vh;
   margin: 0;
   background-color: #2C7C45;
 }
@@ -162,15 +164,22 @@ export default {
   font-weight: 200;
 }
 
-
+@media (max-width: 1824px) {
+  .background {
+    height:87.9vh;
+  }
+}
 
 @media (max-width: 768px) {
   .login-container {
     background-color: #F5F0F6;
     border-radius: 30px;
     text-align: center;
-
     width: 85%;
+  }
+
+  .background {
+    height: 78.1vh;
   }
 
   .login-container button {
