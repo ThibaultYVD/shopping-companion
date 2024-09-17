@@ -130,7 +130,8 @@ export default {
     justify-content: space-between;
 }
 
-.top-infos, .bottom-infos {
+.top-infos,
+.bottom-infos {
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -171,7 +172,12 @@ export default {
     font-size: 30px;
 }
 
-.added-by{
+.delete-action {
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    border-radius: 10px;
+}
+
+.added-by {
     font-style: italic;
     font-size: 13px;
 }

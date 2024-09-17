@@ -40,14 +40,13 @@
         <Spacing />
     </div>
 
-    <div v-if="isEditing" class="edit-modal">
-        <div class="modal-content">
-            <h2>Modifier le nom du groupe</h2>
-            <input v-model="newGroupName" placeholder="Nouveau nom du groupe" />
-            <button @click="saveGroupName">Enregistrer</button>
-            <button @click="cancelEdit">Annuler</button>
-        </div>
-    </div>
+
+    <Modal :visible="isEditing" title="Modifier le nom du groupe" :actions="actionsEdit" @close="cancelEdit">
+        <template v-slot:body>
+            <input v-model="newGroupName" class="modal-input" placeholder="Nouveau nom du groupe" />
+        </template>
+    </Modal>
+
 
     <div v-if="isCreatingInvit" class="invitation-modal">
         <div class="modal-content">
@@ -58,22 +57,18 @@
         </div>
     </div>
 
-    <div v-if="isCreating" class="create-modal">
-        <div class="modal-content">
-            <h2>Nommez votre liste</h2>
+    <Modal :visible="isCreating" title="Nommez votre liste" :actions="actionsCreate" @close="cancelListCreate">
+        <template v-slot:body>
             <input v-model="list_name" placeholder="Nom de la liste" />
-
+            <input v-model="shopping_date" placeholder="yyyy-mm-dd" />
             <select v-model="selectedSupermarket">
                 <option v-for="supermarket in supermarkets" :key="supermarket.supermarket_id"
                     :value="supermarket.supermarket_id">
                     {{ supermarket.supermarket_name }}
                 </option>
             </select>
-
-            <button @click="submitList">Enregistrer</button>
-            <button @click="cancelListCreate">Annuler</button>
-        </div>
-    </div>
+        </template>
+    </Modal>
 
 </template>
 
@@ -108,12 +103,19 @@ export default {
             newGroupName: '',
             selectedSupermarket: null,
             list_name: null,
+            shopping_date:null,
             invitation_code: null,
             listButtons: [
                 { label: "Créer", action: this.createList }
             ],
             memberButtons: [
                 { label: "Inviter", action: this.createInvitation }
+            ],
+            actionsEdit: [
+                { label: 'Enregistrer', handler: this.saveGroupName }
+            ],
+            actionsCreate: [
+                { label: 'Enregistrer', handler: this.submitList }
             ],
         };
     },
@@ -128,13 +130,13 @@ export default {
             const buttons = []
             if (this.isGroupCreator) {
                 buttons.push(
-                    { label: 'Modifier', action: this.editGroupName },
-                    { label: "Supprimer", action: this.deleteGroup },
+                    { label: '', action: this.editGroupName, icon:"fa-solid fa-pen-to-square" },
+                    { label: "", action: this.deleteGroup, icon:"fa-solid fa-trash"},
                 )
             }
             if (this.isGroupMember) {
                 buttons.push(
-                    { label: 'Quitter le groupe', action: this.leaveGroup, class: 'leave-button' }
+                    { label: '', action: this.leaveGroup, class: 'leave-button', icon:"fa-solid fa-right-from-bracket" }
                 );
             }
             return buttons
@@ -197,7 +199,7 @@ export default {
                 }));
                 this.displayedLists = this.lists.slice(0, 9);
             } catch (error) {
-                console.error('Error fetching lists:', error);
+                //console.error('Error fetching lists:', error);
 
             }
         },
@@ -269,9 +271,9 @@ export default {
         },
         async submitList() {
             try {
-                const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: '2024-08-28', supermarket_id: this.selectedSupermarket });
+                const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: this.shopping_date, supermarket_id: this.selectedSupermarket });
                 this.isCreating = false;
-                this.$router.push(`/group/${response.data.group_id}`);
+                this.$router.push(`/group/${this.groupId}/list/${response.data.list_id}`);
 
             } catch (error) {
                 console.error('Error creating list:', error);
@@ -366,7 +368,7 @@ export default {
     margin-bottom: 10px;
     border-radius: 10px;
     width: 100%;
-    height: 6%;
+    height: 10%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -487,6 +489,10 @@ export default {
 
     .main-container {
         width: 90%;
+    }
+
+    .member {
+        height: 30%;
     }
 }
 

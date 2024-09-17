@@ -11,7 +11,7 @@
       <div class="center-container">
         <div v-if="groups.length > 0" class="container">
           <Card v-for="group in displayedGroups" :key="group.group_id" :title="group.group_name"
-            :userCount="group.user_count" :activeListCount="group.active_list_count" :groupId="group.group_id"
+            :userCount="group.member_count" :activeListCount="group.list_count" :groupId="group.group_id"
             buttonText="Voir le groupe" @go-to-group="() => goToGroupPage(group.group_id)" />
         </div>
 
@@ -45,23 +45,17 @@
   </div>
 
 
-  <div v-if="isCreating" class="modal">
-    <div class="modal-content">
-      <h2>Nommez votre groupe</h2>
-      <input v-model="group_name" placeholder="Nom du groupe" />
-      <button @click="submitGroup">Enregistrer</button>
-      <button @click="cancelGroupCreate">Annuler</button>
-    </div>
-  </div>
+  <Modal :visible="isCreating" title="Créer un groupe" :actions="actionsCreate" @close="cancelGroupCreate">
+    <template v-slot:body>
+      <input v-model="group_name" class="modal-input" placeholder="Nom du groupe" />
+    </template>
+  </Modal>
 
-  <div v-if="isJoining" class="modal">
-    <div class="modal-content">
-      <h2>Indiquez le code du groupe</h2>
-      <input v-model="invitation_code" placeholder="Code d'invitation" />
-      <button @click="joiningGroup">Rejoindre</button>
-      <button @click="cancelGroupJoin">Annuler</button>
-    </div>
-  </div>
+  <Modal :visible="isJoining" title="Indiquez le code du groupe" :actions="actionsJoin" @close="cancelGroupJoin">
+    <template v-slot:body>
+      <input v-model="invitation_code" class="modal-input" placeholder="Code d'invitation" />
+    </template>
+  </Modal>
 
 
 </template>
@@ -95,8 +89,14 @@ export default {
       isCreating: false,
       isJoining: false,
       groupButtons: [
-        { label: 'Créer', action: this.createGroup },
+        { label: 'Créer', action: this.createGroup  },
         { label: 'Rejoindre', action: this.joinGroup },
+      ],
+      actionsCreate: [
+        { label: 'Enregistrer', handler: this.submitGroup }
+      ],
+      actionsJoin: [
+        { label: 'Rejoindre', handler: this.joiningGroup }
       ],
     };
   },
@@ -117,11 +117,9 @@ export default {
       try {
         const response = await axios.get("/user/groups");
         this.groups = response.data.map((group) => ({
-          ...group,
-          user_count: Math.floor(Math.random() * 10),
-          active_list_count: Math.floor(Math.random() * 10),
+          ...group
         }));
-        this.displayedGroups = this.groups.slice(0, 9);
+        this.displayedGroups = this.groups;
       } catch (error) {
         console.error("Error fetching groups:", error);
       }
@@ -210,7 +208,6 @@ export default {
         }
 
         this.isJoining = false;
-        //console.error('Erreur lors de la tentative de rejoindre le groupe:', error);
       }
     },
   },
