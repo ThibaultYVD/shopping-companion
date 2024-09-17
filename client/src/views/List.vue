@@ -4,7 +4,11 @@
         <div class="main-container">
             <div class="group-container">
                 <CustomTitleSeparator :title="list.list_name" :buttons="listButtons" />
-                <p>Infos</p>
+                <div class="list-details">
+                    <p>Date de création: {{ formatDate(list.creation_date) }}</p>
+                    <p>Date de course prévue: {{ formatDate(list.shopping_date) }}</p>
+                </div>
+
             </div>
 
 
@@ -21,15 +25,25 @@
                         <p>Il n'y a aucun produit dans cette liste. Commencez par en ajouter un !</p>
                     </div>
 
+
                 </div>
 
+                <div class="container-footer">
+                    <div class="algorythm-button">
+                        <button>Commencer les courses</button>
+                    </div>
+                    <div class="total">
+                        <p>Total: {{ calculateTotalPrice() }}€</p>
+                    </div>
 
+                </div>
             </div>
+
         </div>
         <Spacing />
     </div>
 
-    <SearchProduct v-if="isSearchModalVisible" @close="closeSearchModal" @product-added="getProducts(this.listId)"/>
+    <SearchProduct v-if="isSearchModalVisible" @close="closeSearchModal" @product-added="getProducts(this.listId)" />
 
     <Modal :visible="isEditModalVisible" title="Modifier le nom de la liste" :actions="actions" @close="closeEditModal">
         <template v-slot:body>
@@ -105,7 +119,11 @@ export default {
 
     },
     methods: {
-
+        calculateTotalPrice() {
+            return this.products.reduce((total, product) => {
+                return total + (product.price * product.quantity);
+            }, 0).toFixed(2);
+        },
         getUserIdFromToken() {
             const token = localStorage.getItem('token');
             if (token) {
@@ -179,6 +197,11 @@ export default {
                 console.error('Erreur lors de la suppression du produit:', error);
             }
         },
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('fr-FR', options);
+        },
         openEditModal() {
             this.isEditModalVisible = true;
         },
@@ -212,7 +235,7 @@ export default {
     margin-top: 10px;
     margin-bottom: 20px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     padding: 10px;
     background: rgb(241, 238, 238);
@@ -228,6 +251,10 @@ export default {
 
 .products-mobile {
     display: none;
+}
+
+.list-details{
+    padding: 10px;
 }
 
 .modal-content {
@@ -257,6 +284,43 @@ export default {
     border-radius: 5px;
 }
 
+.container-footer {
+    display: flex;
+    justify-content: right;
+    border-top: 2px grey solid;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 0 0 30px 30px;
+    margin-top: 20px;
+}
+
+.algorythm-button {
+    width: 60%;
+    display: none;
+
+}
+
+.algorythm-button button {
+    width: 90%;
+    border: 2px solid #2C7C45;
+    background-color: white;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+
+.total {
+    padding: 2px;
+    width: 20%;
+    border: 2px solid #2C7C45;
+    border-radius: 10px;
+    background-color: white;
+
+}
+
+.total p {
+    font-size: 20px;
+}
 
 
 @media (max-width:1444px) {
@@ -275,6 +339,22 @@ export default {
     }
 }
 
+@media (max-width:1024px) {
+    .container-footer {
+        justify-content: space-between;
+    }
+
+    .algorythm-button {
+        width: 40%;
+        display: flex;
+
+    }
+
+    .total {
+        width: 30%;
+    }
+}
+
 @media (max-width: 768px) {
 
     .main-container {
@@ -283,12 +363,11 @@ export default {
 
     .center-container {
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         justify-content: flex-end;
         margin-left: auto;
         margin-right: auto;
         width: 95%;
-        min-height: 80%;
         overflow: auto;
     }
 
@@ -299,6 +378,15 @@ export default {
 
     .products .card {
         width: 100%;
+    }
+
+    .algorythm-button {
+        width: 60%;
+
+    }
+
+    .total {
+        width: 40%;
     }
 
 }
