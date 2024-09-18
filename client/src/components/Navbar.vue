@@ -7,7 +7,7 @@
         <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i></router-link></li>
       </ul>
       <ul>
-        <li v-if="isAuthenticated"><router-link to="/account" ><i class="fa-solid fa-user"></i></router-link></li>
+        <li v-if="isAuthenticated"><router-link to="/account"><i class="fa-solid fa-user"></i></router-link></li>
         <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i
               class="fa-solid fa-right-from-bracket"></i></a></li>
       </ul>
@@ -23,8 +23,7 @@
           <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
           <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i> Tableau de
               bord</router-link></li>
-          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-user"></i> Mon compte</a>
-          </li>
+          <li v-if="isAuthenticated"><router-link to="/account"><i class="fa-solid fa-user"></i> Mon compte</router-link></li>
           <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-right-from-bracket"></i>
               Se déconnecter</a></li>
         </ul>
@@ -59,9 +58,9 @@ export default {
       const authStore = useAuthStore();
       authStore.clearToken();
       const router = useRouter();
-      router.push('/login');
+      window.location.href = "http://localhost:5173/";
     },
-    account(){
+    account() {
 
     },
     handleResize() {
