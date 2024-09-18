@@ -60,9 +60,6 @@ export default {
       const router = useRouter();
       window.location.href = "http://localhost:5173/";
     },
-    account() {
-
-    },
     handleResize() {
       this.isMobile = window.innerWidth <= 768;
     },
