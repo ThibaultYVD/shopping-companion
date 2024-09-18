@@ -130,6 +130,8 @@ export default {
     color: white;
 }
 
+
+
 /* Responsive styles */
 @media (max-width:1444px) {
     .card {

@@ -1,68 +1,130 @@
-<!-- src/components/Navbar.vue -->
 <template>
   <nav class="navbar">
-    <button class="burger" @click="toggleMenu">
-      ☰
-    </button>
-    <ul :class="{ open: menuOpen }">
-      <li v-if="!isAuthenticated"><router-link to="/">Accueil</router-link></li>
-      <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
-      <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
-      <li v-if="isAuthenticated"><router-link to="/dashboard">Tableau de bord</router-link></li>
-      <li v-if="isAuthenticated"><a href="#" @click="logout">Se déconnecter</a></li>
-    </ul>
+    <div class="nav-links" v-if="!isMobile">
+      <ul>
+        <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
+        <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
+        <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i></router-link></li>
+      </ul>
+      <ul>
+        <li v-if="isAuthenticated"><router-link to="/account"><i class="fa-solid fa-user"></i></router-link></li>
+        <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i
+              class="fa-solid fa-right-from-bracket"></i></a></li>
+      </ul>
+    </div>
+
+    <div class="burger-menu" v-if="isMobile" ref="burgerMenu">
+      <button class="burger" @click="toggleBurger" aria-expanded="menuOpen" aria-label="Ouvrir le menu">
+        ☰
+      </button>
+      <div class="dropdown-menu" v-if="menuOpen">
+        <ul>
+          <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
+          <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
+          <li v-if="isAuthenticated"><router-link to="/dashboard"><i class="fa-solid fa-house"></i> Tableau de
+              bord</router-link></li>
+          <li v-if="isAuthenticated"><router-link to="/account"><i class="fa-solid fa-user"></i> Mon compte</router-link></li>
+          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-right-from-bracket"></i>
+              Se déconnecter</a></li>
+        </ul>
+      </div>
+    </div>
   </nav>
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { mapState } from 'pinia';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 
 export default {
-  setup() {
-    const authStore = useAuthStore();
-    const router = useRouter();
-    const menuOpen = ref(false);
-
-    const logout = () => {
-      authStore.clearToken();
-      router.push('/');
-    };
-
-    const toggleMenu = () => {
-      menuOpen.value = !menuOpen.value;
-    };
-
-    const isAuthenticated = computed(() => authStore.isAuthenticated);
-
+  data() {
     return {
-      isAuthenticated,
-      logout,
-      menuOpen,
-      toggleMenu,
+      menuOpen: false,
+      isMobile: window.innerWidth <= 768,
     };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isAuthenticated']),
+  },
+  methods: {
+    toggleBurger() {
+      this.menuOpen = !this.menuOpen;
+    },
+    closeMenu() {
+      this.menuOpen = false;
+    },
+    logout() {
+      const authStore = useAuthStore();
+      authStore.clearToken();
+      const router = useRouter();
+      window.location.href = "http://localhost:5173/";
+    },
+    account() {
+
+    },
+    handleResize() {
+      this.isMobile = window.innerWidth <= 768;
+    },
+    handleClickOutside(event) {
+      const burgerMenu = this.$refs.burgerMenu;
+      // Si le clic est en dehors du burger menu, fermer le menu
+      if (burgerMenu && !burgerMenu.contains(event.target)) {
+        this.closeMenu();
+      }
+    },
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleResize);
+    document.addEventListener('click', this.handleClickOutside);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+    document.removeEventListener('click', this.handleClickOutside);
   },
 };
 </script>
 
 <style scoped>
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background-color: #2C7C45;
-  padding: 1rem;
+  padding: 10px;
   box-shadow: inset rgba(0, 0, 0, 0.48) 0px 30px 50px -30px;
   z-index: 1000;
 }
 
+i {
+  font-size: 25px;
+}
+
+.nav-links {
+  padding-left: 10px;
+  padding-right: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-links ul,
+.burger-menu .dropdown-menu ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links ul li a,
+.burger-menu .dropdown-menu ul li a {
+  color: #F5F0F6;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.nav-links ul li a:hover,
+.burger-menu .dropdown-menu ul li a:hover {
+  text-decoration: underline;
+}
+
 .burger {
-  display: none;
   font-size: 1.8rem;
   background: none;
   border: none;
@@ -70,67 +132,35 @@ export default {
   cursor: pointer;
 }
 
-.navbar ul {
-  list-style: none;
-  display: flex;
-  gap: 2rem;
+.burger-menu .dropdown-menu {
+  background-color: #2C7C45;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.48) 0px 30px 50px -30px;
+  z-index: 1000;
 }
 
-.navbar a {
-  color: #F5F0F6;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 500
+.burger-menu .dropdown-menu ul {
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.navbar a:hover {
-  text-decoration: underline;
+.burger-menu .dropdown-menu ul li {
+  margin: 0.5rem 0;
 }
 
-/* Styles pour petits écrans */
 @media (max-width: 768px) {
-  .burger {
-    display: block;
-  }
-
-  .navbar{
-    padding: 0.65rem;
-  }
-
-  .navbar ul {
+  .nav-links {
     display: none;
-    flex-direction: column;
-    gap: 0;
-    position: absolute;
-    top: 60px;
-    left: 0px;
-    width: 40%;
-    background-color: #F5F0F6;
-    padding: 1rem;
-    color: black;
-    border-radius: 0 20px 20px 0px;
-    z-index: 1;
-    transition: left 0.5s ease;
-    box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 37px 0px;
   }
+}
 
-  .navbar ul.open {
-    display: flex;
-  }
-
-  .navbar a {
-    display:block;
-    color: black;
-    text-decoration: none;
-    width: 100%;
-    margin-left: 4px;
-
-  }
-
-
-  .navbar li {
-    margin: 0.4rem 0;
-    border-left: #2C7C45 3px solid;
+@media (min-width: 769px) {
+  .burger-menu {
+    display: none;
   }
 }
 </style>

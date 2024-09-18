@@ -3,7 +3,7 @@
         <h1>{{ title }}</h1>
         <div class="buttons" v-if="buttons.length > 0">
             <button v-for="(button, index) in buttons" :key="index" @click="button.action" class="action-button">
-                {{ button.label }}
+                <i :class="button.icon"></i> {{ button.label }}
             </button>
         </div>
         <slot></slot>
@@ -27,6 +27,10 @@ export default {
 </script>
 
 <style scoped>
+h1{
+    font-weight: 400;
+}
+
 .buttons-container {
     padding: 15px 0px 10px 0px;
     display: flex;
@@ -45,18 +49,27 @@ export default {
 
 .action-button {
     background-color: white;
-    border: 2px solid #2c7c45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    border:none;
     border-radius: 15px;
     cursor: pointer;
     font-size: 18px;
     padding: 10px;
     font-weight: 400;
     font-family: Inter;
+    text-align: center;
 }
 
 .action-button:hover {
     background-color: #2c7c45;
     color: white
+}
+
+i{
+    font-size: 25px;
 }
 
 @media (max-width: 1444px) {
