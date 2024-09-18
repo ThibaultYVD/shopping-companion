@@ -84,7 +84,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 89.2vh;
+  height: 89.5vh;
   margin: 0;
   background-color: #2C7C45;
 }
@@ -177,7 +177,7 @@ export default {
 
 @media (max-width: 1824px) {
   .background {
-    height:87.9vh;
+    height:88.4vh;
   }
 }
 
@@ -205,7 +205,7 @@ export default {
   }
 
   .background {
-    height: 78.1vh;
+    height: 79.1vh;
   }
 
   .register-container button {
