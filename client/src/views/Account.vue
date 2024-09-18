@@ -1,28 +1,38 @@
 <template>
-    <div class="compte">
-        <h1>Mon Compte</h1>
+    <div class="background">
+        <Spacing />
+        <div class="main-container">
+            <div class="group-container">
+                <TitleSeparator title="Mon compte" :buttons="actionsButtons" />
+            </div>
+            <div class="compte">
+                <div v-if="loading">
+                    <p>Chargement des informations utilisateur...</p>
+                </div>
 
-        <div v-if="loading">
-            <p>Chargement des informations utilisateur...</p>
-        </div>
+                <div v-if="!loading && user">
+                    <section>
+                        <h2>Informations personnelles</h2>
+                        <p><strong>Nom :</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                        <p><strong>Email :</strong> {{ user.email }}</p>
+                        <p><strong>Date de création :</strong> {{ formatDate(user.created_at) }}</p>
+                    </section>
+                </div>
 
-        <div v-if="!loading && user">
-            <section>
-                <h2>Informations personnelles</h2>
-                <p><strong>Nom :</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Email :</strong> {{ user.email }}</p>
-                <p><strong>Date de création :</strong> {{ formatDate(user.created_at) }}</p>
-            </section>
+                <div v-if="error">
+                    <p>Erreur lors du chargement des données : {{ error }}</p>
+                </div>
+            </div>
         </div>
-
-        <div v-if="error">
-            <p>Erreur lors du chargement des données : {{ error }}</p>
-        </div>
+        <Spacing />
     </div>
 </template>
 
 <script>
 import { instance as axios } from "../services/axios";
+import Spacing from '@/components/Spacing.vue'
+import TitleSeparator from '@/components/TitleSeparator.vue'
+import { useAuthStore } from '../stores/auth';
 
 export default {
     name: "Compte",
@@ -31,8 +41,16 @@ export default {
             token: localStorage.getItem('token'),  // Correction: Utilisation correcte de "token"
             user: null,
             loading: true,
-            error: null
+            error: null,
+            actionsButtons: [
+                { label: "Supprimer mon compte", action: this.deleteAccount }
+            ],
         };
+    },
+    components: {
+        Spacing,
+        TitleSeparator
+
     },
     methods: {
         async fetchUserData() {
@@ -49,6 +67,20 @@ export default {
         formatDate(date) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(date).toLocaleDateString('fr-FR', options);
+        },
+        async deleteAccount() {
+            try {
+                const isConfirmed = confirm("Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible.");
+                if (isConfirmed) {
+                    await axios.delete(`/user/users/`);
+                    const authStore = useAuthStore();
+                    authStore.clearToken();
+                    window.location.href = "http://localhost:5173/";
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
         }
     },
     mounted() {
@@ -58,6 +90,16 @@ export default {
 </script>
 
 <style scoped>
+.background {
+    margin: 0;
+    background-color: white;
+    display: flex;
+}
+
+.main-container {
+    width: 70%;
+}
+
 .compte {
     padding: 20px;
     line-height: 1.6;
@@ -75,5 +117,24 @@ h2 {
 
 p {
     margin-bottom: 0.5rem;
+}
+
+
+@media (max-width:1444px) {
+    .main-container {
+        width: 80%;
+    }
+}
+
+@media (max-width:1244px) {
+    .main-container {
+        width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        width: 100%;
+    }
 }
 </style>
