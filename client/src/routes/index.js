@@ -8,6 +8,7 @@ import Group from '@/views/Group.vue';
 import List from '@/views/List.vue';
 import MentionsLegales from '@/views/MentionsLegales.vue';
 import Account from '@/views/Account.vue';
+import GeneratedList from '@/views/GeneratedList.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -17,9 +18,8 @@ const routes = [
   { path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/account', component: Account, meta: { requiresAuth: true } },
   { path: '/group/:groupId', component: Group, meta: { requiresAuth: true } },
-  { path: '/group/:groupId/list/:listId', component: List, meta: { requiresAuth: true } }
-
-
+  { path: '/group/:groupId/list/:listId', component: List, meta: { requiresAuth: true } },
+  { path: '/group/:groupId/list/:listId/generated-list', component: GeneratedList, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({
