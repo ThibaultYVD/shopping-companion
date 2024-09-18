@@ -30,7 +30,7 @@
 
                 <div class="container-footer">
                     <div class="algorythm-button">
-                        <button>Commencer les courses</button>
+                        <button @click="goToGeneratedListPage">Commencer les courses</button>
                     </div>
                     <div class="total">
                         <p>Total: {{ calculateTotalPrice() }}€</p>
@@ -103,8 +103,8 @@ export default {
             const buttons = []
             if (this.isGroupCreator) {
                 buttons.push(
-                    { label: '', action: this.openEditModal, icon:"fa-solid fa-pen-to-square" },
-                    { label: "", action: this.deleteList, icon:"fa-solid fa-trash" },
+                    { label: '', action: this.openEditModal, icon: "fa-solid fa-pen-to-square" },
+                    { label: "", action: this.deleteList, icon: "fa-solid fa-trash" },
                 )
             }
             return buttons
@@ -210,6 +210,10 @@ export default {
         },
         closeSearchModal() {
             this.isSearchModalVisible = false;
+        },
+        goToGeneratedListPage() {
+            const router = useRouter();
+            this.$router.push(`/group/${this.groupId}/list/${this.listId}/generated-list`);
         }
 
 
