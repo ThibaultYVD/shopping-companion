@@ -492,7 +492,7 @@ export default {
     }
 
     .member {
-        height: 30%;
+        height: 10%;
     }
 }
 

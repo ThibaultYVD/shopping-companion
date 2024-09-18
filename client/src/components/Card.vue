@@ -4,7 +4,7 @@
             <h3>{{ title }}</h3>
             <p v-if="groupName">{{ groupName }}</p>
             <p v-if="userCount !== undefined">Nombre de personnes: {{ userCount }}</p>
-            <p v-if="activeListCount !== undefined">Listes actives: {{ activeListCount }}</p>
+            <p v-if="activeListCount !== undefined">Listes: {{ activeListCount }}</p>
             <p v-if="shoppingDate">Date de course prévu: {{ formattedDate }}</p>
             <p v-if="supermarketName">{{ supermarketName }}</p>
         </div>
