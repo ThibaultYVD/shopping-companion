@@ -10,6 +10,8 @@ router.get('/', [verifyToken], async (req, res) => {
     try {
         const tokenUser_id = req.userId
 
+        console.log(tokenUser_id)
+
         const user = await db.sequelize.query(`SELECT user_id, first_name, last_name, email, created_at FROM users WHERE user_id = :user_id`,
             {
                 replacements: {

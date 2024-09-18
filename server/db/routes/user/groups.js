@@ -11,11 +11,17 @@ router.get('/', [verifyToken], async (req, res) => {
         const tokenUser_id = req.userId
 
         const groups = await db.sequelize.query(
-            `SELECT DISTINCT g.* 
-             FROM users_groups g 
-             INNER JOIN group_members m 
-             ON g.group_id = m.group_id 
-             WHERE m.user_id = :user_id`,
+            `SELECT DISTINCT g.*, 
+          (SELECT COUNT(*) 
+           FROM group_members gm 
+           WHERE gm.group_id = g.group_id) AS member_count,
+          (SELECT COUNT(*) 
+           FROM lists l 
+           WHERE l.group_id = g.group_id) AS list_count
+   FROM users_groups g 
+   INNER JOIN group_members m 
+   ON g.group_id = m.group_id 
+   WHERE m.user_id = :user_id`,
             {
                 replacements: {
                     user_id: tokenUser_id
@@ -30,7 +36,6 @@ router.get('/', [verifyToken], async (req, res) => {
         res.status(500).json({ error: 'Error dans récupération des groupes' });
     }
 })
-
 
 
 router.get('/:groupId', [verifyToken], async (req, res) => {
@@ -55,6 +60,34 @@ router.get('/:groupId', [verifyToken], async (req, res) => {
         }
 
         res.status(200).json(userGroup)
+    } catch (error) {
+        console.error(`Error dans récupération du groupe ${req.params.groupId} :`, error);
+        res.status(500).json({ error: 'Error dans récupération du groupe' });
+    }
+})
+
+
+router.get('/groupmembers/:groupId', [verifyToken], async (req, res) => {
+    try {
+
+        const tokenUser_id = req.userId
+
+        const groupMembers = await db.sequelize.query(`SELECT DISTINCT u.user_id, u.first_name, u.last_name, m.joined_at FROM group_members m 
+            INNER JOIN users u ON u.user_id = m.user_id
+            WHERE m.group_id = :group_id`,
+            {
+                replacements: {
+                    user_id: tokenUser_id,
+                    group_id: req.params.groupId
+                }, type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
+
+        if (!groupMembers || groupMembers.length == 0) {
+            return res.status(404).json({ error: "Il n'y a aucun membre dans ce groupe." });
+        }
+
+        res.status(200).json(groupMembers)
     } catch (error) {
         console.error(`Error dans récupération du groupe ${req.params.groupId} :`, error);
         res.status(500).json({ error: 'Error dans récupération du groupe' });

@@ -6,10 +6,12 @@
     <div class="main-container">
       <div class="group-container">
         <CustomTitleSeparator title="Vos groupes" :buttons="groupButtons" />
+      </div>
 
+      <div class="center-container">
         <div v-if="groups.length > 0" class="container">
           <Card v-for="group in displayedGroups" :key="group.group_id" :title="group.group_name"
-            :userCount="group.user_count" :activeListCount="group.active_list_count" :groupId="group.group_id"
+            :userCount="group.member_count" :activeListCount="group.list_count" :groupId="group.group_id"
             buttonText="Voir le groupe" @go-to-group="() => goToGroupPage(group.group_id)" />
         </div>
 
@@ -19,19 +21,20 @@
             !
           </p>
         </div>
-      </div>
 
-      <div class="list-container">
-        <TitleSeparator title="Vos listes" />
+        <div class="list-container">
+          <TitleSeparator title="Vos listes" />
 
-        <div v-if="lists.length > 0" class="container">
-          <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name" :groupName="list.group_name"
-            :shoppingDate="list.shopping_date" :supermarketName="list.supermarket_name" :listId="list.list_id"
-            :groupId="list.group_id" buttonText="Voir la liste"
-            @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
-        </div>
-        <div v-else>
-          <p>Vous n'avez aucune liste. Commencez par créer un groupe.</p>
+          <div v-if="lists.length > 0" class="container">
+            <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name"
+              :groupName="list.group_name" :shoppingDate="list.shopping_date" :supermarketName="list.supermarket_name"
+              :listId="list.list_id" :groupId="list.group_id" buttonText="Voir la liste"
+              @go-to-list="() => goToListPage(list.group_id, list.list_id)" />
+          </div>
+          <div v-else>
+            <p>Vous n'avez aucune liste. Commencez par créer un groupe.</p>
+          </div>
+
         </div>
 
       </div>
@@ -42,23 +45,17 @@
   </div>
 
 
-  <div v-if="isCreating" class="modal">
-    <div class="modal-content">
-      <h2>Nommez votre groupe</h2>
-      <input v-model="group_name" placeholder="Nom du groupe" />
-      <button @click="submitGroup">Enregistrer</button>
-      <button @click="cancelGroupCreate">Annuler</button>
-    </div>
-  </div>
+  <Modal :visible="isCreating" title="Créer un groupe" :actions="actionsCreate" @close="cancelGroupCreate">
+    <template v-slot:body>
+      <input v-model="group_name" class="modal-input" placeholder="Nom du groupe" />
+    </template>
+  </Modal>
 
-  <div v-if="isJoining" class="modal">
-    <div class="modal-content">
-      <h2>Indiquez le code du groupe</h2>
-      <input v-model="invitation_code" placeholder="Code d'invitation" />
-      <button @click="joiningGroup">Rejoindre</button>
-      <button @click="cancelGroupJoin">Annuler</button>
-    </div>
-  </div>
+  <Modal :visible="isJoining" title="Indiquez le code du groupe" :actions="actionsJoin" @close="cancelGroupJoin">
+    <template v-slot:body>
+      <input v-model="invitation_code" class="modal-input" placeholder="Code d'invitation" />
+    </template>
+  </Modal>
 
 
 </template>
@@ -92,8 +89,14 @@ export default {
       isCreating: false,
       isJoining: false,
       groupButtons: [
-        { label: 'Créer', action: this.createGroup },
+        { label: 'Créer', action: this.createGroup  },
         { label: 'Rejoindre', action: this.joinGroup },
+      ],
+      actionsCreate: [
+        { label: 'Enregistrer', handler: this.submitGroup }
+      ],
+      actionsJoin: [
+        { label: 'Rejoindre', handler: this.joiningGroup }
       ],
     };
   },
@@ -114,11 +117,9 @@ export default {
       try {
         const response = await axios.get("/user/groups");
         this.groups = response.data.map((group) => ({
-          ...group,
-          user_count: Math.floor(Math.random() * 10),
-          active_list_count: Math.floor(Math.random() * 10),
+          ...group
         }));
-        this.displayedGroups = this.groups.slice(0, 9);
+        this.displayedGroups = this.groups;
       } catch (error) {
         console.error("Error fetching groups:", error);
       }
@@ -207,7 +208,6 @@ export default {
         }
 
         this.isJoining = false;
-        //console.error('Erreur lors de la tentative de rejoindre le groupe:', error);
       }
     },
   },
@@ -216,22 +216,27 @@ export default {
 
 <style scoped>
 .background {
-  height: 100vh;
   margin: 0;
   background-color: white;
   display: flex;
 }
 
 .main-container {
-  padding-top: 60px;
   width: 70%;
+  margin-bottom: 20px;
+}
+
+.center-container {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .container {
   display: flex;
-  flex-direction: row;
-  align-content: center;
-  height: 30vh;
   gap: 20px;
   margin-top: 10px;
 }
@@ -245,8 +250,8 @@ export default {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  border: solid 2px #2c7c45;
-  box-shadow: #0000004d 0px 0px 50px 0px;
+  border: 2px solid #2c7c45;
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
 
@@ -280,12 +285,9 @@ export default {
 
 .modal-content button:hover {
   background-color: #2C7C45;
-  color: white;
 }
 
-@media (max-width:1444px) {}
-
-@media (max-width:1244px) {
+@media (max-width: 1244px) {
   .modal {
     width: 50%;
   }
@@ -304,23 +306,20 @@ export default {
     width: 90%;
   }
 
-  .group-container,
-  .list-container {
-    height: 70%;
-  }
-
   .main-container {
     width: 100%;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 0 5px;
+  }
+
+  .center-container {
+    justify-content: flex-end;
+    margin: 0 auto;
   }
 
   .container {
-    display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
   }
-
 }
 </style>

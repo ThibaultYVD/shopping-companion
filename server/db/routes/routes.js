@@ -13,14 +13,14 @@ async function routes(app) {
     const productsAdmin = require('./admin/products')
     app.use('/admin/products/', productsAdmin)
 
-    const rolesRoute = require('./admin/roles')
-    app.use('/admin/roles/', rolesRoute)
+    const rolesAdmin = require('./admin/roles')
+    app.use('/admin/roles/', rolesAdmin)
 
-    const shelvesRoute = require('./admin/shelves')
-    app.use('/admin/shelves/', shelvesRoute)
+    const shelvesAdmin = require('./admin/shelves')
+    app.use('/admin/shelves/', shelvesAdmin)
 
-    const supermarketsRoute = require('./admin/supermarkets')
-    app.use('/supermarkets/', supermarketsRoute)
+    const supermarketsAdmin = require('./admin/supermarkets')
+    app.use('/supermarkets/', supermarketsAdmin)
 
 
     /* ROUTES USERS */
@@ -32,6 +32,9 @@ async function routes(app) {
 
     const productsRoute = require('./user/products')
     app.use('/user/products/', productsRoute)
+
+    const supermarketsRoute = require('./user/supermarkets')
+    app.use('/user/supermarkets/', supermarketsRoute)
 
     const usersRoute = require('./user/users')
     app.use('/user/users/', usersRoute)
