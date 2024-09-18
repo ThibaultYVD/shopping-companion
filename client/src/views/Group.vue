@@ -368,7 +368,7 @@ export default {
     margin-bottom: 10px;
     border-radius: 10px;
     width: 100%;
-    height: 10%;
+    height: 20%;
     display: flex;
     flex-direction: row;
     align-items: center;

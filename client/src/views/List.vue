@@ -283,7 +283,7 @@ export default {
 
 .container-footer {
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
     border-top: 2px grey solid;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -292,12 +292,13 @@ export default {
 }
 
 .algorythm-button {
-    width: 60%;
-    display: none;
+    width: 20%;
+    padding: 2px;
 
 }
 
 .algorythm-button button {
+    padding: 2px;
     width: 90%;
     border: 2px solid #2C7C45;
     background-color: white;
