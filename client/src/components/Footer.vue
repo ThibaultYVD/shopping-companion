@@ -32,11 +32,11 @@ export default {
 
 <style scoped>
 .footer {
-    width: 100%;
     background-color: #2C7C45;
     box-shadow: inset 0px -30px 40px 7px rgba(0, 0, 0, 0.1);
     color: white;
     text-align: center;
+    z-index: 1000;
 }
 
 .footer-content {
