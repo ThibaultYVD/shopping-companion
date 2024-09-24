@@ -56,7 +56,7 @@ export default {
           email: email.value,
           password: password.value
         });
-
+        alert('Votre compte a été créé, veuillez vous connecter.');
         router.push('/login');
       } catch (error) {
         console.error(error);
@@ -177,7 +177,7 @@ export default {
 
 @media (max-width: 1824px) {
   .background {
-    height:88.4vh;
+    height: 88.4vh;
   }
 }
 

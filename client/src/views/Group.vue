@@ -60,7 +60,7 @@
     <Modal :visible="isCreating" title="Nommez votre liste" :actions="actionsCreate" @close="cancelListCreate">
         <template v-slot:body>
             <input v-model="list_name" placeholder="Nom de la liste" />
-            <input v-model="shopping_date" placeholder="yyyy-mm-dd" />
+            <input v-model="shopping_date" placeholder="jj/mm/yyyy" />
             <select v-model="selectedSupermarket">
                 <option v-for="supermarket in supermarkets" :key="supermarket.supermarket_id"
                     :value="supermarket.supermarket_id">
@@ -103,7 +103,7 @@ export default {
             newGroupName: '',
             selectedSupermarket: null,
             list_name: null,
-            shopping_date:null,
+            shopping_date: null,
             invitation_code: null,
             listButtons: [
                 { label: "Créer", action: this.createList }
@@ -130,13 +130,13 @@ export default {
             const buttons = []
             if (this.isGroupCreator) {
                 buttons.push(
-                    { label: '', action: this.editGroupName, icon:"fa-solid fa-pen-to-square" },
-                    { label: "", action: this.deleteGroup, icon:"fa-solid fa-trash"},
+                    { label: '', action: this.editGroupName, icon: "fa-solid fa-pen-to-square" },
+                    { label: "", action: this.deleteGroup, icon: "fa-solid fa-trash" },
                 )
             }
             if (this.isGroupMember) {
                 buttons.push(
-                    { label: '', action: this.leaveGroup, class: 'leave-button', icon:"fa-solid fa-right-from-bracket" }
+                    { label: '', action: this.leaveGroup, class: 'leave-button', icon: "fa-solid fa-right-from-bracket" }
                 );
             }
             return buttons
@@ -271,6 +271,16 @@ export default {
         },
         async submitList() {
             try {
+                const parts = this.shopping_date.split('/');
+                if (parts.length === 3) {
+                    const day = parts[0];
+                    const month = parts[1];
+                    const year = parts[2];
+                    this.shopping_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                }
+
+                console.log(this.shopping_date)
+
                 const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: this.shopping_date, supermarket_id: this.selectedSupermarket });
                 this.isCreating = false;
                 this.$router.push(`/group/${this.groupId}/list/${response.data.list_id}`);
@@ -398,11 +408,32 @@ export default {
     margin-bottom: 15px;
 }
 
-.modal-content input {
+.modal-content input,
+.modal-content select {
     margin-bottom: 15px;
     padding: 10px;
     font-size: 16px;
     width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: lightgrey;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-bottom: 3px solid #2C7C45;
+    background-color: white;
+}
+
+.modal-content select {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: lightgrey;
 }
 
 .modal-content button {

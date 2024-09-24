@@ -9,9 +9,11 @@
       </div>
       <form @submit.prevent="login">
         <input v-model="email" type="text" placeholder="Email" required>
-        <input v-model="password" type="password" placeholder="Mot de passe" required>
+        <div class="password-container">
+          <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="Mot de passe" required>
+          <i :class="showPassword ? 'fa fa-eye' : 'fa fa-eye-slash'" @click="togglePasswordVisibility"></i>
+        </div>
         <button type="submit">S'identifier</button>
-        <a href="#">Mot de passe oublié ?</a>
         <div class="register-container">
           <p>Pas encore inscrit ? <router-link to="/register">S'inscrire</router-link></p>
         </div>
@@ -31,8 +33,13 @@ export default {
   setup() {
     const email = ref('');
     const password = ref('');
+    const showPassword = ref(false); // état pour afficher ou masquer le mot de passe
     const router = useRouter();
     const authStore = useAuthStore();
+
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
 
     const login = async () => {
       try {
@@ -65,7 +72,7 @@ export default {
       }
     };
 
-    return { email, password, login };
+    return { email, password, showPassword, togglePasswordVisibility, login };
   }
 };
 </script>
@@ -75,7 +82,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 89.5vh;
+  min-height: 89.2vh;
   margin: 0;
   background-color: #2C7C45;
 }
@@ -85,11 +92,36 @@ export default {
   border-radius: 30px;
   box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 37px 0px;
   text-align: center;
+  width: 30%;
 }
 
 .title-container {
   display: flex;
   justify-content: center;
+}
+
+.password-container {
+  position: relative;
+  margin: 10px auto;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px;
+  padding: 10px;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: lightgrey;
+}
+
+.password-container i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #2C7C45;
 }
 
 .login-container h2 {
@@ -107,7 +139,6 @@ export default {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: lightgrey;
-
 }
 
 .login-container input::placeholder {
@@ -166,7 +197,18 @@ export default {
 
 @media (max-width: 1824px) {
   .background {
-    height:88.4vh;
+    /*height: 88.4vh;*/
+  }
+}
+
+@media (max-width:1244px) {
+
+  .login-container {
+    width: 50%;
+  }
+
+  .background {
+    /*height: 88.4vh;*/
   }
 }
 
@@ -179,7 +221,7 @@ export default {
   }
 
   .background {
-    height: 79.1vh;
+    /*height: 79.1vh;*/
   }
 
   .login-container button {
