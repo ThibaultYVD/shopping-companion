@@ -46,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./client
+          file: ./client/Dockerfile
           push: true
           tags: thibaultyvd/shopping-companion:production
           build-args: |
