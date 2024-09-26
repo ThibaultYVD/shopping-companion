@@ -17,6 +17,6 @@ RUN npm install -g serve
 
 EXPOSE 3000
 
-ENTRYPOINT [ "/app/start.sh" ]
+#ENTRYPOINT [ "/app/start.sh" ]
 
-#CMD ["serve", "-s", "dist"]
+CMD ["serve", "-s", "dist"]
