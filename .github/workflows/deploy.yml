@@ -25,8 +25,6 @@ jobs:
     needs: [build]
     # only build/deploy main branch on pushes
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
-    # env:
-    #   APP_ENV: ${{ secrets.APP_ENV }}
 
     steps:
       - name: ⬇️ Checkout repo
@@ -44,5 +42,5 @@ jobs:
           APP_ENV: ${{ secrets.APP_ENV }}
         run: |
           docker pull thibaultyvd/shopping-companion:production
-          docker compose -f docker.compose.yml up -d
+          docker compose -f docker-compose.yml up -d
           docker system prune --all --volumes --force
