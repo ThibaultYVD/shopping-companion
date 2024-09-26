@@ -1,12 +1,9 @@
-version: '3'
 services:
   client:
+    environment:
+    - APP_ENV
+    container_name: shopping-companion
+    image: thibaultyvd/shopping-companion:production
+    restart: always 
     ports:
       - 8080:3000
-    volumes:
-      - './shopping-companion:/home/shopping-companion-volume'
-    image: shopping-companion:latest
-    restart: unless-stopped
-
-volumes:
-  shoppingcompanion:
