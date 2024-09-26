@@ -45,7 +45,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./client
           push: true
           tags: thibaultyvd/shopping-companion:production
           build-args: |
