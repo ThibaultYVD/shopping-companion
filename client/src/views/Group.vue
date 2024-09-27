@@ -164,7 +164,7 @@ export default {
                 this.group = response.data[0];
             } catch (error) {
                 console.error('Error fetching group:', error);
-                this.$router.push('/dashboard');
+                this.$router.push('/home');
             }
         },
         async getSupermarkets() {
@@ -187,7 +187,7 @@ export default {
                 this.displayedMembers = this.members
             } catch (error) {
                 console.error('Error fetching members:', error);
-                this.$router.push('/dashboard');
+                this.$router.push('/home');
             }
         },
         async getLists(groupId) {
@@ -227,7 +227,7 @@ export default {
             if (isConfirmed) {
                 try {
                     await axios.delete(`/user/groups/${this.groupId}`);
-                    this.$router.push('/dashboard');
+                    this.$router.push('/home');
                 } catch (error) {
                     console.error('Error deleting group:', error);
                     alert("Une erreur est survenue lors de la suppression du groupe.");
@@ -241,7 +241,7 @@ export default {
                 try {
                     await axios.delete(`/user/users/leavegroup/${this.groupId}`);
 
-                    this.$router.push('/dashboard');
+                    this.$router.push('/home');
                 } catch (error) {
                     console.error('Error deleting group:', error);
                     alert("Une erreur est survenue lors de la suppression du groupe.");
