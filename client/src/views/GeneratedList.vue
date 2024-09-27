@@ -104,7 +104,7 @@ export default {
                 this.isProcessFinished = true;
             }
         },
-        goToHome(){
+        goToHome() {
             this.$router.push('/home');
         }
     },
@@ -121,6 +121,7 @@ export default {
     background-color: #2C7C45;
     display: flex;
     min-height: 100vh;
+    min-height: 100svh;
 }
 
 .main-container {
@@ -236,7 +237,7 @@ export default {
 }
 
 .finished p {
-   font-size: 20px;
+    font-size: 20px;
 }
 
 .finished button {
