@@ -105,7 +105,7 @@ export default {
             }
         },
         goToHome(){
-            this.$router.push('/dashboard');
+            this.$router.push('/home');
         }
     },
     mounted() {

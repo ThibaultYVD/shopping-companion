@@ -53,7 +53,7 @@ export default {
           authStore.setToken(token);
 
           if (localStorage.getItem('token')) {
-            router.push('/dashboard');
+            router.push('/home');
           } else {
             console.error('Token non stocké correctement');
           }

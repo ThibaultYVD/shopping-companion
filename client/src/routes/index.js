@@ -15,7 +15,7 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/register', component: Register },
   { path: '/mentions-legales', component: MentionsLegales },
-  { path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/home', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/account', component: Account, meta: { requiresAuth: true } },
   { path: '/group/:groupId', component: Group, meta: { requiresAuth: true } },
   { path: '/group/:groupId/list/:listId', component: List, meta: { requiresAuth: true } },
