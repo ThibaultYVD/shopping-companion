@@ -55,6 +55,7 @@ body {
 
 body {
   min-height: 100vh;
+  min-height: 100svh;
   color: var(--color-text);
   background: var(--color-background);
   transition:

@@ -82,7 +82,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 89.2vh;
+  min-height: 100vh;
+  min-height: 100svh;
   margin: 0;
   background-color: #2C7C45;
 }
@@ -195,11 +196,6 @@ export default {
   font-weight: 200;
 }
 
-@media (max-width: 1824px) {
-  .background {
-    /*height: 88.4vh;*/
-  }
-}
 
 @media (max-width:1244px) {
 
@@ -207,9 +203,6 @@ export default {
     width: 50%;
   }
 
-  .background {
-    /*height: 88.4vh;*/
-  }
 }
 
 @media (max-width: 768px) {
@@ -220,9 +213,6 @@ export default {
     width: 85%;
   }
 
-  .background {
-    /*height: 79.1vh;*/
-  }
 
   .login-container button {
     width: 50%;
