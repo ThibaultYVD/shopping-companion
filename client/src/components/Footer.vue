@@ -13,10 +13,10 @@
                 <a href="https://thibault-yvard.fr" target="_blank" rel="noopener noreferrer" class="social-icon">
                     <i class="fa-solid fa-globe"></i>
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-icon">
+                <a href="https://github.com/ThibaultYVD" target="_blank" rel="noopener noreferrer" class="social-icon">
                     <i class="fa-brands fa-github"></i>
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-icon">
+                <a href="https://www.linkedin.com/in/thibault-yvard/" target="_blank" rel="noopener noreferrer" class="social-icon">
                     <i class="fa-brands fa-linkedin"></i>
                 </a>
             </div>

@@ -1,14 +1,20 @@
 <template>
     <div v-if="visible" class="modal-overlay">
         <div class="modal-content">
-            <button @click="$emit('close')" class="close-button">&times;</button>
-            <h2>{{ title }}</h2>
-            <slot name="body"></slot>
-            <div class="modal-actions">
-                <button v-for="action in actions" :key="action.label" @click="action.handler" :class="action.class">
-                    {{ action.label }}
-                </button>
+            <div class="modal-header">
+                <h2>{{ title }}</h2>
+                <button @click="$emit('close')" class="close-button">&times;</button>
+
             </div>
+            <div class="modal-body">
+                <slot name="body"></slot>
+                <div class="modal-actions">
+                    <button v-for="action in actions" :key="action.label" @click="action.handler" :class="action.class">
+                        {{ action.label }}
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -51,20 +57,37 @@ export default {
     background: white;
     border-radius: 10px;
     padding: 20px;
+    padding-top: 15px;
     width: 80%;
     max-width: 500px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
+.modal-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
 .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
     background: transparent;
     border: none;
-    font-size: 24px;
+    font-size: 32px;
     cursor: pointer;
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    border-radius: 10px;
 }
+
+
 
 .modal-actions button {
     width: 100%;
@@ -74,8 +97,6 @@ export default {
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 10px;
     font-size: 16px;
 }
-
 </style>

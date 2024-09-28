@@ -1,25 +1,38 @@
 <template>
     <div class="modal-overlay">
         <div class="modal-content">
-            <button @click="$emit('close')" class="close-button">&times;</button>
-            <h2>Recherche de Produits</h2>
+            <div class="modal-header">
+                <h2>Recherche de produits</h2>
+                <button @click="$emit('close')" class="close-button">&times;</button>
 
-            <input v-model="searchQuery" @input="searchProducts" placeholder="Rechercher un produit..."
-                class="search-input" />
+            </div>
 
-            <div v-if="products.length > 0">
-                <ul class="product-list">
-                    <li v-for="product in products" :key="product.product_id" class="product-item">
-                        <span>{{ product.product_name }}</span>
-                        <span>{{ product.shelf_name }}</span>
-                        <span>Prix/u : {{ product.price }}€</span>
-                        <button @click="addProductToList(product)" class="add-button">Ajouter</button>
-                    </li>
-                </ul>
+            <div class="modal-body">
+                <input v-model="searchQuery" @input="searchProducts" placeholder="Rechercher un produit..."
+                    class="search-input" />
+
+                <div v-if="products.length > 0">
+                    <ul class="product-list">
+                        <li v-for="product in products" :key="product.product_id" class="product-item">
+                            <div class="product-infos">
+                                <span class="product-name">{{ product.product_name }}</span>
+                                <span>Prix/u : {{ product.price }}€</span>
+                                <span class="product-shelf">{{ product.shelf_name }}</span>
+                            </div>
+
+                            <div class="product-price-add">
+
+                                <button @click="addProductToList(product)" class="add-button">Ajouter</button>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+                <div v-else-if="searchQuery.length >= 3">
+                    <p>Aucun produit trouvé.</p>
+                </div>
             </div>
-            <div v-else-if="searchQuery.length >= 3">
-                <p>Aucun produit trouvé.</p>
-            </div>
+
         </div>
     </div>
 </template>
@@ -87,25 +100,38 @@ export default {
     background: white;
     border-radius: 10px;
     padding: 20px;
+    padding-top: 15px;
     width: 80%;
     max-width: 500px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
     background: transparent;
     border: none;
-    font-size: 24px;
+    font-size: 32px;
     cursor: pointer;
+    box-shadow: #0000004d 0px 0px 10px 0px;
+    border-radius: 10px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .search-input {
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
 }
@@ -113,13 +139,34 @@ export default {
 .product-list {
     list-style-type: none;
     padding: 0;
+
 }
 
 .product-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 10px;
     border-bottom: 1px solid #ddd;
+}
+
+.product-name {
+    font-weight: bold;
+}
+
+.product-shelf {
+    font-style: italic;
+    font-size: 13px;
+}
+
+.product-infos {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.product-price-add {
+    display: flex;
 }
 
 .add-button {
@@ -129,5 +176,26 @@ export default {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
+}
+
+@media (max-width:768px) {
+    .product-item {
+        flex-direction: row;
+
+    }
+
+    .product-infos {
+        flex-direction: column;
+        gap: 0;
+        align-items: flex-start;
+    }
+
+    .product-price-add {
+        flex-direction: column;
+    }
+
+    .add-button {
+        height: 5vh;
+    }
 }
 </style>

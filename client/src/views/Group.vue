@@ -48,20 +48,19 @@
     </Modal>
 
 
-    <div v-if="isCreatingInvit" class="invitation-modal">
-        <div class="modal-content">
-            <h2>Votre code d'invitation:</h2>
-            <input :value=invitation_code class="invitation-code" readonly>
+    <Modal :visible="isCreatingInvit" title="Votre code d'invitation" @close="closeInvitationCode">
+        <template v-slot:body>
+            <input :value=invitation_code class="invitation-code" readonly />
             <p>Envoyez ce code à la personne de votre choix.</p>
-            <button @click="closeInvitationCode">Fermer</button>
-        </div>
-    </div>
+        </template>
+    </Modal>
 
     <Modal :visible="isCreating" title="Nommez votre liste" :actions="actionsCreate" @close="cancelListCreate">
         <template v-slot:body>
             <input v-model="list_name" placeholder="Nom de la liste" />
-            <input v-model="shopping_date" placeholder="jj/mm/yyyy" />
+            <input v-model="shopping_date" placeholder="jj/mm/yyyy" type="date" />
             <select v-model="selectedSupermarket">
+                <option value="" selected disabled>Choisissez un magasin</option>
                 <option v-for="supermarket in supermarkets" :key="supermarket.supermarket_id"
                     :value="supermarket.supermarket_id">
                     {{ supermarket.supermarket_name }}
@@ -271,16 +270,6 @@ export default {
         },
         async submitList() {
             try {
-                const parts = this.shopping_date.split('/');
-                if (parts.length === 3) {
-                    const day = parts[0];
-                    const month = parts[1];
-                    const year = parts[2];
-                    this.shopping_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                }
-
-                console.log(this.shopping_date)
-
                 const response = await axios.post(`/user/lists/${this.groupId}`, { list_name: this.list_name, shopping_date: this.shopping_date, supermarket_id: this.selectedSupermarket });
                 this.isCreating = false;
                 this.$router.push(`/group/${this.groupId}/list/${response.data.list_id}`);
@@ -347,21 +336,6 @@ export default {
     padding: 10px;
 }
 
-.edit-modal,
-.create-modal,
-.invitation-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    border: solid 2px #2C7C45;
-    box-shadow: #0000004d 0px 0px 10px 0px;
-    z-index: 1000;
-}
-
 
 .members {
     padding: 5px;
@@ -398,25 +372,14 @@ export default {
     font-style: italic;
 }
 
-.modal-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.modal-content h2 {
-    margin-bottom: 15px;
-}
-
 .modal-content input,
 .modal-content select {
-    margin-bottom: 15px;
     padding: 10px;
     font-size: 16px;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: lightgrey;
+    background-color: white;
 }
 
 .modal-content input:focus,
@@ -433,78 +396,15 @@ export default {
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: lightgrey;
-}
-
-.modal-content button {
-    width: 100%;
-    padding: 10px;
-    background-color: #2C7C45;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.modal-content button:hover {
-    background-color: #2C7C45;
-    color: white;
-}
-
-.invitation-modal p {
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 
-.invitation-code {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.modal-content .invitation-code {
     font-size: 25px !important;
     letter-spacing: 0.1cm;
     font-weight: bold;
-    background-color: #f9f9f9;
+    background-color: lightgrey;
     text-align: center;
-}
-
-.invitation-code:focus {
-    border: 1px solid #2C7C45;
-}
-
-
-.create-list-button {
-    width: 100%;
-    padding: 5px;
-    background-color: white;
-    border: solid 2px #2C7C45;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 10px;
-    font-size: 15px;
-    font-weight: 400;
-}
-
-.create-list-button:hover {
-    background: #2C7C45;
-    color: white;
-}
-
-.create-group-button {
-    margin-top: 20px;
-    border: 2px solid #2C7C45;
-    background-color: white;
-    width: 50%;
-    padding: 15px;
-}
-
-.create-group-container {
-    display: flexbox;
-    justify-content: center;
-    margin-top: 20px;
 }
 
 @media (max-width:1444px) {
@@ -514,10 +414,6 @@ export default {
 }
 
 @media (max-width:1244px) {
-    .modal {
-        width: 50%;
-    }
-
     .main-container {
         width: 90%;
     }

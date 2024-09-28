@@ -4,8 +4,13 @@
         <div class="main-container">
             <div class="center-container">
                 <!-- Bouton initial pour commencer -->
+
                 <div class="start" v-if="!stepStarted">
-                    <button @click="startProcess" class="start-button">Je suis sur place.</button>
+                    <p>Dirigez-vous vers votre supermarché.</p>
+                    <div>
+                        <button @click="startProcess" class="start-button">Je suis sur place.</button>
+                    </div>
+
                 </div>
 
                 <!-- Afficher chaque rayon avec une liste de produits à cliquer, exclure les rayons avec "start" -->
@@ -13,7 +18,7 @@
                     :key="index" v-show="currentStep === index && !isProcessFinished">
                     <!-- Rayon actuel -->
                     <div class="current-shelf" v-if="item.nextShelf">
-                        <h1>{{ item.nextShelf.shelf_name }}</h1>
+                        <h1>Rayon {{ item.nextShelf.shelf_name }}</h1>
 
                         <!-- Liste des produits avec interaction par clic -->
                         <div class="products-list" v-if="item.nextShelf && item.nextShelf.products.length">
@@ -34,9 +39,12 @@
 
                 <!-- Message de fin lorsque tous les rayons sont complétés -->
                 <div class="finished" v-if="stepStarted && isProcessFinished">
-                    <h1>Félicitations, vous avez récupéré tous les produits !</h1>
+                    <h1>Vos courses sont terminées !</h1>
                     <p>Dirigez-vous maintenant vers les caisses.</p>
-                    <button @click="goToHome">Retourner à l'accueil</button>
+                    <div>
+                        <button @click="goToHome">Retour à l'accueil</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -132,8 +140,7 @@ export default {
 }
 
 .center-container {
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -142,18 +149,29 @@ export default {
 }
 
 .start {
-    box-shadow: #0000004d 0px 0px 10px 0px;
-    border-radius: 10px;
-    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 50px
 }
 
-.start button {
+.start p {
+    font-size: 32px;
+    color: white;
+}
+
+.start button,
+.finished button {
+    box-shadow: #0000004d 0px 0px 40px 0px;
+    border-radius: 10px;
     font-size: 30px;
     font-weight: bold;
 }
 
 .start-button,
-.next-button {
+.next-button,
+.finished button {
     padding: 10px 20px;
     background-color: white;
     border: solid 2px #2C7C45;
@@ -161,9 +179,10 @@ export default {
     cursor: pointer;
 }
 
-.start-button:hover,
+
 .next-button:hover {
-    background-color: #0056b3;
+    background-color: #2C7C45;
+    color: white;
 }
 
 .start-button:disabled,
@@ -173,7 +192,7 @@ export default {
 }
 
 .current-shelf-container {
-    width: 80%;
+    width: 40%;
     padding: 10px;
     box-shadow: #0000004d 0px 0px 10px 0px;
     border-radius: 10px;
@@ -215,38 +234,24 @@ export default {
     background-color: #aaaaaa;
 }
 
-.start {
-    box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 37px 0px;
-    border-radius: 10px;
-    background-color: white;
-}
-
 .finished {
-    width: 80%;
-    box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 10px 0px;
-    border-radius: 10px;
-    background-color: white;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 10px;
+    align-items: center;
+    text-align: center;
+    gap: 50px
 }
 
 .finished h1 {
     line-height: normal;
+    color: white;
 }
 
 .finished p {
     font-size: 20px;
+    color: white;
 }
 
-.finished button {
-    font-size: 30px;
-    font-weight: bold;
-    background-color: white;
-    border: solid 2px #2C7C45;
-    border-radius: 5px;
-}
 
 @media (max-width:1444px) {
     .main-container {
@@ -258,11 +263,19 @@ export default {
     .main-container {
         width: 90%;
     }
+
+    .current-shelf-container {
+        width: 60%;
+    }
 }
 
 @media (max-width: 768px) {
     .main-container {
         width: 100%;
+    }
+
+    .current-shelf-container {
+        width: 80%;
     }
 }
 </style>
