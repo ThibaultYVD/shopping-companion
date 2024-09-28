@@ -48,7 +48,7 @@
     <Modal :visible="isEditModalVisible" title="Modifier le nom de la liste" :actions="actions" @close="closeEditModal">
         <template v-slot:body>
             <input v-model="newListName" class="modal-input" placeholder="Nouveau nom de la liste" />
-            <input v-model="newShoppingDate" class="modal-input" placeholder="Nouvelle date de course" />
+            <input type="date" v-model="newShoppingDate" class="modal-input" placeholder="Nouvelle date de course" />
         </template>
     </Modal>
 
@@ -250,39 +250,26 @@ export default {
     width: 100%;
 }
 
-.products-mobile {
-    display: none;
-}
 
 .list-details {
     padding: 10px;
 }
 
-.modal-content {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    width: 80%;
-    max-width: 500px;
-    position: relative;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.modal-input {
-    width: 100%;
+.modal-content input,
+.modal-content select {
     padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: white;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-bottom: 3px solid #2C7C45;
+    background-color: white;
 }
 
 .container-footer {
@@ -308,10 +295,13 @@ export default {
     background-color: white;
     border-radius: 10px;
     font-size: 18px;
+    cursor: pointer;
 }
 
 
 .total {
+    display: flex;
+    align-items: center;
     padding: 2px;
     width: 20%;
     border: 2px solid #2C7C45;
@@ -332,10 +322,6 @@ export default {
 }
 
 @media (max-width:1244px) {
-    .modal {
-        width: 50%;
-    }
-
     .main-container {
         width: 90%;
     }

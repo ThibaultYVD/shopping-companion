@@ -53,7 +53,7 @@
 
   <Modal :visible="isJoining" title="Indiquez le code du groupe" :actions="actionsJoin" @close="cancelGroupJoin">
     <template v-slot:body>
-      <input v-model="invitation_code" class="modal-input" placeholder="Code d'invitation" />
+      <input v-model="invitation_code" placeholder="Code d'invitation" />
     </template>
   </Modal>
 
@@ -89,7 +89,7 @@ export default {
       isCreating: false,
       isJoining: false,
       groupButtons: [
-        { label: 'Créer', action: this.createGroup  },
+        { label: 'Créer', action: this.createGroup },
         { label: 'Rejoindre', action: this.joinGroup },
       ],
       actionsCreate: [
@@ -241,71 +241,42 @@ export default {
   margin-top: 10px;
 }
 
-.modal {
-  width: 30%;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  border: 2px solid #2c7c45;
-  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+.modal-content input,
+.modal-content select {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
 }
 
-.modal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-bottom: 3px solid #2C7C45;
+    background-color: white;
 }
 
-.modal-content h2 {
-  margin-bottom: 15px;
+.invitation-code{
+  background-color: lightgray;
 }
 
-.modal-content input {
-  margin-bottom: 15px;
-  padding: 10px;
-  font-size: 16px;
-  width: 100%;
-}
 
-.modal-content button {
-  width: 100%;
-  padding: 10px;
-  background-color: #2C7C45;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.modal-content button:hover {
-  background-color: #2C7C45;
-}
-
-@media (max-width: 1244px) {
-  .modal {
-    width: 50%;
-  }
-
+@media (max-width: 1444px) {
   .main-container {
     width: 90%;
   }
+}
 
+@media (max-width: 1244px) {
   .container {
     justify-content: space-between;
   }
 }
 
 @media (max-width: 768px) {
-  .modal {
-    width: 90%;
-  }
-
   .main-container {
     width: 100%;
     padding: 0 5px;
