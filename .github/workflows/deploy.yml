@@ -13,9 +13,14 @@ permissions:
 
 
 jobs:
+  test:
+    name: 🧪 Tests
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
 
   build:
     name: 🐳 build
+    needs: [test]
     uses: ./.github/workflows/build.yml
     secrets: inherit
 
