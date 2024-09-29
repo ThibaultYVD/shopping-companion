@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: 🐳 Build
+    name: 🐳 Docker Images
     # only build/deploy main branch on pushes
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     # if: ${{ (github.ref == 'refs/heads/main') && github.event_name == 'push' }}
