@@ -19,7 +19,7 @@ export default {
       if (!authStore.isAuthenticated) {
         router.push('/login'); // Redirige vers la page de login si non connecté
       } else {
-        router.push('/dashboard'); // Redirige vers le dashboard si authentifié
+        router.push('/home'); // Redirige vers le dashboard si authentifié
       }
     });
 
