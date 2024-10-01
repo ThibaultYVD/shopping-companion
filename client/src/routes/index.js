@@ -19,7 +19,8 @@ const routes = [
   { path: '/account', component: Account, meta: { requiresAuth: true } },
   { path: '/group/:groupId', component: Group, meta: { requiresAuth: true } },
   { path: '/group/:groupId/list/:listId', component: List, meta: { requiresAuth: true } },
-  { path: '/group/:groupId/list/:listId/generated-list', component: GeneratedList, meta: { requiresAuth: true } }
+  { path: '/group/:groupId/list/:listId/generated-list', component: GeneratedList, meta: { requiresAuth: true } },
+  { path: '/:pathMatch(.*)*', redirect: '/login' }
 ];
 
 const router = createRouter({
