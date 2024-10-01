@@ -58,7 +58,7 @@ export default {
       const authStore = useAuthStore();
       authStore.clearToken();
       const router = useRouter();
-      window.location.href = "http://localhost:5173/";
+      window.location.href = "https://shopping-companion.site/login";
     },
     handleResize() {
       this.isMobile = window.innerWidth <= 768;
