@@ -1,9 +1,33 @@
 services:
+  # Front-end (client)
   client:
+    container_name: shopping-companion-client
+    image: thibaultyvd/shopping-companion-client:production
     environment:
-    - APP_ENV
-    container_name: shopping-companion
-    image: thibaultyvd/shopping-companion:production
-    restart: always 
+      - APP_ENV=${APP_ENV}
     ports:
-      - 8080:3000
+      - "8080:3000" 
+    depends_on:
+      - auth-api
+      - data-api 
+    restart: always
+
+  # Microservice d'authentification (backend)
+  auth-api:
+    container_name: shopping-companion-auth-api
+    image: thibaultyvd/shopping-companion-auth:production
+    environment:
+      - DATABASE_URL=${AUTH_API_DATABASE_URL}
+    ports:
+      - "8081:4000"
+    restart: always
+
+  # Microservice pour les données (backend)
+  data-api:
+    container_name: shopping-companion-data-api
+    image: thibaultyvd/shopping-companion-data:production
+    environment:
+      - DATABASE_URL=${DATA_API_DATABASE_URL}
+    ports:
+      - "8082:5000"
+    restart: always
