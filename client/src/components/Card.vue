@@ -71,8 +71,6 @@ export default {
             }
         },
         formatDate(date) {
-            // Implémentez ici la logique de formatage de la date
-            // Retourne une date formatée
             return new Date(date).toLocaleDateString();
         }
     }
@@ -131,8 +129,6 @@ export default {
 }
 
 
-
-/* Responsive styles */
 @media (max-width:1444px) {
     .card {
         width: 25%;

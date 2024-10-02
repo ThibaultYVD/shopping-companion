@@ -38,7 +38,7 @@ export default {
     name: "Compte",
     data() {
         return {
-            token: localStorage.getItem('token'),  // Correction: Utilisation correcte de "token"
+            token: localStorage.getItem('token'), 
             user: null,
             loading: true,
             error: null,

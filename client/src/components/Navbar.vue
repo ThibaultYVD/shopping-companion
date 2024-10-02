@@ -65,7 +65,7 @@ export default {
     },
     handleClickOutside(event) {
       const burgerMenu = this.$refs.burgerMenu;
-      // Si le clic est en dehors du burger menu, fermer le menu
+
       if (burgerMenu && !burgerMenu.contains(event.target)) {
         this.closeMenu();
       }

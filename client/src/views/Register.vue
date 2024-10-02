@@ -35,7 +35,6 @@ export default {
     const verify_password = ref('');
     const router = useRouter();
 
-    // Regex pour vérifier le format de l'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const register = async () => {
