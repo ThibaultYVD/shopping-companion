@@ -10,15 +10,9 @@ app.use(cors())
 require('dotenv/config')
 const db = require("./model/Models");
 
-// db.sequelize.sync({ force: true }).then(() => {
-//     console.log('Drop and Resync Db');
-//     initial();
-// });
-
 db.sequelize.sync()
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -39,7 +33,6 @@ app.use(session({
     resave: false, 
     saveUninitialized: false, 
     cookie: {
-        //secure: process.env.NODE_ENV === 'production', // Cookie sécurisé en production
         httpOnly: true, 
         maxAge: 24 * 60 * 60 * 1000
     }

@@ -34,11 +34,9 @@ router.get('/', [verifyToken], async (req, res) => {
 router.post('/joingroup', [verifyToken, escapeData], async (req, res) => {
     try {
         const bcrypt = require('bcrypt');
-        const { invitation_code } = req.body;  // Extraction des données du corps de la requête
-        const tokenUser_id = req.userId;  // ID de l'utilisateur connecté
+        const { invitation_code } = req.body; 
+        const tokenUser_id = req.userId; 
 
-        console.log(invitation_code)
-        // Récupération des groupes avec un code d'invitation ou ouverts
         const existingGroups = await db.sequelize.query(
             `SELECT * FROM users_groups WHERE (invitation_code IS NOT NULL OR is_open = TRUE) `,
             {
@@ -48,27 +46,23 @@ router.post('/joingroup', [verifyToken, escapeData], async (req, res) => {
 
         console.log(existingGroups)
 
-        // Vérification du code d'invitation avec chaque code haché
         let groupMatch = null;
         for (const group of existingGroups) {
-            const match = await bcrypt.compare(invitation_code, group.invitation_code);  // Comparer avec bcrypt
+            const match = await bcrypt.compare(invitation_code, group.invitation_code); 
 
-            if (match || group.is_open === true) {  // Correspondance du code ou groupe ouvert
+            if (match || group.is_open === true) { 
                 groupMatch = group;
-                break;  // Arrêter la boucle dès qu'une correspondance est trouvée
+                break;
             }
         }
 
-        console.log(groupMatch)
-        // Si le groupe est trouvé
         if (groupMatch) {
-            // Vérification si l'utilisateur a déjà rejoint ce groupe
             const alreadyJoined = await db.sequelize.query(
                 `SELECT * FROM group_members WHERE user_id = :user_id AND group_id = :group_id`,
                 {
                     replacements: {
                         user_id: tokenUser_id,
-                        group_id: groupMatch.group_id,  // Utilisation de groupMatch.group_id
+                        group_id: groupMatch.group_id, 
                     },
                     type: db.sequelize.QueryTypes.SELECT
                 }
@@ -80,7 +74,6 @@ router.post('/joingroup', [verifyToken, escapeData], async (req, res) => {
                 return res.status(403).json({ error: "Vous êtes déjà membre de ce groupe." });
             }
 
-            // Ajout de l'utilisateur au groupe
             await db.sequelize.query(
                 `INSERT INTO group_members (user_id, group_id, joined_at) VALUES (:user_id, :group_id, :joined_at)`,
                 {
