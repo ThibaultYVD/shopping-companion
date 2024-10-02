@@ -49,7 +49,7 @@ exports.signin = async (req, res) => {
 
                 const token = jwt.sign(payload, process.env.SECRET_KEY, {
                     algorithm: 'HS256',
-                    expiresIn: '4h'
+                    expiresIn: '1d'
                 });
 
 
