@@ -1,35 +1,36 @@
 <template>
     <div class="background">
         <Spacing />
-        <div class="main-container">
-            <div class="group-container">
+        <div class="main-container" aria-label="Conteneur principal">
+            <div class="group-container" aria-label="Informations sur le groupe">
                 <CustomTitleSeparator :title="group.group_name" :buttons="groupButtons" />
                 <p>Créé par {{ group.first_name }} {{ group.last_name }} le {{ formatDate(group.creation_date) }}</p>
             </div>
 
-            <div class="center-container">
-                <div class="member-container">
+            <div class="center-container" aria-label="Conteneur central">
+                <div class="member-container" aria-label="Liste des membres">
                     <TitleSeparator title="Membres" :buttons="memberButtons" />
-                    <div v-if="members.length > 0" class="members">
-                        <div class="member" v-for="member in displayedMembers" :key="member.user_id">
-                            <div class="member-name">
+                    <div v-if="members.length > 0" class="members" aria-label="Membres du groupe">
+                        <div class="member" v-for="member in displayedMembers" :key="member.user_id" tabindex="0" aria-label="Informations sur un membre">
+                            <div class="member-name" aria-label="Nom du membre">
                                 <p>{{ member.first_name }}</p>
                                 <p>{{ member.last_name }}</p>
                             </div>
-                            <div class="joined-at">
+                            <div class="joined-at" aria-label="Date d'adhésion">
                                 <p>A rejoint le {{ formatDate(member.joined_at) }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="list-container">
+                <div class="list-container" aria-label="Liste des listes">
                     <TitleSeparator title="Listes" :buttons="listButtons" />
-                    <div v-if="lists.length > 0" class="lists">
+                    <div v-if="lists.length > 0" class="lists" aria-label="Listes du groupe">
                         <Card v-for="list in displayedLists" :key="list.list_id" :title="list.list_name"
                             :groupName="list.group_name" :shoppingDate="list.shopping_date"
                             :supermarketName="list.supermarket_name" :listId="list.list_id" :groupId="list.group_id"
-                            buttonText="Voir la liste" @go-to-list="() => goToListPage(list.list_id, list.group_id)" />
+                            buttonText="Voir la liste" @go-to-list="() => goToListPage(list.list_id, list.group_id)"
+                            tabindex="0" aria-label="Informations sur la liste" />
                     </div>
                     <div v-else>
                         <p>Il n'y a aucune liste dans ce groupe. Commencez par en créer une !</p>
@@ -40,26 +41,24 @@
         <Spacing />
     </div>
 
-
-    <Modal :visible="isEditing" title="Modifier le nom du groupe" :actions="actionsEdit" @close="cancelEdit">
+    <Modal :visible="isEditing" title="Modifier le nom du groupe" :actions="actionsEdit" @close="cancelEdit" aria-label="Modifier le nom du groupe" tabindex="0">
         <template v-slot:body>
-            <input v-model="newGroupName" class="modal-input" placeholder="Nouveau nom du groupe" />
+            <input v-model="newGroupName" class="modal-input" placeholder="Nouveau nom du groupe" aria-label="Nouveau nom du groupe" tabindex="0" />
         </template>
     </Modal>
 
-
-    <Modal :visible="isCreatingInvit" title="Votre code d'invitation" @close="closeInvitationCode">
+    <Modal :visible="isCreatingInvit" title="Votre code d'invitation" @close="closeInvitationCode" aria-label="Code d'invitation" tabindex="0">
         <template v-slot:body>
-            <input :value=invitation_code class="invitation-code" readonly />
+            <input :value="invitation_code" class="invitation-code" readonly aria-label="Code d'invitation" tabindex="0" />
             <p>Envoyez ce code à la personne de votre choix.</p>
         </template>
     </Modal>
 
-    <Modal :visible="isCreating" title="Nommez votre liste" :actions="actionsCreate" @close="cancelListCreate">
+    <Modal :visible="isCreating" title="Nommez votre liste" :actions="actionsCreate" @close="cancelListCreate" aria-label="Créer une nouvelle liste" tabindex="0">
         <template v-slot:body>
-            <input v-model="list_name" placeholder="Nom de la liste" />
-            <input v-model="shopping_date" placeholder="jj/mm/yyyy" type="date" />
-            <select v-model="selectedSupermarket">
+            <input v-model="list_name" placeholder="Nom de la liste" aria-label="Nom de la liste" tabindex="0" />
+            <input v-model="shopping_date" placeholder="jj/mm/yyyy" type="date" aria-label="Date des achats" tabindex="0" />
+            <select v-model="selectedSupermarket" aria-label="Choisissez un magasin" tabindex="0">
                 <option value="" selected disabled>Choisissez un magasin</option>
                 <option v-for="supermarket in supermarkets" :key="supermarket.supermarket_id"
                     :value="supermarket.supermarket_id">
@@ -70,6 +69,7 @@
     </Modal>
 
 </template>
+
 
 <script>
 import { instance as axios } from '../services/axios';
