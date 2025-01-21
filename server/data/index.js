@@ -21,10 +21,12 @@ app.use(bodyParser.json())
 app.use(cors())
 
 const redisClient = redis.createClient({
-    url: process.env.REDIS_CONNECTION_STRING 
-});
-
-redisClient.connect() 
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  });
+redisClient.connect()
+    .then(() => console.log('Connected to Redis successfully!'))
+    .catch((err) => console.error('Failed to connect to Redis:', err));
 
 redisClient.on('error', (err) => {
     console.error('Erreur Redis:', err);
