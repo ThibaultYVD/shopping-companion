@@ -34,39 +34,46 @@ db.Group = require("./Group.js")(sequelize, Sequelize)
 db.List = require("./List.js")(sequelize, Sequelize)
 db.Product = require("./Product.js")(sequelize, Sequelize)
 db.ListRoute = require("./ListRoute.js")(sequelize, Sequelize)
+db.GroupMember = require("./GroupMembers.js")(sequelize, Sequelize);
+db.ProductsList = require("./ProductsLists.js")(sequelize, Sequelize);
 
 // Tables de jointures
 
 db.User.belongsToMany(db.Role, {
-    through: "user_role", foreignKey: 'user_id',
+    through: "user_role", 
+    foreignKey: 'user_id',
     onDelete: 'CASCADE'
 });
 
 db.Role.belongsToMany(db.User, {
-    through: "user_role", foreignKey: 'role_id',
-    onDelete: 'CASCADE'
-});
-
-db.Group.belongsToMany(db.User, {
-    through: "group_members", foreignKey: 'group_id',
+    through: "user_role", 
+    foreignKey: 'role_id',
     onDelete: 'CASCADE'
 });
 
 db.User.belongsToMany(db.Group, {
-    through: "group_members", foreignKey: 'user_id',
+    through: db.GroupMember,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE'
+});
+
+db.Group.belongsToMany(db.User, {
+    through: db.GroupMember,
+    foreignKey: 'group_id',
     onDelete: 'CASCADE'
 });
 
 db.Product.belongsToMany(db.List, {
-    through: "products_list", foreignKey: 'product_id',
+    through: db.ProductsList,
+    foreignKey: 'product_id',
     onDelete: 'CASCADE'
 });
 
 db.List.belongsToMany(db.Product, {
-    through: "products_list", foreignKey: 'list_id',
+    through: db.ProductsList,
+    foreignKey: 'list_id',
     onDelete: 'CASCADE'
 });
-
 
 // Clés étrangères
 db.Shelf.belongsTo(db.Supermarket, {

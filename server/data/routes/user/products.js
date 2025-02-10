@@ -56,7 +56,7 @@ router.get('/:listId', [verifyToken], async (req, res) => {
         const tokenUser_id = decodedToken.id
 
         let sql = `SELECT DISTINCT p.product_id, p.product_name, p.price, pl.quantity, pl.added_at, u.first_name, s.shelf_name, s.location_x, s.location_y
-        FROM products_list pl
+        FROM products_lists pl
         INNER JOIN products p ON pl.product_id = p.product_id
         INNER JOIN shelves s ON p.shelf_id = s.shelf_id
         INNER JOIN lists l ON l.list_id = pl.list_id
@@ -151,7 +151,7 @@ router.post('/:listId/:productId', [verifyToken], async (req, res) => {
         const product = await db.Product.findByPk(req.params.productId);
 
         if (!list || !product) return res.status(404).json({error: "Ce produit ou cette liste n'existe pas."});
-        sql = `SELECT quantity FROM products_list WHERE product_id = :product_id AND list_id = :list_id`
+        sql = `SELECT quantity FROM products_lists WHERE product_id = :product_id AND list_id = :list_id`
 
         const checkQuantity = await db.sequelize.query(sql,
             {
@@ -165,7 +165,7 @@ router.post('/:listId/:productId', [verifyToken], async (req, res) => {
 
         if(!checkQuantity || checkQuantity.length == 0)
         {
-            sql = `INSERT INTO products_list(product_id, list_id, quantity, user_id, added_at) VALUES (:product_id, :list_id, :quantity, :user_id, :added_at)`
+            sql = `INSERT INTO products_lists(product_id, list_id, quantity, user_id, added_at) VALUES (:product_id, :list_id, :quantity, :user_id, :added_at)`
             const insert = await db.sequelize.query(sql,
                 {
                     replacements: {
@@ -181,7 +181,7 @@ router.post('/:listId/:productId', [verifyToken], async (req, res) => {
             return res.status(201).json({message: "Le produit a bien été ajouté à la liste."});
 
         } else {
-            sql = `UPDATE products_list SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`
+            sql = `UPDATE products_lists SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`
             const update = await db.sequelize.query(sql,
                 {
                     replacements: {
@@ -231,7 +231,7 @@ router.patch('/quantity/:listId/:productId', [verifyToken], async (req, res) => 
 
         if (!list || !product) return res.status(404).json({error: "Ce produit ou cette liste n'existe pas."});
 
-        sql = `UPDATE products_list SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`
+        sql = `UPDATE products_lists SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`
 
             const update = await db.sequelize.query(sql,
                 {
@@ -281,7 +281,7 @@ router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
         const product = await db.Product.findByPk(req.params.productId);
 
         if (!list || !product) return res.status(404).json({error: "Ce produit ou cette liste n'existe pas."});
-        sql = `SELECT quantity FROM products_list WHERE product_id = :product_id AND list_id = :list_id`
+        sql = `SELECT quantity FROM products_lists WHERE product_id = :product_id AND list_id = :list_id`
 
         const checkQuantity = await db.sequelize.query(sql,
             {
@@ -295,7 +295,7 @@ router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
 
         if(checkQuantity[0].quantity > 1) 
         {
-            sql = `UPDATE products_list SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`
+            sql = `UPDATE products_lists SET quantity = :quantity WHERE product_id = :product_id AND list_id = :list_id`
             const update = await db.sequelize.query(sql,
                 {
                     replacements: {
@@ -308,7 +308,7 @@ router.patch('/:listId/:productId', [verifyToken], async (req, res) => {
             return res.status(200).json({message: "La quantité du produit été décrémentée."});
 
         } else {
-            sql = `DELETE FROM products_list WHERE product_id = :product_id AND list_id = :list_id`
+            sql = `DELETE FROM products_lists WHERE product_id = :product_id AND list_id = :list_id`
 
             const del = await db.sequelize.query(sql,
                 {
@@ -356,7 +356,7 @@ router.delete('/:listId/:productId', [verifyToken], async (req, res) => {
         if (!list || !product) return res.status(404).json({error: "Ce produit ou cette liste n'existe pas."});
         
         sql = `
-        DELETE FROM products_list 
+        DELETE FROM products_lists 
         WHERE product_id = :product_id 
         AND list_id = :list_id`
 

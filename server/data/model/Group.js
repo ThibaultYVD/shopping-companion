@@ -5,7 +5,8 @@ module.exports = (sequelize, Sequelize) => {
         group_id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
+            allowNull: false
         },
         group_name: {
             type: Sequelize.STRING,

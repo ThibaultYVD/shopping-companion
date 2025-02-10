@@ -82,7 +82,7 @@ function buildGraph(points) {
 
 
 
-router.get('/:listId', [verifyToken], async (req, res) => {
+router.get('/:listId', async (req, res) => {
     try {
         const user_id = req.userId;
 
@@ -96,7 +96,10 @@ router.get('/:listId', [verifyToken], async (req, res) => {
             }
         );
 
-        if (checkIfExist.length !== 0) return res.status(200).json(JSON.parse(checkIfExist[0].route));
+        if (checkIfExist.length !== 0) {
+            const existingRoute = checkIfExist[0].route;
+            return res.status(200).json(typeof existingRoute === "string" ? JSON.parse(existingRoute) : existingRoute);
+        }
 
         let sql =
             `SELECT DISTINCT 
@@ -110,18 +113,16 @@ router.get('/:listId', [verifyToken], async (req, res) => {
             INNER JOIN group_members gm ON gm.group_id = g.group_id
 
             WHERE l.list_id = :list_id
-                AND gm.user_id = :user_id
                 AND s.shelf_name = 'start'`;
 
         const getStart = await db.sequelize.query(sql, {
             replacements: {
                 list_id: req.params.listId,
-                user_id: user_id,
             },
             type: db.sequelize.QueryTypes.SELECT,
-        }); 
+        });
 
-       
+
         sql =
             `SELECT DISTINCT 
                 s.shelf_id, s.shelf_name, s.location_x, s.location_y
@@ -129,31 +130,29 @@ router.get('/:listId', [verifyToken], async (req, res) => {
             FROM shelves s 
             
             INNER JOIN products p ON p.shelf_id = s.shelf_id
-            INNER JOIN products_list pl ON pl.product_id = p.product_id
+            INNER JOIN products_lists pl ON pl.product_id = p.product_id
             INNER JOIN lists l ON l.list_id = pl.list_id
             INNER JOIN users_groups g ON g.group_id = l.group_id
             INNER JOIN group_members gm ON gm.group_id = g.group_id
             INNER JOIN supermarkets sm ON sm.supermarket_id = l.supermarket_id
             
-            WHERE (l.list_id = :list_id
-            AND gm.user_id = :user_id)
+            WHERE (l.list_id = :list_id)
             OR s.shelf_name = 'start'`;
 
         const shelvesData = await db.sequelize.query(sql, {
             replacements: {
                 list_id: req.params.listId,
-                user_id: user_id,
             },
             type: db.sequelize.QueryTypes.SELECT,
         });
 
-    
+
         let shelves = getStart.concat(shelvesData);
 
         let source = shelves[0].shelf_id.toString();
         let route = [];
 
- 
+
         route.push({
             start: {
                 shelf_id: shelves[0].shelf_id,
@@ -168,7 +167,7 @@ router.get('/:listId', [verifyToken], async (req, res) => {
                 `SELECT DISTINCT 
                     p.product_name, p.price, pl.quantity
     
-                FROM products_list pl
+                FROM products_lists pl
     
                 INNER JOIN products p ON pl.product_id = p.product_id
                 INNER JOIN shelves s ON s.shelf_id = p.shelf_id
@@ -211,14 +210,14 @@ router.get('/:listId', [verifyToken], async (req, res) => {
             },
         });
 
-        
+
         await db.ListRoute.create({
             list_id: req.params.listId,
             route: route,
             created_at: new Date()
         });
 
-        
+
         res.status(200).json(route);
 
     } catch (error) {

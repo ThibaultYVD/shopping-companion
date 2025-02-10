@@ -4,7 +4,9 @@ module.exports = (sequelize, Sequelize) => {
     const Shelf = sequelize.define("shelves", {
         shelf_id: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true,
+            allowNull: false
         },
         shelf_name: {
             type: Sequelize.STRING,

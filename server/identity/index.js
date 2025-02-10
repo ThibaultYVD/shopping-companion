@@ -6,7 +6,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis').default
 const redis = require('redis');
 
-app.use(cors())
+app.use(cors({ origin: "http://localhost:8080", credentials: true }));
 require('dotenv/config')
 const db = require("./model/Models");
 
@@ -15,9 +15,13 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-
 const redisClient = redis.createClient({
-    url: process.env.REDIS_CONNECTION_STRING
+    username: 'default',
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+        host: 'redis-10405.c339.eu-west-3-1.ec2.redns.redis-cloud.com',
+        port: 10405
+    }
 });
 
 redisClient.connect() 

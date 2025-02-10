@@ -2,7 +2,9 @@ module.exports = (sequelize, Sequelize) => {
   const User = sequelize.define("users", {
     user_id: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     first_name: {
       type: Sequelize.STRING,
@@ -23,10 +25,10 @@ module.exports = (sequelize, Sequelize) => {
     created_at: {
       type: Sequelize.DATE,
       allowNull: false
-  },
-  },{
-    timestamps:false
-});
+    },
+  }, {
+    timestamps: false
+  });
 
   return User;
 };

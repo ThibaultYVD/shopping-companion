@@ -6,7 +6,8 @@ module.exports = (sequelize, Sequelize) => {
         list_id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
+            allowNull: false
         },
         list_name: {
             type: Sequelize.STRING,

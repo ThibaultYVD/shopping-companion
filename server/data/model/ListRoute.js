@@ -9,6 +9,7 @@ module.exports = (sequelize, Sequelize) => {
                 model: 'lists', 
                 key: 'list_id'
             },
+            allowNull: false
         },
         route: {
             type: Sequelize.JSON,

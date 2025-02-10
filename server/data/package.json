@@ -1,7 +1,8 @@
 {
   "name": "db-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "type":"commonjs",
+  "main": "index.cjs",
   "scripts": {
     "test": "jest",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && nyc report --reporter=text-summary"

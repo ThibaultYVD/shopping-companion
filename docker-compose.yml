@@ -4,7 +4,7 @@ services:
     environment:
       - APP_ENV
     container_name: shopping-companion-client
-    image: shopping-companion-client
+    image: thibaultyvd/shopping-companion-client
     restart: unless-stopped
     ports:
       - "8080:3000" 
@@ -14,7 +14,7 @@ services:
   # Microservice pour les données
   data:
     container_name: shopping-companion-data
-    image: shopping-companion-data
+    image: thibaultyvd/shopping-companion-data
     environment:
       - APP_ENV
       - DATA_PORT
@@ -23,14 +23,11 @@ services:
       - DB_PASSWORD
       - DB_NAME
       - SECRET_KEY
-      - REDIS_HOST=cache
-      - REDIS_PORT=6379
     ports:
-      - "8082:5000"
+      - "3001:3001"
     restart: unless-stopped
     depends_on:
       - database
-      - redis
 
   # Microservice d'authentification
   identity:
@@ -41,27 +38,14 @@ services:
       - DB_USER
       - DB_PASSWORD
       - DB_NAME
-      - REDIS_HOST=cache
-      - REDIS_PORT
-      - REDIS_PASSWORD
       - SECRET_KEY
     container_name: shopping-companion-identity
-    image: shopping-companion-identity
+    image: thibaultyvd/shopping-companion-identity
     ports:
-      - "8081:4000"
+      - "3002:3002"
     restart: unless-stopped
     depends_on:
       - database
-      - redis
-
-  redis:
-    image: redis:6.0.7
-    container_name: redis
-    restart: always
-    volumes:
-      - redis_volume_data:/data
-    ports:
-      - 6379:6379
 
   database:
     image: mysql:8.0
@@ -78,5 +62,4 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
-  redis_volume_data:
   db_data_production:

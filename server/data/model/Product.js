@@ -1,10 +1,10 @@
-const Shelf = require("./Shelf");
-
 module.exports = (sequelize, Sequelize) => {
     const Product = sequelize.define("products", {
         product_id: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true,
+            allowNull: false
         },
         product_name: {
             type: Sequelize.STRING,

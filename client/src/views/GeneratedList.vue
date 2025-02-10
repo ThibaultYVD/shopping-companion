@@ -50,7 +50,6 @@
 <script>
 import { instance as axios } from "../services/axios";
 import Spacing from '@/components/Spacing.vue'
-import { useRouter } from 'vue-router';
 
 export default {
     name: "CourseGénéré",
@@ -77,17 +76,18 @@ export default {
                 const response = await axios.get(`/dijkstra/${this.listId}`);
                 this.generated_list = response.data;
 
+                if (!Array.isArray(this.generated_list) || this.generated_list.length === 0) {
+                    throw new Error("Données reçues incorrectes");
+                }
+
                 this.productChecks = this.filteredShelves.map(item =>
-                    item.nextShelf && item.nextShelf.products ? Array(item.nextShelf.products.length).fill(false) : []
+                    item.nextShelf?.products?.length ? Array(item.nextShelf.products.length).fill(false) : []
                 );
             } catch (err) {
                 this.error = 'Impossible de charger les informations utilisateur.';
                 console.error(err);
-            } finally {
-                this.loading = false;
             }
         },
-
         startProcess() {
             this.stepStarted = true;
         },

@@ -67,7 +67,7 @@ exports.signin = async (req, res) => {
                     token: token
                 });
 
-                
+
             } else {
                 res.status(403).json({ message: "Mot de passe invalide" });
             }
@@ -83,7 +83,7 @@ exports.signin = async (req, res) => {
 exports.signout = async (req, res) => {
     try {
 
-        if (!req.session || !req.session.token) return res.status(200).json({ message: "Vous n'êtes pas connecté." }); 
+        if (!req.session || !req.session.token) return res.status(200).json({ message: "Vous n'êtes pas connecté." });
 
         req.session.destroy((err) => {
             if (err) {
@@ -93,7 +93,7 @@ exports.signout = async (req, res) => {
                 });
             }
 
-            res.clearCookie('connect.sid'); 
+            res.clearCookie('connect.sid');
 
             return res.status(200).json({
                 message: "Vous avez été déconnecté."
