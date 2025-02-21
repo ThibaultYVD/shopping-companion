@@ -34,7 +34,6 @@ export default {
     const password = ref('');
     const verify_password = ref('');
     const router = useRouter();
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const register = async () => {
@@ -199,8 +198,6 @@ export default {
 
     width: 85%;
   }
-
-
 
   .register-container button {
     width: 50%;

@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 
-
 const instance = axios.create({
   baseURL: "http://localhost:3001",
   timeout: 60000
@@ -32,7 +31,6 @@ instance.interceptors.response.use(
       router.push('/login');
       alert('Session expirée, veuillez vous reconnecter.');
     }
-
     else return Promise.reject(error);
   }
 );

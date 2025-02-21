@@ -53,7 +53,7 @@
             <p>Envoyez ce code à la personne de votre choix.</p>
         </template>
     </Modal>
-
+    
     <Modal :visible="isCreating" title="Nommez votre liste" :actions="actionsCreate" @close="cancelListCreate" aria-label="Créer une nouvelle liste" tabindex="0">
         <template v-slot:body>
             <input v-model="list_name" placeholder="Nom de la liste" aria-label="Nom de la liste" tabindex="0" />
@@ -69,7 +69,6 @@
     </Modal>
 
 </template>
-
 
 <script>
 import { instance as axios } from '../services/axios';

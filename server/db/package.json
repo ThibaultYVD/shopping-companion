@@ -1,0 +1,48 @@
+{
+  "name": "db-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && nyc report --reporter=text-summary"
+  },
+  "nyc": {
+    "include": [
+      "server/**/*.js"
+    ],
+    "exclude": [
+      "node_modules/**/*",
+      "test/**/*"
+    ]
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "connect-redis": "^7.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.3",
+    "redis": "^4.7.0",
+    "sequelize": "^6.37.2",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "chai": "^4.2.0",
+    "eslint": "^9.5.0",
+    "express": "^4.19.2",
+    "globals": "^15.6.0",
+    "jest": "^29.7.0",
+    "mocha": "^10.4.0",
+    "nyc": "^17.0.0",
+    "supertest": "^7.0.0"
+  }
+}

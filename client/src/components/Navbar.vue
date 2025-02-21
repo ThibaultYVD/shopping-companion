@@ -29,7 +29,6 @@
   </nav>
 </template>
 
-
 <script>
 import { mapState } from 'pinia';
 import { useAuthStore } from '../stores/auth';
@@ -63,7 +62,6 @@ export default {
     },
     handleClickOutside(event) {
       const burgerMenu = this.$refs.burgerMenu;
-
       if (burgerMenu && !burgerMenu.contains(event.target)) {
         this.closeMenu();
       }

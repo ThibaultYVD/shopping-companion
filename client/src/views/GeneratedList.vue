@@ -3,7 +3,6 @@
         <Spacing />
         <div class="main-container">
             <div class="center-container">
-
                 <div class="start" v-if="!stepStarted">
                     <p>Dirigez-vous vers votre supermarché.</p>
                     <div>
@@ -17,7 +16,6 @@
 
                     <div class="current-shelf" v-if="item.nextShelf">
                         <h1>Rayon {{ item.nextShelf.shelf_name }}</h1>
-
                         <div class="products-list" v-if="item.nextShelf && item.nextShelf.products.length">
                             <h3>Produits à récupérer</h3>
                             <p v-for="(product, productIndex) in item.nextShelf.products" :key="productIndex"
@@ -26,13 +24,11 @@
                                 {{ product.product_name }} x {{ product.quantity }}
                             </p>
                         </div>
-
                         <button @click="nextStep" :disabled="!allProductsChecked(index)" class="next-button">
                             Prochain rayon
                         </button>
                     </div>
                 </div>
-
                 <div class="finished" v-if="stepStarted && isProcessFinished">
                     <h1>Vos courses sont terminées !</h1>
                     <p>Dirigez-vous maintenant vers les caisses.</p>
@@ -50,7 +46,6 @@
 <script>
 import { instance as axios } from "../services/axios";
 import Spacing from '@/components/Spacing.vue'
-
 export default {
     name: "CourseGénéré",
     data() {
@@ -75,7 +70,6 @@ export default {
             try {
                 const response = await axios.get(`/dijkstra/${this.listId}`);
                 this.generated_list = response.data;
-
                 if (!Array.isArray(this.generated_list) || this.generated_list.length === 0) {
                     throw new Error("Données reçues incorrectes");
                 }
