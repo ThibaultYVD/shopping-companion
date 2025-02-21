@@ -53,6 +53,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE=shopping_companion_db
+      - MYSQL_USER
+      - MYSQL_PASSWORD
       - TZ=Europe/Paris
     restart: always
     ports:

@@ -33,8 +33,8 @@ const redisClient = redis.createClient({
     username: 'default',
     password: process.env.REDIS_PASSWORD,
     socket: {
-        host: 'redis-10405.c339.eu-west-3-1.ec2.redns.redis-cloud.com',
-        port: 10405
+        host: 'redis-17389.c339.eu-west-3-1.ec2.redns.redis-cloud.com',
+        port: 17389
     }
 });
 
@@ -61,7 +61,7 @@ app.use(session({
 routes(app)
 
 
-const PORT = process.env.PORT
+const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });

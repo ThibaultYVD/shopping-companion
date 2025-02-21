@@ -175,9 +175,7 @@ export default {
   font-weight: 200;
 }
 
-@media (max-width: 1824px) {
-
-}
+@media (max-width: 1824px) {}
 
 
 @media (max-width: 1400px) {
@@ -202,7 +200,7 @@ export default {
     width: 85%;
   }
 
- 
+
 
   .register-container button {
     width: 50%;
