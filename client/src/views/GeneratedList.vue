@@ -3,8 +3,6 @@
         <Spacing />
         <div class="main-container">
             <div class="center-container">
-                <!-- Bouton initial pour commencer -->
-
                 <div class="start" v-if="!stepStarted">
                     <p>Dirigez-vous vers votre supermarché.</p>
                     <div>
@@ -13,14 +11,11 @@
 
                 </div>
 
-                <!-- Afficher chaque rayon avec une liste de produits à cliquer, exclure les rayons avec "start" -->
                 <div class="current-shelf-container" v-if="stepStarted" v-for="(item, index) in filteredShelves"
                     :key="index" v-show="currentStep === index && !isProcessFinished">
-                    <!-- Rayon actuel -->
+
                     <div class="current-shelf" v-if="item.nextShelf">
                         <h1>Rayon {{ item.nextShelf.shelf_name }}</h1>
-
-                        <!-- Liste des produits avec interaction par clic -->
                         <div class="products-list" v-if="item.nextShelf && item.nextShelf.products.length">
                             <h3>Produits à récupérer</h3>
                             <p v-for="(product, productIndex) in item.nextShelf.products" :key="productIndex"
@@ -29,15 +24,11 @@
                                 {{ product.product_name }} x {{ product.quantity }}
                             </p>
                         </div>
-
-                        <!-- Bouton pour passer au rayon suivant, disponible seulement quand tous les produits sont cochés -->
                         <button @click="nextStep" :disabled="!allProductsChecked(index)" class="next-button">
                             Prochain rayon
                         </button>
                     </div>
                 </div>
-
-                <!-- Message de fin lorsque tous les rayons sont complétés -->
                 <div class="finished" v-if="stepStarted && isProcessFinished">
                     <h1>Vos courses sont terminées !</h1>
                     <p>Dirigez-vous maintenant vers les caisses.</p>
@@ -55,8 +46,6 @@
 <script>
 import { instance as axios } from "../services/axios";
 import Spacing from '@/components/Spacing.vue'
-import { useRouter } from 'vue-router';
-
 export default {
     name: "CourseGénéré",
     data() {
@@ -81,18 +70,18 @@ export default {
             try {
                 const response = await axios.get(`/dijkstra/${this.listId}`);
                 this.generated_list = response.data;
+                if (!Array.isArray(this.generated_list) || this.generated_list.length === 0) {
+                    throw new Error("Données reçues incorrectes");
+                }
 
                 this.productChecks = this.filteredShelves.map(item =>
-                    item.nextShelf && item.nextShelf.products ? Array(item.nextShelf.products.length).fill(false) : []
+                    item.nextShelf?.products?.length ? Array(item.nextShelf.products.length).fill(false) : []
                 );
             } catch (err) {
                 this.error = 'Impossible de charger les informations utilisateur.';
                 console.error(err);
-            } finally {
-                this.loading = false;
             }
         },
-
         startProcess() {
             this.stepStarted = true;
         },

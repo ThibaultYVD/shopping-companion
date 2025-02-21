@@ -1,31 +1,28 @@
 <template>
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Barre de navigation principale">
     <div class="nav-links" v-if="!isMobile">
       <ul>
-        <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
-        <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
-        <li v-if="isAuthenticated"><router-link to="/home"><i class="fa-solid fa-house"></i></router-link></li>
+        <li v-if="!isAuthenticated" tabindex="0"><router-link to="/login" aria-label="Se connecter">Se connecter</router-link></li>
+        <li v-if="!isAuthenticated" tabindex="0"><router-link to="/register" aria-label="S'inscrire">S'inscrire</router-link></li>
+        <li v-if="isAuthenticated" tabindex="0"><router-link to="/home" aria-label="Accueil"><i class="fa-solid fa-house" aria-hidden="true"></i></router-link></li>
       </ul>
       <ul>
-        <li v-if="isAuthenticated"><router-link to="/account"><i class="fa-solid fa-user"></i></router-link></li>
-        <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i
-              class="fa-solid fa-right-from-bracket"></i></a></li>
+        <li v-if="isAuthenticated" tabindex="0"><router-link to="/account" aria-label="Mon compte"><i class="fa-solid fa-user" aria-hidden="true"></i></router-link></li>
+        <li v-if="isAuthenticated" tabindex="0"><a href="#" @click.prevent="logout" aria-label="Se déconnecter"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></a></li>
       </ul>
     </div>
 
-    <div class="burger-menu" v-if="isMobile" ref="burgerMenu">
-      <button class="burger" @click="toggleBurger" aria-expanded="menuOpen" aria-label="Ouvrir le menu">
+    <div class="burger-menu" v-if="isMobile" ref="burgerMenu" aria-label="Menu mobile">
+      <button class="burger" @click="toggleBurger" :aria-expanded="menuOpen" aria-label="Ouvrir le menu" tabindex="0">
         ☰
       </button>
-      <div class="dropdown-menu" v-if="menuOpen">
+      <div class="dropdown-menu" v-if="menuOpen" aria-label="Menu déroulant" tabindex="0">
         <ul>
-          <li v-if="!isAuthenticated"><router-link to="/login">Se connecter</router-link></li>
-          <li v-if="!isAuthenticated"><router-link to="/register">S'inscrire</router-link></li>
-          <li v-if="isAuthenticated"><router-link to="/home"><i class="fa-solid fa-house"></i> Tableau de
-              bord</router-link></li>
-          <li v-if="isAuthenticated"><router-link to="/account"><i class="fa-solid fa-user"></i> Mon compte</router-link></li>
-          <li v-if="isAuthenticated"><a href="#" @click.prevent="logout"><i class="fa-solid fa-right-from-bracket"></i>
-              Se déconnecter</a></li>
+          <li v-if="!isAuthenticated" tabindex="0"><router-link to="/login" aria-label="Se connecter">Se connecter</router-link></li>
+          <li v-if="!isAuthenticated" tabindex="0"><router-link to="/register" aria-label="S'inscrire">S'inscrire</router-link></li>
+          <li v-if="isAuthenticated" tabindex="0"><router-link to="/home" aria-label="Tableau de bord"><i class="fa-solid fa-house" aria-hidden="true"></i> Tableau de bord</router-link></li>
+          <li v-if="isAuthenticated" tabindex="0"><router-link to="/account" aria-label="Mon compte"><i class="fa-solid fa-user" aria-hidden="true"></i> Mon compte</router-link></li>
+          <li v-if="isAuthenticated" tabindex="0"><a href="#" @click.prevent="logout" aria-label="Se déconnecter"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Se déconnecter</a></li>
         </ul>
       </div>
     </div>
@@ -65,7 +62,6 @@ export default {
     },
     handleClickOutside(event) {
       const burgerMenu = this.$refs.burgerMenu;
-      // Si le clic est en dehors du burger menu, fermer le menu
       if (burgerMenu && !burgerMenu.contains(event.target)) {
         this.closeMenu();
       }

@@ -1,0 +1,38 @@
+{
+    "supermarkets": [
+        {
+            "supermarket_name": "Super U",
+            "address": "123 Rue du Commerce, Paris"
+        },
+        {
+            "supermarket_name": "Carrefour",
+            "address": "45 Avenue des Champs, Lyon"
+        }
+    ],
+    "shelves": [
+        {
+            "shelf_name": "Rayon Fruits & Légumes",
+            "location_x": 12.5,
+            "location_y": 5.3,
+            "supermarket_name": "Super U"
+        },
+        {
+            "shelf_name": "Rayon Boissons",
+            "location_x": 8.2,
+            "location_y": 3.1,
+            "supermarket_name": "Carrefour" 
+        }
+    ],
+    "products": [
+        {
+            "product_name": "Pommes Gala",
+            "price": 2.5,
+            "shelf_name": "Rayon Fruits & Légumes"
+        },
+        {
+            "product_name": "Bière Heineken",
+            "price": 1.8,
+            "shelf_name": "Rayon Boissons"
+        }
+    ]
+}

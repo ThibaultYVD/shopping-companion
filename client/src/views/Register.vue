@@ -34,8 +34,6 @@ export default {
     const password = ref('');
     const verify_password = ref('');
     const router = useRouter();
-
-    // Regex pour vérifier le format de l'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const register = async () => {
@@ -176,9 +174,7 @@ export default {
   font-weight: 200;
 }
 
-@media (max-width: 1824px) {
-
-}
+@media (max-width: 1824px) {}
 
 
 @media (max-width: 1400px) {
@@ -202,8 +198,6 @@ export default {
 
     width: 85%;
   }
-
- 
 
   .register-container button {
     width: 50%;

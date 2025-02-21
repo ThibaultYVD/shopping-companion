@@ -22,9 +22,7 @@
                     </div>
 
                     <div class="quantity-inputs">
-                        <!--<button class="left-button" @click="decrementQuantity">-</button>-->
                         <input v-model.number="product.quantity" min="0" @input="onQuantityChange" />
-                        <!--<button class="right-button" @click="incrementQuantity">+</button>-->
                     </div>
 
                 </div>

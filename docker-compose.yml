@@ -1,9 +1,67 @@
 services:
+  # Front-end
   client:
     environment:
-    - APP_ENV
-    container_name: shopping-companion
-    image: thibaultyvd/shopping-companion:production
-    restart: always 
+      - APP_ENV
+    container_name: shopping-companion-client
+    image: thibaultyvd/shopping-companion-client
+    restart: unless-stopped
     ports:
-      - 8080:3000
+      - "8080:3000" 
+    depends_on:
+      - data
+
+  # Microservice pour les données
+  data:
+    container_name: shopping-companion-data
+    image: thibaultyvd/shopping-companion-data
+    environment:
+      - APP_ENV
+      - DATA_PORT
+      - DB_HOST=database
+      - DB_USER
+      - DB_PASSWORD
+      - DB_NAME
+      - SECRET_KEY
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    depends_on:
+      - database
+
+  # Microservice d'authentification
+  identity:
+    environment:
+      - APP_ENV
+      - PORT
+      - DB_HOST=database
+      - DB_USER
+      - DB_PASSWORD
+      - DB_NAME
+      - SECRET_KEY
+    container_name: shopping-companion-identity
+    image: thibaultyvd/shopping-companion-identity
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+    depends_on:
+      - database
+
+  database:
+    image: mysql:8.0
+    container_name: shopping-companion-db
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE=shopping_companion_db
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+      - TZ=Europe/Paris
+    restart: always
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data_production:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  db_data_production:

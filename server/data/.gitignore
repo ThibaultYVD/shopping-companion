@@ -1,0 +1,4 @@
+node_modules/
+.env
+shopping_companion_db.sql
+coverage/

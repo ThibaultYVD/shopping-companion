@@ -14,12 +14,11 @@ export default {
     const authStore = useAuthStore();
     const router = useRouter();
 
-    // Redirection selon l'état d'authentification
     onMounted(() => {
       if (!authStore.isAuthenticated) {
-        router.push('/login'); // Redirige vers la page de login si non connecté
+        router.push('/login');
       } else {
-        router.push('/home'); // Redirige vers le dashboard si authentifié
+        router.push('/home');
       }
     });
 

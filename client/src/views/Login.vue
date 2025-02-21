@@ -33,7 +33,7 @@ export default {
   setup() {
     const email = ref('');
     const password = ref('');
-    const showPassword = ref(false); // état pour afficher ou masquer le mot de passe
+    const showPassword = ref(false); 
     const router = useRouter();
     const authStore = useAuthStore();
 
