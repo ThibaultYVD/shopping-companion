@@ -10,6 +10,7 @@ services:
       - "8080:3000" 
     depends_on:
       - data
+      - identity
 
   # Microservice pour les données
   data:
@@ -18,7 +19,7 @@ services:
     environment:
       - APP_ENV
       - DATA_PORT
-      - DB_HOST=database
+      - DB_HOST=shopping-companion-db
       - DB_USER
       - DB_PASSWORD
       - DB_NAME
@@ -27,7 +28,7 @@ services:
       - "3001:3001"
     restart: unless-stopped
     depends_on:
-      - database
+      - shopping-companion-db
       - redis
 
   # Microservice d'authentification
@@ -35,7 +36,7 @@ services:
     environment:
       - APP_ENV
       - PORT
-      - DB_HOST=database
+      - DB_HOST=shopping-companion-db
       - DB_USER
       - DB_PASSWORD
       - DB_NAME
@@ -46,10 +47,10 @@ services:
       - "3002:3002"
     restart: unless-stopped
     depends_on:
-      - database
+      - shopping-companion-db
       - redis
 
-  database:
+  shopping-companion-db:
     image: mysql:8.0
     container_name: shopping-companion-db
     environment:
