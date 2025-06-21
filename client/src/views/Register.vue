@@ -48,20 +48,34 @@ export default {
       }
 
       try {
-        await axios.post('/api/auth/signup', {
-          first_name: first_name.value,
-          last_name: last_name.value,
-          email: email.value,
-          password: password.value
-        });
+        await axios.post(
+          'http://localhost:3002/api/auth/signup',
+          {
+            first_name: first_name.value,
+            last_name: last_name.value,
+            email: email.value,
+            password: password.value
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          }
+        );
         alert('Votre compte a été créé, veuillez vous connecter.');
         router.push('/login');
       } catch (error) {
         console.error(error);
-        if (error.response && error.response.status) {
-          if (error.response.status === 404) {
+
+        if (error.response) {
+          const { status, data } = error.response;
+
+          if (data?.message) {
+            alert(data.message);
+          } else if (status === 404) {
             alert('Utilisateur inconnu');
-          } else if (error.response.status === 403) {
+          } else if (status === 403) {
             alert('Mot de passe invalide');
           } else {
             alert('Erreur inconnue');

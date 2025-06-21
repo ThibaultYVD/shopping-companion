@@ -7,8 +7,10 @@ const RedisStore = require('connect-redis').default
 const redis = require('redis');
 
 app.use(cors({
-    origin: 'http://localhost:8080'
-  }));
+  origin: "http://localhost:8080",
+  credentials: true
+}));
+
 require('dotenv/config')
 const db = require("./model/Models");
 
@@ -17,11 +19,9 @@ db.sequelize.sync()
 app.use(express.urlencoded({ extended: true }));
 
 const redisClient = redis.createClient({
-    username: 'default',
-    password: process.env.REDIS_PASSWORD,
     socket: {
-        host: 'redis-17389.c339.eu-west-3-1.ec2.redns.redis-cloud.com',
-        port: 17389
+        host: process.env.REDIS_HOST || 'redis',
+        port: 6379
     }
 });
 

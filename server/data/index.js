@@ -30,11 +30,9 @@ app.use(bodyParser.json())
 app.use(cors())
 
 const redisClient = redis.createClient({
-    username: 'default',
-    password: process.env.REDIS_PASSWORD,
     socket: {
-        host: 'redis-17389.c339.eu-west-3-1.ec2.redns.redis-cloud.com',
-        port: 17389
+        host: process.env.REDIS_HOST || 'redis',
+        port: 6379
     }
 });
 
