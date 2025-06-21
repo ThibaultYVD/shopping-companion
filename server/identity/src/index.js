@@ -7,10 +7,8 @@ const RedisStore = require('connect-redis').default
 const redis = require('redis');
 
 app.use(cors({
-    origin: 'http://localhost:9000',
-    credentials: true
+    origin: 'http://localhost:9000'
 }));
-
 require('dotenv/config')
 const db = require("./model/Models");
 
@@ -25,12 +23,16 @@ const redisClient = redis.createClient({
     }
 });
 
+
 redisClient.connect()
 
 redisClient.on('error', (err) => {
     console.error('Erreur Redis:', err);
 });
 
+if (!process.env.SECRET_KEY) {
+    throw new Error("SECRET_KEY is not defined in environment variables.");
+}
 
 app.use(session({
     store: new RedisStore({ client: redisClient }),
@@ -47,7 +49,7 @@ app.get("/", (req, res) => {
     res.json({ message: "Auth Server" });
 });
 
-require('./routes/auth')(app)
+require('./routes/auth').default(app);
 
 const PORT = 3000
 app.listen(PORT, () => {

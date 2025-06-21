@@ -1,0 +1,27 @@
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    command: npm run dev
+
+  data:
+    build:
+      context: ./server/data
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/data:/app
+      - /app/node_modules
+    command: node .
+
+  identity:
+    build:
+      context: ./server/identity
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/identity:/app
+      - /app/node_modules
+    command: node .
