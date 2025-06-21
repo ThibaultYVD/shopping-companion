@@ -49,7 +49,7 @@ export default {
 
       try {
         await axios.post(
-          'http://localhost:3002/api/auth/signup',
+          '/api/auth/signup',
           {
             first_name: first_name.value,
             last_name: last_name.value,

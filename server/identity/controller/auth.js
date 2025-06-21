@@ -8,7 +8,6 @@ const bcrypt = require("bcryptjs");
 
 exports.signup = async (req, res) => {
     try {
-        console.log("Reçu dans signup:", req.body);
         const user = await User.create({
             first_name: req.body.first_name,
             last_name: req.body.last_name,

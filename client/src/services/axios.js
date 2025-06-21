@@ -3,12 +3,13 @@ import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 
 const instance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "http://localhost:9001",
   timeout: 60000
 });
 
 const auth_api = axios.create({
-  baseURL: "http://localhost:3002",
+  baseURL: "http://localhost:9002",
+  timeout: 60000
 });
 
 instance.interceptors.request.use(
