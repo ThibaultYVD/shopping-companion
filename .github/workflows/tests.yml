@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd server/db
+          cd server/data
           npm install
 
       - name: Run Jest tests
