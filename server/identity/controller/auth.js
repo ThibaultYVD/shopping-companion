@@ -7,8 +7,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 exports.signup = async (req, res) => {
-
     try {
+        console.log("Reçu dans signup:", req.body);
         const user = await User.create({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
@@ -18,6 +18,7 @@ exports.signup = async (req, res) => {
         });
 
         const result = user.setRoles([1])
+        await user.setRoles([1]);
         if (result) res.status(200).json({ message: "Utilisateur enregistré avec succès!" });
 
     } catch (error) {
