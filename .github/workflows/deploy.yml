@@ -45,6 +45,11 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
           APP_ENV: ${{ secrets.APP_ENV }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
         run: |
           docker pull thibaultyvd/shopping-companion:production
           docker compose -f docker-compose.yml up -d
